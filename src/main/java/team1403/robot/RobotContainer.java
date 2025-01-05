@@ -65,6 +65,8 @@ public class RobotContainer {
     // Configure the trigger bindings
 
     m_swerve = new SwerveSubsystem();
+    // initialize the blackbox subsystem so that data can be reference later
+    Blackbox.getInstance();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
@@ -89,8 +91,8 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
-    autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
+    // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
+    // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
     Constants.kDriverTab.add("Auto Chooser", autoChooser);
     if(Constants.DEBUG_MODE) {
@@ -119,10 +121,6 @@ public class RobotContainer {
 
     Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
     Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
-    Pose2d pos_blue_shoot = new Pose2d(new Translation2d(1.5, 5.4), new Rotation2d());
-    Pose2d pos_red_shoot = FlippingUtil.flipFieldPose(pos_blue_shoot);
-    Pose2d pose_blue_amp = new Pose2d(new Translation2d(1.813, 7.715), new Rotation2d(-Math.PI/2));
-    Pose2d pose_red_amp = new Pose2d(FlippingUtil.flipFieldPosition(pose_blue_amp.getTranslation()), new Rotation2d(-Math.PI/2));
     
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(
         m_swerve,
@@ -139,20 +137,6 @@ public class RobotContainer {
         () -> m_driverController.getLeftTriggerAxis()));
 
     m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
-
-    m_driverController.rightBumper().whileTrue(Commands.runOnce(() -> {
-      Pose2d tar = pos_red_shoot;
-      if(CougarUtil.getAlliance() == Alliance.Blue) tar = pos_blue_shoot;
-      Blackbox.targetPosition = tar;
-      m_pathFinder = AutoUtil.pathFindToPose(tar);
-    }).andThen(m_swerve.defer(() -> m_pathFinder)));
-
-    m_driverController.leftBumper().whileTrue(Commands.runOnce(() -> {
-      Pose2d tar = pose_red_amp;
-      if(CougarUtil.getAlliance() == Alliance.Blue) tar = pose_blue_amp;
-      Blackbox.targetPosition = tar;
-      m_pathFinder = AutoUtil.pathFindToPose(tar);
-    }).andThen(m_swerve.defer(() -> m_pathFinder)));
 
     //disable NT publish if FMS is attached at any point
     new Trigger(() -> DriverStation.isFMSAttached())

@@ -217,7 +217,7 @@ public class DefaultSwerveCommand extends Command {
     }
     
     if((m_ampSupplier.getAsBoolean() || m_alignSupplier.getAsBoolean()) && Blackbox.isValidTargetPosition() && vel_hypot < 0.2) {
-      m_driveState.pose = Blackbox.targetPosition;
+      m_driveState.pose = Blackbox.getTargetPosition();
       chassisSpeeds = m_driveController.calculateRobotRelativeSpeeds(curPose, m_driveState);
       double output_speed = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
       if(output_speed < 0.02) {
