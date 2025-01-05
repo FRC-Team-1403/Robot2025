@@ -93,7 +93,7 @@ public class Constants {
     public static final double kSteerPositionConversionFactor = 2.0 * Math.PI
         * Swerve.kSteerReduction;
 
-    public static final double kNEOMaxRpm = 5676; //taken from DCMotor
+    public static final double kNEOMaxRpm = Units.radiansPerSecondToRotationsPerMinute(DCMotor.getNEO(1).freeSpeedRadPerSec);
 
     public static final double kMaxSpeed = kNEOMaxRpm * kDrivePositionConversionFactor / 60.0; 
 
