@@ -31,7 +31,7 @@ public class TreeCommandProxy extends TreeCommandNode {
     //binary variant for compatibility with older code
     public TreeCommandProxy(Supplier<Command> c, BooleanSupplier override) {
         cmd_s = c;
-        branch_select = () -> override.getAsBoolean() ? 0 : 1;
+        branch_select = () -> override.getAsBoolean() ? 1 : 0;
     }
 
     public TreeCommandProxy(Command c, BooleanSupplier override) {
