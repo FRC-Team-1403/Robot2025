@@ -4,6 +4,13 @@
 
 package team1403.robot;
 
+import org.littletonrobotics.urcl.URCL;
+
+import com.ctre.phoenix6.SignalLogger;
+
+import dev.doglog.DogLog;
+import dev.doglog.DogLogOptions;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -25,6 +32,12 @@ public class Robot extends TimedRobot {
   public Robot() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    DogLog.setOptions(new DogLogOptions()
+      .withCaptureConsole(true)
+      .withCaptureDs(true));
+    /* Enable logging for motors, so we don't need logging in SysID routines */
+    URCL.start();
+    SignalLogger.start();
     m_robotContainer = new RobotContainer();
   }
 

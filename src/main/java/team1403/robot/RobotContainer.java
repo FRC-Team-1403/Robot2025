@@ -12,6 +12,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.GeometryUtil;
 
 import dev.doglog.DogLog;
+import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,6 +34,7 @@ import team1403.lib.auto.TreeCommandNode;
 import team1403.lib.auto.TreeCommandProxy;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
+import team1403.robot.Constants.Driver;
 import team1403.robot.Constants.Setpoints;
 import team1403.robot.autos.AutoHelper;
 import team1403.robot.subsystems.Blackbox;
@@ -152,8 +154,11 @@ public class RobotContainer {
       m_pathFinder = AutoUtil.pathFindToPose(tar);
     }).andThen(m_swerve.defer(() -> m_pathFinder)));
 
-    //run intake shooter state machine
-    RobotModeTriggers.disabled().whileFalse(m_teleopCommand);
+    //disable NT publish if FMS is attached at any point
+    new Trigger(() -> DriverStation.isFMSAttached())
+    .onTrue(new InstantCommand(
+      () -> DogLog.setOptions(
+        DogLog.getOptions().withNtPublish(false))));
   }
   
   /**
