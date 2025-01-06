@@ -236,7 +236,7 @@ public class DefaultSwerveCommand extends Command {
       m_driveController.reset(curPose, currentSpeeds);
       chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
       m_setpoint = m_generator.generateSetpoint(m_setpoint, chassisSpeeds, Constants.kLoopTime);
-      // chassisSpeeds = m_setpoint.robotRelativeSpeeds();
+      chassisSpeeds = m_setpoint.robotRelativeSpeeds();
     }
 
     m_drivetrainSubsystem.drive(chassisSpeeds, false);
