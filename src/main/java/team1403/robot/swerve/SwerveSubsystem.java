@@ -51,6 +51,7 @@ import team1403.robot.Constants;
 import team1403.robot.Robot;
 import team1403.robot.Constants.CanBus;
 import team1403.robot.Constants.Swerve;
+import team1403.robot.swerve.ISwerveModule.ModControlType;
 
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
@@ -326,7 +327,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     for (int i = 0; i < m_modules.length; i++) {
       states[i].optimize(currentStates[i].angle);
-      m_modules[i].set(states[i].speedMetersPerSecond,
+      m_modules[i].set(ModControlType.Velocity, states[i].speedMetersPerSecond,
           MathUtil.angleModulus(states[i].angle.getRadians()));
     }
 

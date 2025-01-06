@@ -210,7 +210,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
      * @param steerAngle           steering angle.
      *
      */
-    public void set(double driveMetersPerSecond, double steerAngle) {
+    public void set(ModControlType type, double value, double steerAngle) {
       // Set driveMotor according to velocity input
       // System.out.println("drive input speed: " + driveMetersPerSecond);
 
@@ -229,13 +229,19 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
       // Set steerMotor according to position of encoder
       m_steerPIDController.setReference(steerAngle, ControlType.kPosition);
 
-      driveMetersPerSecond *= MathUtil.clamp(Math.cos(steerAngle - absAngle), 0, 1);
-      driveMetersPerSecond += steerVel * Constants.Swerve.kCouplingRatio;
-      driveMetersPerSecond = MathUtil.clamp(driveMetersPerSecond, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
+      if(type == ModControlType.Velocity) {
+        value *= MathUtil.clamp(Math.cos(steerAngle - absAngle), 0, 1);
+        value += steerVel * Constants.Swerve.kCouplingRatio;
+        value = MathUtil.clamp(value, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
 
-      m_drivePIDController.setReference(driveMetersPerSecond, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
-                    m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, driveMetersPerSecond));
-      m_lastVelocitySetpoint = driveMetersPerSecond;
+        m_drivePIDController.setReference(value, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
+                      m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, value));
+        m_lastVelocitySetpoint = value;
+      } else if (type == ModControlType.Voltage) {
+        m_drivePIDController.setReference(value, ControlType.kVoltage);
+        //better than it being completely wrong
+        m_lastVelocitySetpoint = getDriveVelocity();
+      }
 
       DogLog.log(getName() + "/EncError", relativeErr);
     }

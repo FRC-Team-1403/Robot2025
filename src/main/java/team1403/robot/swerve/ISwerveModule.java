@@ -5,9 +5,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface ISwerveModule {
 
+    enum ModControlType {
+        Velocity,
+        Voltage
+    }
+
     public SwerveModuleState getState();
 
     public SwerveModulePosition getModulePosition();
 
-    public void set(double driveMetersPerSecond, double steerAngle);
+    public void set(ModControlType type, double value, double steerAngle);
 }
