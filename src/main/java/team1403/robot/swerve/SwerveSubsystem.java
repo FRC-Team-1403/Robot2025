@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
@@ -55,6 +56,7 @@ import team1403.robot.swerve.ISwerveModule.ModControlType;
 
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Meters;
 
 /**
@@ -76,6 +78,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveHeadingCorrector m_headingCorrector = new SwerveHeadingCorrector();
   private SimDouble m_gryoHeadingSim;
   private SimDouble m_gyroRateSim;
+  private SysIdRoutine m_sysIdRoutine;
 
   private static final SwerveModuleState[] m_xModeState = {
     // Front Left
@@ -185,6 +188,13 @@ public class SwerveSubsystem extends SubsystemBase {
     m_odometeryNotifier = new Notifier(m_odometer::update);
     m_odometeryNotifier.setName("SwerveOdoNotifer");
     m_odometeryNotifier.startPeriodic(Units.millisecondsToSeconds(Constants.Swerve.kModuleUpdateRateMs));
+
+    m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism((voltage) -> {
+      for(ISwerveModule m : m_modules) {
+        m.set(ModControlType.Voltage, voltage.in(Volts), 0);
+      }
+    }, null, this));
 
     Constants.kDriverTab.add("Gyro", m_navx2);
     Constants.kDriverTab.add("Field", m_field);
@@ -398,6 +408,14 @@ public class SwerveSubsystem extends SubsystemBase {
     builder.addDoubleProperty("Back Right Velocity", () -> m_currentStates[3].speedMetersPerSecond, null);
 
     builder.addDoubleProperty("Robot Angle", () -> getRotation().getZ(), null);
+  }
+
+  public Command getSysIDQ(SysIdRoutine.Direction dir) {
+    return m_sysIdRoutine.quasistatic(dir);
+  }
+
+  public Command getSysIDD(SysIdRoutine.Direction dir) {
+    return m_sysIdRoutine.dynamic(dir);
   }
 
   private Pose2d[] getModulePoses() {
