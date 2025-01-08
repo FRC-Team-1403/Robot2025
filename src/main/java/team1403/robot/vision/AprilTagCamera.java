@@ -1,5 +1,5 @@
 
-package team1403.robot.swerve;
+package team1403.robot.vision;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
 
-public class AprilTagCamera extends SubsystemBase {
+public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final PhotonCamera m_camera;
   private PhotonCameraSim m_cameraSim;
   private PhotonPoseEstimator m_poseEstimator;
@@ -105,7 +105,7 @@ public class AprilTagCamera extends SubsystemBase {
     return -1;
   }
 
-  public List<PhotonTrackedTarget> getTargets() {
+  private List<PhotonTrackedTarget> getTargets() {
     if(hasPose())
     {
       return m_estPos.targetsUsed;
