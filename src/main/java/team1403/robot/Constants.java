@@ -241,7 +241,7 @@ public class Constants {
   }
 
   public static class Vision {
-    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
   }
 
   public static class Arm {
