@@ -112,7 +112,7 @@ public class DefaultSwerveCommand extends Command {
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
 
-    m_translationLimiter = new SlewRateLimiter(1.5, -3, 0);
+    m_translationLimiter = new SlewRateLimiter(2, -2, 0);
     m_rotationRateLimiter = new SlewRateLimiter(4, -4, 0);
     m_directionSlewRate = new CircularSlewRateLimiter(kDirectionSlewRateLimit);
 
