@@ -212,7 +212,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
      * @param steerAngle           steering angle.
      *
      */
-    public void set(ModControlType type, double value, double steerAngle) {
+    public void set(ModControlType type, double value, SteerControlType s_type, double steerAngle) {
       // Set driveMotor according to velocity input
       // System.out.println("drive input speed: " + driveMetersPerSecond);
 
@@ -223,13 +223,16 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
       double steerVel = m_steerRelativeEncoder.getVelocity();
       
       //if we dynamically correct while rotating the PID will get angry, error is also higher when in motion, since values aren't time synced
-      if(relativeErr > Units.degreesToRadians(10) && Math.abs(steerVel) < 0.1) {
+      if(relativeErr > Units.degreesToRadians(15) && Math.abs(steerVel) < 0.1) {
         System.out.println(getName() + " Encoder Reset!");
         m_steerRelativeEncoder.setPosition(absAngle);
       }
 
       // Set steerMotor according to position of encoder
-      m_steerPIDController.setReference(steerAngle, ControlType.kPosition);
+      if(s_type == SteerControlType.Angle)
+        m_steerPIDController.setReference(steerAngle, ControlType.kPosition);
+      else if(s_type == SteerControlType.Voltage)
+        m_steerPIDController.setReference(steerAngle, ControlType.kVoltage);
 
       if(type == ModControlType.Velocity) {
         value *= MathUtil.clamp(Math.cos(steerAngle - absAngle), 0, 1);

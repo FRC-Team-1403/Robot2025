@@ -47,6 +47,7 @@ import team1403.robot.Robot;
 import team1403.robot.Constants.CanBus;
 import team1403.robot.Constants.Swerve;
 import team1403.robot.swerve.ISwerveModule.ModControlType;
+import team1403.robot.swerve.ISwerveModule.SteerControlType;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.VisionSimUtil;
 
@@ -72,6 +73,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private SimDouble m_gryoHeadingSim;
   private SimDouble m_gyroRateSim;
   private SysIdRoutine m_sysIdRoutine;
+  private SysIdRoutine m_sysIDAngle;
 
   private static final SwerveModuleState[] m_xModeState = {
     // Front Left
@@ -190,9 +192,16 @@ public class SwerveSubsystem extends SubsystemBase {
       (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
     new SysIdRoutine.Mechanism((voltage) -> {
       for(ISwerveModule m : m_modules) {
-        m.set(ModControlType.Voltage, voltage.in(Volts), 0);
+        m.set(ModControlType.Voltage, voltage.in(Volts), SteerControlType.Angle, 0);
       }
     }, null, this));
+    m_sysIDAngle = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
+      (state) -> Logger.recordOutput("SysIDSwerveSteer", state.toString())), 
+      new SysIdRoutine.Mechanism((voltage) -> {
+        for(ISwerveModule m : m_modules) {
+          m.set(ModControlType.Voltage, 0, SteerControlType.Voltage, voltage.in(Volts));
+        }
+      }, null, this));
 
     Constants.kDriverTab.add("Gyro", m_navx2);
     Constants.kDriverTab.add("Field", m_field);
@@ -298,8 +307,8 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
     double dtheta = Units.degreesToRadians(m_navx2.getRate()) * Constants.Swerve.kAngVelCoeff;
-    Logger.recordOutput("test", dtheta);
-    if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 10 && Robot.isReal()) {
+    // Logger.recordOutput("test", dtheta);
+    if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
       Rotation2d rot = getPose2D().getRotation();
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rot.plus(new Rotation2d(dtheta)));
@@ -360,7 +369,7 @@ public class SwerveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_modules.length; i++) {
       states[i].optimize(currentStates[i].angle);
       m_modules[i].set(ModControlType.Velocity, states[i].speedMetersPerSecond,
-          MathUtil.angleModulus(states[i].angle.getRadians()));
+          SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()));
     }
 
     Logger.recordOutput("SwerveStates/Target", states);
@@ -437,6 +446,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public Command getSysIDD(SysIdRoutine.Direction dir) {
     return m_sysIdRoutine.dynamic(dir);
+  }
+
+  public Command getSysIDSteerQ(SysIdRoutine.Direction dir) {
+    return m_sysIDAngle.quasistatic(dir);
+  }
+
+  public Command getSysIDSteerD(SysIdRoutine.Direction dir) {
+    return m_sysIDAngle.dynamic(dir);
   }
 
   private Pose2d[] getModulePoses() {

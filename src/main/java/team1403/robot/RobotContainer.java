@@ -78,6 +78,10 @@ public class RobotContainer {
     autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
     autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
     autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+    autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
+    autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
+    autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
+    autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
@@ -116,6 +120,7 @@ public class RobotContainer {
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
         () -> m_driverController.getHID().getYButtonPressed(),
+        () -> m_driverController.getHID().getBButtonPressed(),
         () -> m_driverController.getHID().getXButton(),
         () -> m_driverController.getHID().getAButton(),
         () -> m_driverController.getHID().getLeftBumperButton(),
@@ -124,7 +129,7 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
   
   /**

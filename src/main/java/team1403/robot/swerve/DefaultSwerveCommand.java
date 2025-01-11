@@ -50,6 +50,7 @@ public class DefaultSwerveCommand extends Command {
   private final DoubleSupplier m_snipingMode;
   private final BooleanSupplier m_ampSupplier;
   private final BooleanSupplier m_alignSupplier;
+  private final BooleanSupplier m_zeroGyroSupplier;
   private boolean m_isFieldRelative;
   
   private SlewRateLimiter m_translationLimiter;
@@ -91,6 +92,7 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
       BooleanSupplier fieldRelativeSupplier,
+      BooleanSupplier zeroGyroSupplier,
       BooleanSupplier xModeSupplier,
       BooleanSupplier aimbotSupplier,
       BooleanSupplier ampSupplier,
@@ -108,12 +110,13 @@ public class DefaultSwerveCommand extends Command {
     this.m_aimbotSupplier = aimbotSupplier;
     this.m_targetPosSupplier = targetSupplier;
     this.m_alignSupplier = alignmentSupplier;
+    this.m_zeroGyroSupplier = zeroGyroSupplier;
     m_ampSupplier = ampSupplier;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
 
     m_translationLimiter = new SlewRateLimiter(2, -2, 0);
-    m_rotationRateLimiter = new SlewRateLimiter(4, -4, 0);
+    m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
     m_directionSlewRate = new CircularSlewRateLimiter(kDirectionSlewRateLimit);
 
     m_controller = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(Swerve.kMaxAngularSpeed, 80));
@@ -146,6 +149,10 @@ public class DefaultSwerveCommand extends Command {
 
     if (m_fieldRelativeSupplier.getAsBoolean()) {
       m_isFieldRelative = !m_isFieldRelative;
+    }
+
+    if(m_zeroGyroSupplier.getAsBoolean()) {
+      m_drivetrainSubsystem.zeroHeading();
     }
 
     if (m_xModeSupplier.getAsBoolean()) {
@@ -198,11 +205,11 @@ public class DefaultSwerveCommand extends Command {
     given_target_angle = MathUtil.angleModulus(given_target_angle + Math.PI);
     // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
 
-    Logger.recordOutput("SwerveDC/Target Angle", given_target_angle);
     
     if(m_aimbotSupplier.getAsBoolean())
     {
-      angular = m_controller.calculate(given_current_angle, given_target_angle);
+      angular = m_controller.calculate(given_current_angle, given_target_angle);   
+      Logger.recordOutput("SwerveDC/Target Angle", given_target_angle);
       Logger.recordOutput("SwerveDC/Aimbot Angular", angular);
     } else {
       m_state.position = given_current_angle;

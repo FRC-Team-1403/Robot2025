@@ -10,9 +10,14 @@ public interface ISwerveModule {
         Voltage
     }
 
+    enum SteerControlType {
+        Angle,
+        Voltage
+    }
+
     public SwerveModuleState getState();
 
     public SwerveModulePosition getModulePosition();
 
-    public void set(ModControlType type, double value, double steerAngle);
+    public void set(ModControlType type, double value, SteerControlType s_type, double steerAngle);
 }
