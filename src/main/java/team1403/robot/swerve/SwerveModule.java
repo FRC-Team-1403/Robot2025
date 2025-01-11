@@ -212,7 +212,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
      * @param steerAngle           steering angle.
      *
      */
-    public void set(ModControlType type, double value, SteerControlType s_type, double steerAngle) {
+    public void set(DriveControlType type, double value, SteerControlType s_type, double steerAngle) {
       // Set driveMotor according to velocity input
       // System.out.println("drive input speed: " + driveMetersPerSecond);
 
@@ -234,7 +234,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
       else if(s_type == SteerControlType.Voltage)
         m_steerPIDController.setReference(steerAngle, ControlType.kVoltage);
 
-      if(type == ModControlType.Velocity) {
+      if(type == DriveControlType.Velocity) {
         value *= MathUtil.clamp(Math.cos(steerAngle - absAngle), 0, 1);
         value += steerVel * Constants.Swerve.kCouplingRatio;
         value = MathUtil.clamp(value, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
@@ -242,7 +242,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
         m_drivePIDController.setReference(value, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
                       MathUtil.clamp(m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, value), -12, 12));
         m_lastVelocitySetpoint = value;
-      } else if (type == ModControlType.Voltage) {
+      } else if (type == DriveControlType.Voltage) {
         m_drivePIDController.setReference(value, ControlType.kVoltage);
         //better than it being completely wrong
         m_lastVelocitySetpoint = getDriveVelocity();

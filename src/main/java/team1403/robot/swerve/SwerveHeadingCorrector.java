@@ -44,7 +44,7 @@ public class SwerveHeadingCorrector {
         boolean is_near_zero = m_yawZeroDetector.update(Math.abs(target.omegaRadiansPerSecond) < OMEGA_THRESH, 0.2);
         double filtered_ang_vel = m_gyroVelFilter.calculate(gyro_vel);
         // degrees per second
-        boolean is_rotating = Math.abs(filtered_ang_vel) > 8;
+        boolean is_rotating = Math.abs(filtered_ang_vel) > 10;
         /* gyro angular vel used when you get hit by another robot and rotate inadvertantly, don't want to snap heading back when that happens
           usually such a hit would create a high angular velocity temporarily, so check for that (units of degrees/s) */
         boolean auto_reset = Math.abs(target.omegaRadiansPerSecond) > OMEGA_THRESH ||

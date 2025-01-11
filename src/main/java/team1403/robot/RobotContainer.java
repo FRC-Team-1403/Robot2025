@@ -74,14 +74,18 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
-    autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
-    autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
-    autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
-    autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
-    autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
-    autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
-    autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+    
+    //avoid cluttering up auto chooser at competitions
+    if (Constants.ENABLE_SYSID) {
+      autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
+      autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
+      autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
+      autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
+      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+    }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));

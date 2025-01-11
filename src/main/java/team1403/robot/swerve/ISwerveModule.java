@@ -5,7 +5,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface ISwerveModule {
 
-    enum ModControlType {
+    enum DriveControlType {
         Velocity,
         Voltage
     }
@@ -19,5 +19,5 @@ public interface ISwerveModule {
 
     public SwerveModulePosition getModulePosition();
 
-    public void set(ModControlType type, double value, SteerControlType s_type, double steerAngle);
+    public void set(DriveControlType type, double value, SteerControlType s_type, double steerAngle);
 }

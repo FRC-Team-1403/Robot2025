@@ -46,7 +46,7 @@ import team1403.robot.Constants;
 import team1403.robot.Robot;
 import team1403.robot.Constants.CanBus;
 import team1403.robot.Constants.Swerve;
-import team1403.robot.swerve.ISwerveModule.ModControlType;
+import team1403.robot.swerve.ISwerveModule.DriveControlType;
 import team1403.robot.swerve.ISwerveModule.SteerControlType;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.VisionSimUtil;
@@ -192,14 +192,14 @@ public class SwerveSubsystem extends SubsystemBase {
       (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
     new SysIdRoutine.Mechanism((voltage) -> {
       for(ISwerveModule m : m_modules) {
-        m.set(ModControlType.Voltage, voltage.in(Volts), SteerControlType.Angle, 0);
+        m.set(DriveControlType.Voltage, voltage.in(Volts), SteerControlType.Angle, 0);
       }
     }, null, this));
     m_sysIDAngle = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
       (state) -> Logger.recordOutput("SysIDSwerveSteer", state.toString())), 
       new SysIdRoutine.Mechanism((voltage) -> {
         for(ISwerveModule m : m_modules) {
-          m.set(ModControlType.Voltage, 0, SteerControlType.Voltage, voltage.in(Volts));
+          m.set(DriveControlType.Voltage, 0, SteerControlType.Voltage, voltage.in(Volts));
         }
       }, null, this));
 
@@ -306,7 +306,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return the corrected chassisspeeds
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    double dtheta = Units.degreesToRadians(m_navx2.getRate()) * Constants.Swerve.kAngVelCoeff;
+    double dtheta = Units.degreesToRadians(m_navx2.getRawGyroZ()) * Constants.Swerve.kAngVelCoeff;
     // Logger.recordOutput("test", dtheta);
     if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
       Rotation2d rot = getPose2D().getRotation();
@@ -324,10 +324,6 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public Rotation3d getRotation() {
     return getPose().getRotation();
-  }
-
-  public double getRate() {
-    return m_navx2.getRate();
   }
 
   /**
@@ -368,7 +364,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     for (int i = 0; i < m_modules.length; i++) {
       states[i].optimize(currentStates[i].angle);
-      m_modules[i].set(ModControlType.Velocity, states[i].speedMetersPerSecond,
+      m_modules[i].set(DriveControlType.Velocity, states[i].speedMetersPerSecond,
           SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()));
     }
 
@@ -404,7 +400,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation().toRotation2d(), m_navx2.getRate());
+    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation().toRotation2d(), m_navx2.getRawGyroZ());
     if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
     {
       return corrected;

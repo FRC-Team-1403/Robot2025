@@ -229,9 +229,10 @@ public class DefaultSwerveCommand extends Command {
         chassisSpeeds.omegaRadiansPerSecond = 0;
       }
     } else {
-      chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       if (m_isFieldRelative) {
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, curRotation);
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, curRotation);
+      } else {
+        chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }
       m_driveController.reset(curPose, currentSpeeds);
       //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
