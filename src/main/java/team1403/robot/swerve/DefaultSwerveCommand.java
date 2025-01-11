@@ -171,7 +171,7 @@ public class DefaultSwerveCommand extends Command {
       double angle = Math.atan2(vertical, horizontal);
 
       velocity *= m_speedLimiter;
-      velocity *= m_translationLimiter.calculate(velocity) * Constants.Swerve.kMaxSpeed;
+      velocity = m_translationLimiter.calculate(velocity) * Constants.Swerve.kMaxSpeed;
 
       if(vel_hypot < 0.01) {
         angle = m_directionSlewRate.lastValue();
