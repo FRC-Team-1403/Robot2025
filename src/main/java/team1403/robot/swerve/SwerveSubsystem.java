@@ -2,6 +2,8 @@ package team1403.robot.swerve;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
@@ -14,7 +16,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.studica.frc.AHRS.NavXUpdateRate;
 
-import dev.doglog.DogLog;
+
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.MathUtil;
@@ -157,11 +159,11 @@ public class SwerveSubsystem extends SubsystemBase {
     //replace when pathplanner warmup command gets fixed (update: it never did lmao)
     swerveWarmupCommand().schedule();
     PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-      DogLog.log("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+      Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
       m_field.getObject("traj").setPoses(activePath);
     });
     PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
-      DogLog.log("Odometry/TrajectorySetpoint", targetPose);
+      Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
     });
 
     // addDevice(m_navx2.getName(), m_navx2);
@@ -169,6 +171,10 @@ public class SwerveSubsystem extends SubsystemBase {
       while (m_navx2.isCalibrating());
 
     zeroGyroscope();
+
+    //initialize the arrays
+    getModuleStates();
+    getModulePositions();
 
     m_odometer = new SyncSwerveDrivePoseEstimator(CougarUtil.getInitialRobotPose(), () -> getGyroscopeRotation(), () -> getModulePositions());
 
@@ -180,7 +186,8 @@ public class SwerveSubsystem extends SubsystemBase {
     m_odometeryNotifier.setName("SwerveOdoNotifer");
     m_odometeryNotifier.startPeriodic(Units.millisecondsToSeconds(Constants.Swerve.kModuleUpdateRateMs));
 
-    m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(),
+    m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
+      (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
     new SysIdRoutine.Mechanism((voltage) -> {
       for(ISwerveModule m : m_modules) {
         m.set(ModControlType.Voltage, voltage.in(Volts), 0);
@@ -277,6 +284,30 @@ public class SwerveSubsystem extends SubsystemBase {
     return m_navx2.getRotation3d();
   }
 
+  
+  /**
+   * Accounts for the drift caused by the first order kinematics
+   * while doing both translational and rotational movement.
+   * 
+   * <p>
+   * Looks forward one control loop to figure out where the robot
+   * should be given the chassisspeed and backs out a twist command from that.
+   * 
+   * @param chassisSpeeds the given chassisspeeds
+   * @return the corrected chassisspeeds
+   */
+  private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+    double dtheta = Units.degreesToRadians(m_navx2.getRate()) * Constants.Swerve.kAngVelCoeff;
+    Logger.recordOutput("test", dtheta);
+    if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 10 && Robot.isReal()) {
+      Rotation2d rot = getPose2D().getRotation();
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rot.plus(new Rotation2d(dtheta)));
+    }
+
+    return chassisSpeeds;
+  }
+
   /**
    * Gets the heading of the robot.
    *
@@ -295,7 +326,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param chassisSpeeds
    */
   public void drive(ChassisSpeeds chassisSpeeds, boolean discretize) {
-    m_chassisSpeeds = chassisSpeeds;
+    m_chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     //update here to reduce latency
     updateTargetModuleStates(discretize);
   }
@@ -332,7 +363,7 @@ public class SwerveSubsystem extends SubsystemBase {
           MathUtil.angleModulus(states[i].angle.getRadians()));
     }
 
-    DogLog.log("SwerveStates/Target", states);
+    Logger.recordOutput("SwerveStates/Target", states);
   }
 
 
@@ -340,7 +371,6 @@ public class SwerveSubsystem extends SubsystemBase {
     for(int i = 0; i < m_modules.length; i++) {
       m_currentStates[i] = m_modules[i].getState();
     }
-    DogLog.log("SwerveStates/Measured", m_currentStates);
     return m_currentStates;
   }
 
@@ -350,7 +380,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getCurrentChassisSpeed() {
     ChassisSpeeds ret =  Swerve.kDriveKinematics.toChassisSpeeds(getModuleStates());
-    DogLog.log("SwerveStates/Current Chassis Speeds", ret);
+    Logger.recordOutput("SwerveStates/Current Chassis Speeds", ret);
     return ret;
   }
 
@@ -425,7 +455,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private void updateTargetModuleStates(boolean discretize) {
     ChassisSpeeds corrected = rotationalDriftCorrection(m_chassisSpeeds);
 
-    DogLog.log("SwerveStates/Corrected Target Chassis Speeds", corrected);
+    Logger.recordOutput("SwerveStates/Corrected Target Chassis Speeds", corrected);
 
     setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), discretize);
   }
@@ -433,7 +463,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    DogLog.log("Odometry/Cycles", m_odometer.resetUpdateCount());
+    Logger.recordOutput("Odometry/Cycles", m_odometer.resetUpdateCount());
 
     if(!m_disableVision)
     {
@@ -453,9 +483,10 @@ public class SwerveSubsystem extends SubsystemBase {
     if (Constants.DEBUG_MODE) m_field.getObject("xModules").setPoses(getModulePoses());
     // Logging Output
 
-    DogLog.log("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
+    Logger.recordOutput("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
 
     //wip: slip detection based on orbit's swerve presentation
+    /*
     ChassisSpeeds temp = getCurrentChassisSpeed();
     temp.vxMetersPerSecond = 0;
     temp.vyMetersPerSecond = 0;
@@ -479,9 +510,11 @@ public class SwerveSubsystem extends SubsystemBase {
       min = Math.min(min, speed);
       max = Math.max(max, speed);
     }
+    
 
-    DogLog.log("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
-    DogLog.log("SwerveStates/PureTranslation", tState);
-    DogLog.log("Odometry/Robot", getPose());
+    Logger.recordOutput("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
+    Logger.recordOutput("SwerveStates/PureTranslation", tState); */
+    Logger.recordOutput("SwerveStates/Measured", m_currentStates);
+    Logger.recordOutput("Odometry/Robot", getPose());
   }
 }

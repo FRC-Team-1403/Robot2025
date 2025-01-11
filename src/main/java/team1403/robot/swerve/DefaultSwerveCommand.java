@@ -4,13 +4,16 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
-import dev.doglog.DogLog;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -48,7 +51,11 @@ public class DefaultSwerveCommand extends Command {
   private final BooleanSupplier m_ampSupplier;
   private final BooleanSupplier m_alignSupplier;
   private boolean m_isFieldRelative;
-
+  
+  private SlewRateLimiter m_translationLimiter;
+  private SlewRateLimiter m_rotationRateLimiter;
+  private CircularSlewRateLimiter m_directionSlewRate;
+  private static final double kDirectionSlewRateLimit = 22;
 
   private ProfiledPIDController m_controller;
   private TrapezoidProfile.State m_state = new TrapezoidProfile.State();
@@ -58,8 +65,6 @@ public class DefaultSwerveCommand extends Command {
     Constants.kLoopTime
   );
   private PathPlannerTrajectoryState m_driveState = new PathPlannerTrajectoryState();
-  private SwerveSetpointGenerator m_generator;
-  private SwerveSetpoint m_setpoint;
 
   private double m_speedLimiter = 0.2;
 
@@ -106,11 +111,13 @@ public class DefaultSwerveCommand extends Command {
     m_ampSupplier = ampSupplier;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
+
+    m_translationLimiter = new SlewRateLimiter(1.5, -3, 0);
+    m_rotationRateLimiter = new SlewRateLimiter(4, -4, 0);
+    m_directionSlewRate = new CircularSlewRateLimiter(kDirectionSlewRateLimit);
+
     m_controller = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(Swerve.kMaxAngularSpeed, 80));
     m_controller.enableContinuousInput(-Math.PI, Math.PI);
-
-    m_generator = new SwerveSetpointGenerator(CougarUtil.loadRobotConfig(), Constants.Swerve.kMaxTurningSpeed);
-    m_setpoint = new SwerveSetpoint(new ChassisSpeeds(), m_drivetrainSubsystem.getModuleStates(), DriveFeedforwards.zeros(Constants.Swerve.kNumSwerveModules));
 
     Constants.kDriverTab.addBoolean("isFieldRelative", () -> m_isFieldRelative);
     if(Constants.DEBUG_MODE) {
@@ -126,32 +133,7 @@ public class DefaultSwerveCommand extends Command {
     ChassisSpeeds speeds = m_drivetrainSubsystem.getCurrentChassisSpeed();
     m_controller.reset(MathUtil.angleModulus(m_drivetrainSubsystem.getRotation().getZ()), speeds.omegaRadiansPerSecond);
     m_driveController.reset(m_drivetrainSubsystem.getPose2D(), speeds);
-    m_setpoint = new SwerveSetpoint(speeds, m_drivetrainSubsystem.getModuleStates(), DriveFeedforwards.zeros(Constants.Swerve.kNumSwerveModules));
   }
-
-    /**
-   * Accounts for the drift caused by the first order kinematics
-   * while doing both translational and rotational movement.
-   * 
-   * <p>
-   * Looks forward one control loop to figure out where the robot
-   * should be given the chassisspeed and backs out a twist command from that.
-   * 
-   * @param chassisSpeeds the given chassisspeeds
-   * @return the corrected chassisspeeds
-   */
-  private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    double coeff = Robot.isReal() ? Constants.Swerve.kAngVelCoeff : -0.1; //sim needs different coeff
-    double dtheta = Units.degreesToRadians(m_drivetrainSubsystem.getRate()) * coeff;
-    if(Math.abs(dtheta) > 0.001) {
-      Rotation2d rot = m_drivetrainSubsystem.getRotation().toRotation2d();
-      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rot.plus(new Rotation2d(dtheta)));
-    }
-
-    return chassisSpeeds;
-  }
-
 
   @Override
   public void execute() {
@@ -168,7 +150,6 @@ public class DefaultSwerveCommand extends Command {
 
     if (m_xModeSupplier.getAsBoolean()) {
       m_drivetrainSubsystem.xMode();
-      m_setpoint = new SwerveSetpoint(new ChassisSpeeds(), m_drivetrainSubsystem.getModuleStates(), DriveFeedforwards.zeros(Constants.Swerve.kNumSwerveModules));
       return;
     }
 
@@ -189,13 +170,26 @@ public class DefaultSwerveCommand extends Command {
       velocity = MathUtil.applyDeadband(velocity, 0.05);
       double angle = Math.atan2(vertical, horizontal);
 
-      velocity *= m_speedLimiter * Constants.Swerve.kMaxSpeed;
+      velocity *= m_speedLimiter;
+      velocity *= m_translationLimiter.calculate(velocity) * Constants.Swerve.kMaxSpeed;
+
+      if(vel_hypot < 0.01) {
+        angle = m_directionSlewRate.lastValue();
+      }
+      else if(velocity < 0.01) {
+        m_directionSlewRate.setLimits(500);
+        angle = m_directionSlewRate.calculate(angle);
+      }
+      else {
+        m_directionSlewRate.setLimits(kDirectionSlewRateLimit / velocity);
+        angle = m_directionSlewRate.calculate(angle);
+      }
 
       horizontal = velocity * Math.cos(angle);
       vertical = velocity * Math.sin(angle);
     }
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
-    double angular = squareNum(ang_deadband) * m_speedLimiter * Swerve.kMaxAngularSpeed;
+    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * Swerve.kMaxAngularSpeed;
 
     Pose2d curPose = m_drivetrainSubsystem.getPose2D();
     Rotation2d curRotation = curPose.getRotation();
@@ -204,12 +198,12 @@ public class DefaultSwerveCommand extends Command {
     given_target_angle = MathUtil.angleModulus(given_target_angle + Math.PI);
     // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
 
-    DogLog.log("SwerveDC/Target Angle", given_target_angle);
+    Logger.recordOutput("SwerveDC/Target Angle", given_target_angle);
     
     if(m_aimbotSupplier.getAsBoolean())
     {
       angular = m_controller.calculate(given_current_angle, given_target_angle);
-      DogLog.log("SwerveDC/Aimbot Angular", angular);
+      Logger.recordOutput("SwerveDC/Aimbot Angular", angular);
     } else {
       m_state.position = given_current_angle;
       m_state.velocity = currentSpeeds.omegaRadiansPerSecond;
@@ -227,19 +221,16 @@ public class DefaultSwerveCommand extends Command {
       if(Math.abs(chassisSpeeds.omegaRadiansPerSecond) < 0.02) {
         chassisSpeeds.omegaRadiansPerSecond = 0;
       }
-      m_setpoint = m_generator.generateSetpoint(m_setpoint, chassisSpeeds, Constants.kLoopTime);
     } else {
       chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       if (m_isFieldRelative) {
         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, curRotation);
       }
       m_driveController.reset(curPose, currentSpeeds);
-      chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
-      m_setpoint = m_generator.generateSetpoint(m_setpoint, chassisSpeeds, Constants.kLoopTime);
-      chassisSpeeds = m_setpoint.robotRelativeSpeeds();
+      //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     }
 
-    m_drivetrainSubsystem.drive(chassisSpeeds, false);
+    m_drivetrainSubsystem.drive(chassisSpeeds, true);
   }
 
   private static double squareNum(double num) {

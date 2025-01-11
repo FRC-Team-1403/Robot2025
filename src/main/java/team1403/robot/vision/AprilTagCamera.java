@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -15,7 +16,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -163,7 +163,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
       //fixme: indentation
         m_estPos = m_poseEstimator.update(result).orElse(null);
 
-        DogLog.log(m_camera.getName() + "/Target Visible", result.hasTargets());
+        Logger.recordOutput(m_camera.getName() + "/Target Visible", result.hasTargets());
 
         if(kExtraVisionDebugInfo)
         {
@@ -171,7 +171,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
           Pose3d robot_pose_transformed = robot_pose3d.transformBy(m_cameraTransform.get());
           double[] ambiguities = new double[getTargets().size()];
 
-          DogLog.log(m_camera.getName() + "/Camera Transform", robot_pose_transformed);
+          Logger.recordOutput(m_camera.getName() + "/Camera Transform", robot_pose_transformed);
 
           m_visionTargets.clear();
           m_corners.clear();
@@ -187,17 +187,17 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
               m_corners.add(new Translation2d(c.x, c.y));
           }
 
-          DogLog.log(m_camera.getName() + "/Vision Targets", m_visionTargets.toArray(new Pose3d[m_visionTargets.size()]));
-          DogLog.log(m_camera.getName() + "/Corners", m_corners.toArray(new Translation2d[m_corners.size()]));
-          DogLog.log(m_camera.getName() + "/PoseAmbiguity", ambiguities.clone());
+          Logger.recordOutput(m_camera.getName() + "/Vision Targets", m_visionTargets.toArray(new Pose3d[m_visionTargets.size()]));
+          Logger.recordOutput(m_camera.getName() + "/Corners", m_corners.toArray(new Translation2d[m_corners.size()]));
+          Logger.recordOutput(m_camera.getName() + "/PoseAmbiguity", ambiguities.clone());
         }
 
-        DogLog.log(m_camera.getName() + "/hasPose", hasPose());
+        Logger.recordOutput(m_camera.getName() + "/hasPose", hasPose());
         
         if(hasPose())
         {
-          DogLog.log(m_camera.getName() + "/Combined Area", getTagAreas());
-          DogLog.log(m_camera.getName() + "/Pose3d", getPose());
+          Logger.recordOutput(m_camera.getName() + "/Combined Area", getTagAreas());
+          Logger.recordOutput(m_camera.getName() + "/Pose3d", getPose());
         }
       }
     }

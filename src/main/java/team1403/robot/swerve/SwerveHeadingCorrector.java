@@ -2,7 +2,9 @@ package team1403.robot.swerve;
 
 import java.util.Optional;
 
-import dev.doglog.DogLog;
+import org.littletonrobotics.junction.Logger;
+
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -53,9 +55,9 @@ public class SwerveHeadingCorrector {
             resetHeadingSetpoint();
         }
 
-        DogLog.log("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
-        DogLog.log("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
-        DogLog.log("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
+        Logger.recordOutput("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
+        Logger.recordOutput("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
+        Logger.recordOutput("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
 
         if(is_near_zero && yaw_setpoint.isEmpty())
         {

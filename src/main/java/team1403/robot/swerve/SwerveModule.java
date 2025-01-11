@@ -14,7 +14,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 
-import dev.doglog.DogLog;
+
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
@@ -38,6 +38,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Represents a swerve module. Consists of a drive motor, steer motor, 
@@ -186,8 +188,8 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .outputRange(-1, 1);
       config.encoder
-        .uvwAverageDepth(2)
-        .uvwMeasurementPeriod(10)
+        //.uvwAverageDepth(2)
+        //.uvwMeasurementPeriod(10)
         .positionConversionFactor(Constants.Swerve.kDrivePositionConversionFactor)
         .velocityConversionFactor(Constants.Swerve.kDrivePositionConversionFactor / 60.);
       config.signals
@@ -235,7 +237,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
         value = MathUtil.clamp(value, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
 
         m_drivePIDController.setReference(value, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
-                      m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, value));
+                      MathUtil.clamp(m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, value), -12, 12));
         m_lastVelocitySetpoint = value;
       } else if (type == ModControlType.Voltage) {
         m_drivePIDController.setReference(value, ControlType.kVoltage);
@@ -243,7 +245,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
         m_lastVelocitySetpoint = getDriveVelocity();
       }
 
-      DogLog.log(getName() + "/EncError", relativeErr);
+      Logger.recordOutput(getName() + "/EncError", relativeErr);
     }
 
     /**
@@ -316,7 +318,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
 
     @Override
     public void periodic() {
-      DogLog.log(m_name + "/Drive Current", m_driveMotor.getOutputCurrent());
-      DogLog.log(m_name + "/Steer Current", m_steerMotor.getOutputCurrent());
+      //Logger.recordOutput(m_name + "/Drive Current", m_driveMotor.getOutputCurrent());
+      //Logger.recordOutput(m_name + "/Steer Current", m_steerMotor.getOutputCurrent());
     }
   }

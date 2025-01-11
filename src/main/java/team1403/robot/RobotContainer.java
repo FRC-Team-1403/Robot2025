@@ -4,40 +4,22 @@
 
 package team1403.robot;
 
-import java.util.Set;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.FlippingUtil;
-import com.pathplanner.lib.util.GeometryUtil;
-
-import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import team1403.lib.auto.TreeAuto;
-import team1403.lib.auto.TreeCommandNode;
-import team1403.lib.auto.TreeCommandProxy;
-import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
-import team1403.robot.Constants.Driver;
-import team1403.robot.Constants.Setpoints;
-import team1403.robot.autos.AutoHelper;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
@@ -76,7 +58,7 @@ public class RobotContainer {
 
     Constants.kDriverTab.addDouble("Battery Voltage", () -> m_powerDistribution.getVoltage());
     Constants.kDriverTab.addDouble("Match Time", () -> DriverStation.getMatchTime());
-    DogLog.setPdh(m_powerDistribution);
+    // DogLog.setPdh(m_powerDistribution);
 
     // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
     // NamedCommands.registerCommand("First Piece", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
@@ -143,12 +125,6 @@ public class RobotContainer {
         () -> m_driverController.getLeftTriggerAxis()));
 
     m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
-
-    //disable NT publish if FMS is attached at any point
-    new Trigger(() -> DriverStation.isFMSAttached())
-    .onTrue(new InstantCommand(
-      () -> DogLog.setOptions(
-        DogLog.getOptions().withNtPublish(false))));
   }
   
   /**
