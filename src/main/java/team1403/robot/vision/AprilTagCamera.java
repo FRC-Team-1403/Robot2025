@@ -18,11 +18,13 @@ import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N4;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
@@ -34,11 +36,11 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private PhotonPoseEstimator m_poseEstimator;
   private Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
-  private Supplier<Pose3d> m_referencePose;
-  private static final Matrix<N4, N1> kDefaultStdv = VecBuilder.fill(2, 2, 4, 999999);
+  private Supplier<Pose2d> m_referencePose;
+  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
   private static final boolean kExtraVisionDebugInfo = true;
 
-  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose3d> referenceSupplier) {
+  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
     // PortForwarder.add(5800, 
     // "photonvision.local", 5800);
@@ -122,18 +124,16 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     return ret;
   }
 
-  public Matrix<N4, N1> getEstStdv() {
+  public Matrix<N3, N1> getEstStdv() {
     return kDefaultStdv.div(getTagAreas());
   }
 
-  //TODO: return false for bad estimates
   public boolean checkVisionResult() {
+    if(!hasPose()) return false;
 
     if(getTagAreas() < 0.3) return false;
 
-    if(getPose().getZ() > 1){
-      return false;
-    }
+    if(getPose().getZ() > 1) return false;
 
     if(getTargets().size() == 1) {
       if(getTargets().get(0).getPoseAmbiguity() > 0.6)
@@ -167,7 +167,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
 
         if(kExtraVisionDebugInfo)
         {
-          Pose3d robot_pose3d = m_referencePose.get();
+          Pose3d robot_pose3d = new Pose3d(m_referencePose.get());
           Pose3d robot_pose_transformed = robot_pose3d.transformBy(m_cameraTransform.get());
           double[] ambiguities = new double[getTargets().size()];
 

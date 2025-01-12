@@ -3,7 +3,7 @@ package team1403.robot.vision;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N4;
+import edu.wpi.first.math.numbers.N3;
 
 public interface ITagCamera {
 
@@ -15,7 +15,7 @@ public interface ITagCamera {
    
     public double getTimestamp();
 
-    public Matrix<N4, N1> getEstStdv();
+    public Matrix<N3, N1> getEstStdv();
 
     //make sure the estimate is not a bad estimate
     public boolean checkVisionResult();

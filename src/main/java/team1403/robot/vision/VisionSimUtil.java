@@ -33,7 +33,7 @@ public class VisionSimUtil {
         }
     }
 
-    public static void update(Pose3d pose) {
+    public static void update(Pose2d pose) {
         if(Robot.isSimulation() && visionSim != null) {
             visionSim.update(pose);
         }

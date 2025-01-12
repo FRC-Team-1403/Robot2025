@@ -145,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     AutoBuilder.configure(
-        this::getPose2D, // Robot pose supplier
+        this::getPose, // Robot pose supplier
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getCurrentChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         (ChassisSpeeds s) -> drive(s, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -236,9 +236,9 @@ public class SwerveSubsystem extends SubsystemBase {
   public void zeroHeading() {
     zeroGyroscope();
     if(CougarUtil.getAlliance() == Alliance.Blue)
-      resetOdometry(CougarUtil.createPose3d(getPose(), new Rotation3d()));
+      resetOdometry(CougarUtil.createPose2d(getPose(), Rotation2d.kZero));
     else
-      resetOdometry(CougarUtil.createPose3d(getPose(), new Rotation3d(0, 0, Math.PI)));
+      resetOdometry(CougarUtil.createPose2d(getPose(), Rotation2d.k180deg));
     m_headingCorrector.resetHeadingSetpoint();
   }
 
@@ -247,19 +247,9 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return the position of the drivetrain in Pose3d
    */
-  public Pose3d getPose() {
+  public Pose2d getPose() {
     return m_odometer.getPose();
   }
-
-  /**
-   * Return the position of the drivetrain.
-   *
-   * @return the position of the drivetrain in Pose2d
-   */
-  public Pose2d getPose2D() {
-    return getPose().toPose2d();
-  }
-
   /**
    * Reset the position of the drivetrain odometry.
    */
@@ -271,14 +261,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * Reset the position of the drivetrain odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    resetOdometry(new Pose3d(pose));
-  }
-
-    /**
-   * Reset the position of the drivetrain odometry.
-   */
-  public void resetOdometry(Pose3d pose) {
-    m_odometer.resetPosition(pose);
+    resetOdometry(pose);
   }
 
   /**
@@ -286,11 +269,8 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return a Rotation3d object that contains the gyroscope's heading
    */
-  private Rotation3d getGyroscopeRotation() {
-    //work around navx sim bug
-    if(Robot.isSimulation()) return new Rotation3d(m_navx2.getRotation2d());
-
-    return m_navx2.getRotation3d();
+  private Rotation2d getGyroscopeRotation() {
+    return m_navx2.getRotation2d();
   }
 
   
@@ -309,7 +289,7 @@ public class SwerveSubsystem extends SubsystemBase {
     double dtheta = Units.degreesToRadians(m_navx2.getRawGyroZ()) * Constants.Swerve.kAngVelCoeff;
     // Logger.recordOutput("test", dtheta);
     if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
-      Rotation2d rot = getPose2D().getRotation();
+      Rotation2d rot = getRotation();
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rot.plus(new Rotation2d(dtheta)));
     }
@@ -322,7 +302,7 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return a Rotation2d object that contains the robot's heading
    */
-  public Rotation3d getRotation() {
+  public Rotation2d getRotation() {
     return getPose().getRotation();
   }
 
@@ -400,7 +380,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation().toRotation2d(), m_navx2.getRawGyroZ());
+    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation(), m_navx2.getRawGyroZ());
     if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
     {
       return corrected;
@@ -433,7 +413,7 @@ public class SwerveSubsystem extends SubsystemBase {
     builder.addDoubleProperty("Back Right Angle", () -> m_currentStates[3].angle.getRadians(), null);
     builder.addDoubleProperty("Back Right Velocity", () -> m_currentStates[3].speedMetersPerSecond, null);
 
-    builder.addDoubleProperty("Robot Angle", () -> getRotation().getZ(), null);
+    builder.addDoubleProperty("Robot Angle", () -> getRotation().getRadians(), null);
   }
 
   public Command getSysIDQ(SysIdRoutine.Direction dir) {
@@ -454,7 +434,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private Pose2d[] getModulePoses() {
     Pose2d[] ret = new Pose2d[m_modules.length];
-    Pose2d cur = getPose2D();
+    Pose2d cur = getPose();
     
     for(int i = 0; i < ret.length; i++) {
       ret[i] = cur.transformBy(
@@ -482,17 +462,17 @@ public class SwerveSubsystem extends SubsystemBase {
     {
       for(AprilTagCamera cam : m_cameras)
       {
-        if (cam.hasPose()) {
+        if (cam.checkVisionResult()) {
           Pose3d pose = cam.getPose();
-          if (pose != null && cam.checkVisionResult()) {
-            m_odometer.addVisionMeasurement(pose, cam.getTimestamp(), cam.getEstStdv());
+          if (pose != null) {
+            m_odometer.addVisionMeasurement(pose.toPose2d(), cam.getTimestamp(), cam.getEstStdv());
           }
         }
       }
     }
     // SmartDashboard.putNumber("Speed", m_speedLimiter);
 
-    m_field.setRobotPose(getPose2D());
+    m_field.setRobotPose(getPose());
     if (Constants.DEBUG_MODE) m_field.getObject("xModules").setPoses(getModulePoses());
     // Logging Output
 

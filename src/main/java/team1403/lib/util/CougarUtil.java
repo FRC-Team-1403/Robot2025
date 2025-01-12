@@ -30,18 +30,20 @@ public class CougarUtil {
         return getAlliance() == Alliance.Red;
     }
 
-    //overrides rotation of input pose3d with the one passed in
-    public static Pose3d createPose3d(Pose3d pose, Rotation3d rot) {
-        return new Pose3d(pose.getTranslation(), rot);
+    //overrides rotation of input pose2d with the one passed in
+    public static Pose2d createPose2d(Pose2d pose, Rotation2d rot) {
+        return new Pose2d(pose.getTranslation(), rot);
     }
 
-    public static Pose3d getInitialRobotPose() {
+    public static Pose2d getInitialRobotPose() {
         if(getAlliance() == Alliance.Red)
-            return new Pose3d(new Translation3d(1 ,1, 0), new Rotation3d(0, 0, Math.PI));
+            //FIXME: put a valid red alliance position
+            return new Pose2d(new Translation2d(1 ,1), Rotation2d.k180deg);
         
-        return new Pose3d(new Translation3d(1, 1, 0), Rotation3d.kZero);
+        return new Pose2d(new Translation2d(1, 1), Rotation2d.kZero);
     }
 
+    //TODO: update when we get robot
     private static RobotConfig config = new RobotConfig(
         Pounds.of(120), 
         KilogramSquareMeters.of(1),

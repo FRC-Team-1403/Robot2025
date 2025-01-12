@@ -134,8 +134,8 @@ public class DefaultSwerveCommand extends Command {
   @Override
   public void initialize() {
     ChassisSpeeds speeds = m_drivetrainSubsystem.getCurrentChassisSpeed();
-    m_controller.reset(MathUtil.angleModulus(m_drivetrainSubsystem.getRotation().getZ()), speeds.omegaRadiansPerSecond);
-    m_driveController.reset(m_drivetrainSubsystem.getPose2D(), speeds);
+    m_controller.reset(MathUtil.angleModulus(m_drivetrainSubsystem.getRotation().getRadians()), speeds.omegaRadiansPerSecond);
+    m_driveController.reset(m_drivetrainSubsystem.getPose(), speeds);
   }
 
   @Override
@@ -198,7 +198,7 @@ public class DefaultSwerveCommand extends Command {
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
     double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * Swerve.kMaxAngularSpeed;
 
-    Pose2d curPose = m_drivetrainSubsystem.getPose2D();
+    Pose2d curPose = m_drivetrainSubsystem.getPose();
     Rotation2d curRotation = curPose.getRotation();
     double given_current_angle = MathUtil.angleModulus(curRotation.getRadians());
     double given_target_angle = Math.atan2(m_targetPosSupplier.get().getY() - curPose.getY(), m_targetPosSupplier.get().getX() - curPose.getX());
