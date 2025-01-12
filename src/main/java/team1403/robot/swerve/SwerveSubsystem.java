@@ -47,6 +47,7 @@ import team1403.robot.Constants.Swerve;
 import team1403.robot.swerve.ISwerveModule.DriveControlType;
 import team1403.robot.swerve.ISwerveModule.SteerControlType;
 import team1403.robot.vision.AprilTagCamera;
+import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.VisionSimUtil;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -64,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SyncSwerveDrivePoseEstimator m_odometer;
   private final Field2d m_field = new Field2d();
 
-  private final ArrayList<AprilTagCamera> m_cameras = new ArrayList<>();
+  private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
   private boolean m_disableVision = false;
   private boolean m_rotDriftCorrect = true;
   private final SwerveHeadingCorrector m_headingCorrector = new SwerveHeadingCorrector();
@@ -458,7 +459,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     if(!m_disableVision)
     {
-      for(AprilTagCamera cam : m_cameras)
+      for(ITagCamera cam : m_cameras)
       {
         if (cam.checkVisionResult()) {
           Pose3d pose = cam.getPose();
