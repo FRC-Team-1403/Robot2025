@@ -1,8 +1,6 @@
 package team1403.robot;
 
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -12,16 +10,12 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Meters;
 
 /**
  * This class holds attributes for the robot configuration.
@@ -166,53 +160,14 @@ public class Constants {
     public static final int backRightSteerID = 6;
     public static final int backRightEncoderID = 23;
 
-    // pivot motor ports (arm)
-    public static final int rightPivotMotorID = 5;
-    public static final int leftPivotMotorID = 14;
-
-    // hanger ID
-    public static final int rightHangerMotorID = 27;
-    public static final int leftHangerMotorID = 28;
-
-    // intake and shooter IDs
-    public static final int shooterMotorTopID = 2;
-    public static final int shooterMotorBottomID = 1;
-    public static final int intakeMotorID = 4;
-
-    // wrist
-    public static final int wristMotorID = 15;
-
     // other
     public static final int powerDistributionID = 60;
-  }
-  
-  /**
-   * Ports on the RoboRIO.
-   */
-  public static class RioPorts {
-    // actual
-    public static final int LEDPort = 0;
-    public static final int intakePhotogate1 = 3;
-    public static final int shooterPhotogate = 2;
-    public static final int kArmAbsoluteEncoder = 0;
-    //Wrist 
-    public static final int kwristAbsoluteEncoder = 1; // DIO
-    //Hanger
-    public static final int kleftServoID = 8;
-    public static final int krightServoID = 9;
-    public static final int kHangerLimitRightBottomID = 0;
-    public static final int kHangerLimitLeftBottomID = 0;
   }
 
   /**
    * Config parameters for tuning the operator interface.
    */
   public static class Operator {
-
-    public static final int dPadUp = 0;
-    public static final int dPadRight = 1;
-    public static final int dPadDown = 2;
-    public static final int dPadLeft = 3;
 
     /**
      * The joystick port for the operator's controller.
@@ -243,87 +198,6 @@ public class Constants {
 
   public static class Vision {
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-  }
-
-  public static class Arm {
-    // all angles are in degrees
-    public static final double KPArmPivot = 0.0135;
-    public static final double KIArmPivot = 0.0;
-    public static final double KDArmPivot = 0;
-    public static final double kAbsolutePivotOffset = 0;
-    public static final double kFeedforwardG = 0.03;
-    public static final double kFeedforwardV = 0.0001;
-
-    public static final double kMaxPivotAngle = 230;//180
-    public static final double kMinPivotAngle = 75;
-    public static final double kPivotMotorMaxAmperage = 40;
-
-    public static final int kPivotMotorCurrentLimit = 30;
-    public static final double kPivotMotorVoltageLimit = 12;
-
-    public static double kIntakeSetpoint = 92; // 92
-    public static  double kAmpSetpoint = 210;
-    public static  double kLoadingSetpoint = 150; //150
-    public static  double kDriveSetpoint = 114;
-    public static  double kDefaultClose = 114;
-  }
-
-  public static class Hanger {
-    public static final double kTopRightLimit = 70;
-    public static final double kTopLeftLimit = 70;
-    public static final double kBottomLeftLimit = 1;
-    public static final double kBottomRightLimit = 2;
-    public static final double kLeftLockAngle = 70;
-    public static final double kLeftUnlockAngle = 100;
-    public static final double kRightLockAngle = 90;
-    public static final double kRightUnlockAngle = 85;
-
-  }
-
-  public static class IntakeAndShooter {
-    public static final double kFrameAngle = 250.24629;
-    public static final double kFrameClearanceAngle = 234.5; // cone angle
-    public static final double kHorizonAngle = 210; 
-    public static final double kSpeedReduction = 2.0; // test value
-    public static double kStageLineRPM = 5000; //To test
-    public static double kCenterLineRPM = 6000;
-    public static double kLaunchpadRPM = 5000;
-    public static double kFeedShotRPM = 4000;
-    public static final double kCloseRPM = 4800;
-    public static final double kExpelDeadzone = 0.15;
-    public static final int kIntakeCurrentLimit = 40;
-  }
-  
-  public static class Wrist {
-    public static final double kWristConversionFactor = 0;
-    public static final double kAbsoluteWristOffset = 0;
-    public static final double kWristVoltageComp = 12;
-
-    public static final double KPWrist = 0.0097; //original value 0.0092 changed - 0.0097
-    public static final double KIWrist = 0.0000;
-    public static final double KDWrist = 0;
-
-    public static final double kTopLimit = 180;
-    public static final double kBottomLimit = 0;
-
-    public static  double kIntakeSetpoint = 134;
-    public static  double kAmpSetpoint = 160.5;
-    public static double kAmpShoootingSetpoint = 142;
-    public static  double kLoadingSetpoint = 90;
-    public static  double kDriveSetpoint = 140;//140
-    public static  double kDefaultClose = 136;
-    public static double kStageLineSetpoint = 138;//To test
-    public static double kStageLineSideSetpoint = 135;//136 version 2
-    public static double kSideLineSourceSetpoint = 130; 
-    public static double kLaunchpadSetpoint = 140;
-    public static double kCenterLineSetpoint = 133;//115
-    public static  double kShootingAngle = 147;//147 for teleop working
-
-
-    public static final double kWristUpperLimit = 150;
-    public static final double kWristLowerLimit = 130;
-    public static final double kWristConstraint = 140;
-    public static final double kArmConstraint = 120;
   }
 
   public static class Setpoints { /*
