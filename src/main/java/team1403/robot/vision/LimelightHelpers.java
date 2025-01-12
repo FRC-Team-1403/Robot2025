@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 import java.io.IOException;
@@ -1505,6 +1506,21 @@ public class LimelightHelpers {
         setLimelightNTDouble(limelightName, "fiducial_downscale_set", d);
     }
     
+        /**
+     * Sets the camera pose relative to the robot.
+     * @param limelightName Name of the Limelight camera
+     * @param transform transform of the camera relative to the robot
+     */
+    public static void setCameraPose_RobotSpace(String limelightName, Transform3d transform) {
+        setCameraPose_RobotSpace(limelightName, 
+            transform.getX(),
+            transform.getY(),
+            transform.getZ(),
+            transform.getRotation().getX(),
+            transform.getRotation().getY(),
+            transform.getRotation().getZ());
+    }
+
     /**
      * Sets the camera pose relative to the robot.
      * @param limelightName Name of the Limelight camera
