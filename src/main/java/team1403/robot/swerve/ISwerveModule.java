@@ -15,9 +15,14 @@ public interface ISwerveModule {
         Voltage
     }
 
+    enum ModuleFeedforwardType {
+        None,
+        XYForce,
+    }
+
     public SwerveModuleState getState();
 
     public SwerveModulePosition getModulePosition();
 
-    public void set(DriveControlType type, double value, SteerControlType s_type, double steerAngle);
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue);
 }

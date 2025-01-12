@@ -77,13 +77,13 @@ public class SimSwerveModule extends SubsystemBase implements ISwerveModule {
     }
 
     @Override
-    public void set(DriveControlType type, double driveMetersPerSecond, SteerControlType s_type, double steerAngle) {
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue) {
         m_lock.lock();
         if (s_type == SteerControlType.Angle) {
-            m_steerController.setSetpoint(MathUtil.angleModulus(steerAngle));
+            m_steerController.setSetpoint(MathUtil.angleModulus(steerValue));
         }
         if (type == DriveControlType.Velocity) {
-            m_driveController.setSetpoint(driveMetersPerSecond);
+            m_driveController.setSetpoint(driveValue);
         }
         m_lock.unlock();
     }

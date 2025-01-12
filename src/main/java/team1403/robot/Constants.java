@@ -117,6 +117,7 @@ public class Constants {
     public static final double kPTurning = 0.7;
     public static final double kITurning = 0.0;
     public static final double kDTurning = 0.11;
+    public static final double kSTurning = 0.0;
 
     //front-to-back-disp = ~8.568 inches 
     //left-to-right-disp = 0 inches

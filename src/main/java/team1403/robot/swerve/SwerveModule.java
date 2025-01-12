@@ -200,10 +200,10 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
      * Method for setting the drive voltage and steering angle.
      *
      * @param driveMetersPerSecond driving meters per second.
-     * @param steerAngle           steering angle.
+     * @param steerValue           steering angle.
      *
      */
-    public void set(DriveControlType type, double value, SteerControlType s_type, double steerAngle) {
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue) {
       // Set driveMotor according to velocity input
       // System.out.println("drive input speed: " + driveMetersPerSecond);
 
@@ -221,20 +221,20 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
 
       // Set steerMotor according to position of encoder
       if(s_type == SteerControlType.Angle)
-        m_steerPIDController.setReference(steerAngle, ControlType.kPosition);
+        m_steerPIDController.setReference(steerValue, ControlType.kPosition);
       else if(s_type == SteerControlType.Voltage)
-        m_steerPIDController.setReference(steerAngle, ControlType.kVoltage);
+        m_steerPIDController.setReference(steerValue, ControlType.kVoltage);
 
       if(type == DriveControlType.Velocity) {
-        value *= MathUtil.clamp(Math.cos(steerAngle - absAngle), 0, 1);
-        value += steerVel * Constants.Swerve.kCouplingRatio;
-        value = MathUtil.clamp(value, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
+        driveValue *= MathUtil.clamp(Math.cos(steerValue - absAngle), 0, 1);
+        driveValue += steerVel * Constants.Swerve.kCouplingRatio;
+        driveValue = MathUtil.clamp(driveValue, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
 
-        m_drivePIDController.setReference(value, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
-                      MathUtil.clamp(m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, value), -12, 12));
-        m_lastVelocitySetpoint = value;
+        m_drivePIDController.setReference(driveValue, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
+                      MathUtil.clamp(m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, driveValue), -12, 12));
+        m_lastVelocitySetpoint = driveValue;
       } else if (type == DriveControlType.Voltage) {
-        m_drivePIDController.setReference(value, ControlType.kVoltage);
+        m_drivePIDController.setReference(driveValue, ControlType.kVoltage);
         //better than it being completely wrong
         m_lastVelocitySetpoint = getDriveVelocity();
       }
