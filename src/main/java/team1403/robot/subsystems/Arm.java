@@ -95,9 +95,9 @@ public class Arm extends SubsystemBase {
   }
 
   private double calcPivotSpeed() {
-    double setpoint = m_pivotAngleSetpoint;
+    double setpoint = getPivotSetpoint();
 
-    //if(setpoint < 110 && !isWristInSafeBounds()) setpoint = MathUtil.clamp(setpoint, 110, Constants.Arm.kMaxPivotAngle);
+    if(setpoint < 110) setpoint = MathUtil.clamp(setpoint, 110, Constants.Arm.kMaxPivotAngle);
 
     double speed = m_armPid.calculate(getPivotAngle(), setpoint);
 
@@ -112,6 +112,7 @@ public class Arm extends SubsystemBase {
   public double getPivotSetpoint() {
     return m_pivotAngleSetpoint;
   }
+
 
   @Override
   public void periodic() {

@@ -74,7 +74,7 @@ public class Wrist extends SubsystemBase {
   private double calcWristSpeed() {
     double setpoint = m_wristAngleSetpoint;
 
-    //if (getPivotAngle() < 110) setpoint = MathUtil.clamp(setpoint, Constants.Wrist.kIntakeSetpoint, 140);
+    setpoint = MathUtil.clamp(setpoint, Constants.Wrist.kIntakeSetpoint, 140);
 
     double speed = m_wristPid.calculate(getWristAngle(), setpoint);
 

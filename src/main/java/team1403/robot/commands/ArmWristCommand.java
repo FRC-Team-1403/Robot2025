@@ -26,14 +26,24 @@ public class ArmWristCommand extends Command {
     }
 
     @Override
+    public void initialize() {
+
+    }
+
+    @Override
     public void execute() {
+        System.out.println("askhgdkahsgda");
         if (m_up.getAsBoolean()) {
             m_wrist.setWristSetpoint(Constants.Wrist.kDriveSetpoint);
-            m_arm.setArmSetpoint(Constants.Arm.kDriveSetpoint);
+            if (m_wrist.isWristAtSetpoint()) {
+                m_arm.setArmSetpoint(Constants.Arm.kDriveSetpoint);
+            }  
         }
         if (m_down.getAsBoolean()) {
             m_wrist.setWristSetpoint(Constants.Wrist.kIntakeSetpoint);
-            m_arm.setArmSetpoint(Constants.Arm.kIntakeSetpoint);
+            if (m_wrist.isWristAtSetpoint()) {
+                m_arm.setArmSetpoint(Constants.Arm.kIntakeSetpoint);
+            }
         }
     }
 
