@@ -4,6 +4,8 @@
 
 package team1403.robot;
 
+import org.ejml.dense.row.MatrixFeatures_CDRM;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.CougarUtil;
+import team1403.robot.commands.ArmWristCommand;
 import team1403.robot.subsystems.Arm;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Wrist;
@@ -36,6 +39,7 @@ public class RobotContainer {
   private SwerveSubsystem m_swerve;
   private Arm m_arm;
   private Wrist m_wrist;
+  private ArmWristCommand m_ArmWristCommand;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -137,6 +141,8 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
+        m_teleopCommand = new ArmWristCommand(m_arm, m_wrist, m_operatorController, m_operatorController.getHID().getAButton(), m_operatorController.getHID().getBButton());
+
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
   
@@ -148,5 +154,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return autoChooser.getSelected();
+  }
+
+  public Command getTeleopCommand() {
+    return m_teleopCommand;
   }
 }

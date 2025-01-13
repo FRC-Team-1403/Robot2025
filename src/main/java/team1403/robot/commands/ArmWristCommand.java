@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import team1403.robot.subsystems.Arm;
 import team1403.robot.subsystems.Wrist;
 import team1403.robot.Constants;
@@ -12,11 +13,11 @@ import team1403.robot.Constants;
 public class ArmWristCommand extends Command {
     private Arm m_arm;
     private Wrist m_wrist;
-    private BooleanSupplier m_up;
-    private BooleanSupplier m_down; 
-    private XboxController m_ops;
+    private boolean m_up;
+    private boolean m_down; 
+    private CommandXboxController m_ops;
 
-    public ArmWristCommand(Arm arm, Wrist wrist, XboxController ops, BooleanSupplier up, BooleanSupplier down) {
+    public ArmWristCommand(Arm arm, Wrist wrist, CommandXboxController ops, boolean up, boolean down) {
         m_arm = arm;
         m_wrist = wrist;
         m_up = up;
@@ -28,11 +29,11 @@ public class ArmWristCommand extends Command {
 
     @Override
     public void execute() {
-        if (m_up.getAsBoolean()) {
+        if (m_up) {
             m_arm.setArmSetpoint(Constants.Arm.kDriveSetpoint);
             m_wrist.setWristSetpoint(Constants.Wrist.kDriveSetpoint);
         }
-        if (m_down.getAsBoolean()) {
+        if (m_down) {
             m_arm.setArmSetpoint(Constants.Arm.kIntakeSetpoint);
             m_wrist.setWristSetpoint(0);
         }
