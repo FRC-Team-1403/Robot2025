@@ -13,29 +13,32 @@ import team1403.robot.Constants;
 public class ArmWristCommand extends Command {
     private Arm m_arm;
     private Wrist m_wrist;
-    private boolean m_up;
-    private boolean m_down; 
-    private CommandXboxController m_ops;
+    private BooleanSupplier m_up;
+    private BooleanSupplier m_down; 
 
-    public ArmWristCommand(Arm arm, Wrist wrist, CommandXboxController ops, boolean up, boolean down) {
+    public ArmWristCommand(Arm arm, Wrist wrist, BooleanSupplier up, BooleanSupplier down) {
         m_arm = arm;
         m_wrist = wrist;
         m_up = up;
         m_down = down;
-        m_ops = ops;
 
         addRequirements(m_arm, m_wrist);
     }
 
     @Override
     public void execute() {
-        if (m_up) {
-            m_arm.setArmSetpoint(Constants.Arm.kDriveSetpoint);
+        if (m_up.getAsBoolean()) {
             m_wrist.setWristSetpoint(Constants.Wrist.kDriveSetpoint);
+            m_arm.setArmSetpoint(Constants.Arm.kDriveSetpoint);
         }
-        if (m_down) {
+        if (m_down.getAsBoolean()) {
+            m_wrist.setWristSetpoint(Constants.Wrist.kIntakeSetpoint);
             m_arm.setArmSetpoint(Constants.Arm.kIntakeSetpoint);
-            m_wrist.setWristSetpoint(0);
         }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

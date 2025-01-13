@@ -27,11 +27,6 @@ public class Wrist extends SubsystemBase {
   // Setpoints
   private double m_wristAngleSetpoint;
 
-
-  private Mechanism2d m_mechanism;
-  private MechanismRoot2d m_mechanismRoot;
-  private MechanismLigament2d m_wristMech;
-
   public Wrist() {
     m_wristMotor = new SparkMax(Constants.CanBus.wristMotorID, MotorType.kBrushless);
     m_wristEncoder = new DutyCycleEncoder(Constants.RioPorts.kwristAbsoluteEncoder);
@@ -41,10 +36,6 @@ public class Wrist extends SubsystemBase {
     m_wristPid = new ProfiledPIDController(Constants.Wrist.KPWrist, Constants.Wrist.KIWrist, Constants.Wrist.KDWrist, new TrapezoidProfile.Constraints(250, 500));
     m_wristPid.reset(getWristAngle(), 0);
     m_wristPid.setIntegratorRange(-1, 1);
-
-    m_mechanism = new Mechanism2d(3, 3);
-    m_mechanismRoot = m_mechanism.getRoot("A-Frame", 1, 1);
-    m_wristMech = m_wristMech.append(new MechanismLigament2d("Wrist", 0.3, getWristAngle()));
 
     if(Constants.DEBUG_MODE) {
       Constants.kDebugTab.addBoolean("Wrist is at Setpoint", () -> isWristAtSetpoint());
@@ -97,8 +88,6 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    m_wristMech.setAngle(-getWristAngle() + 90);
 
     m_wristMotor.set(calcWristSpeed());
 

@@ -37,8 +37,8 @@ import team1403.robot.swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
-  private Arm m_arm;
-  private Wrist m_wrist;
+  private Arm m_arm = new Arm();
+  private Wrist m_wrist = new Wrist();
   private ArmWristCommand m_ArmWristCommand;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -141,7 +141,9 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-        m_teleopCommand = new ArmWristCommand(m_arm, m_wrist, m_operatorController, m_operatorController.getHID().getAButton(), m_operatorController.getHID().getBButton());
+        m_teleopCommand = new ArmWristCommand(m_arm, m_wrist, () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton());
+
+        m_teleopCommand.schedule();
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }

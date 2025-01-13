@@ -285,8 +285,8 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return the corrected chassisspeeds
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    double dtheta = Units.degreesToRadians(m_navx2.getRawGyroZ()) * Constants.Swerve.kAngVelCoeff;
-    // Logger.recordOutput("test", dtheta);
+    double dtheta = Units.degreesToRadians(m_navx2.getRate()) * Constants.Swerve.kAngVelCoeff;
+    Logger.recordOutput("test", dtheta);
     if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
       Rotation2d rot = getRotation();
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
@@ -379,7 +379,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation(), m_navx2.getRawGyroZ());
+    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation(), m_navx2.getRate());
     if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
     {
       return corrected;
