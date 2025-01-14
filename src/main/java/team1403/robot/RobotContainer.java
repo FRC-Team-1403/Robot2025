@@ -38,7 +38,6 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private ArmWrist m_armwrist = new ArmWrist();
-  private ArmWristCommand m_ArmWristCommand;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -139,7 +138,7 @@ public class RobotContainer {
 
         m_teleopCommand = new ArmWristCommand(m_armwrist, () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton());
 
-        m_teleopCommand.schedule();
+      m_armwrist.setDefaultCommand(m_teleopCommand);
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
