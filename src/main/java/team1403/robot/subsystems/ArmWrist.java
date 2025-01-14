@@ -1,5 +1,7 @@
 package team1403.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -177,17 +179,17 @@ public class ArmWrist extends SubsystemBase {
     m_wristMotor.set(calcWristSpeed());
 
 
-    SmartDashboard.putNumber("Pivot/Angle", getPivotAngle());
-    SmartDashboard.putNumber("Pivot/Setpoint", m_pivotAngleSetpoint);
-    SmartDashboard.putNumber("Pivot/Voltage", m_leftMotor.getBusVoltage());
-    SmartDashboard.putNumber("Pivot/Speed", m_leftMotor.get());
-    SmartDashboard.putNumber("Wrist/Voltage", m_wristMotor.getBusVoltage());
-    SmartDashboard.putNumber("Wrist/Current", m_wristMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Wrist/Temp", m_wristMotor.getMotorTemperature());
-    SmartDashboard.putNumber("Wrist/Motor RPM", m_wristMotor.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Wrist/Speed", m_wristMotor.get());
-    SmartDashboard.putNumber("Wrist/Angle", getWristAngle());
-    SmartDashboard.putNumber("Wrist/Setpoint", m_wristAngleSetpoint);
+    Logger.recordOutput("Pivot/Angle", getPivotAngle());
+    Logger.recordOutput("Pivot/Setpoint", m_pivotAngleSetpoint);
+    Logger.recordOutput("Pivot/Voltage", m_leftMotor.getBusVoltage());
+    Logger.recordOutput("Pivot/Speed", m_leftMotor.get());
+    Logger.recordOutput("Wrist/Voltage", m_wristMotor.getBusVoltage());
+    Logger.recordOutput("Wrist/Current", m_wristMotor.getOutputCurrent());
+    Logger.recordOutput("Wrist/Temp", m_wristMotor.getMotorTemperature());
+    Logger.recordOutput("Wrist/Motor RPM", m_wristMotor.getEncoder().getVelocity());
+    Logger.recordOutput("Wrist/Speed", m_wristMotor.get());
+    Logger.recordOutput("Wrist/Angle", getWristAngle());
+    Logger.recordOutput("Wrist/Setpoint", m_wristAngleSetpoint);
   }
     
 }
