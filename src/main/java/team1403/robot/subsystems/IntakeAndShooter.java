@@ -18,8 +18,15 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
+import team1403.robot.swerve.ISwerveModule;
+import team1403.robot.swerve.ISwerveModule.DriveControlType;
+import team1403.robot.swerve.ISwerveModule.SteerControlType;
+
+import static edu.wpi.first.units.Units.Volts;
 
 /**
  * creating the intake and shooter class.
@@ -39,6 +46,8 @@ public class IntakeAndShooter extends SubsystemBase {
   private DigitalInput m_shooterPhotogate;
 
   private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
+
+  private SysIdRoutine m_sysIdRoutine;
 
 
   /**
@@ -86,6 +95,14 @@ public class IntakeAndShooter extends SubsystemBase {
       Constants.kDebugTab.addBoolean("Shooter Sensor", () -> isShooterPhotogateTriggered());
       Constants.kDebugTab.addBoolean("Shooter (teleop) Ready", () -> teleopIsReady());
     }
+
+    m_sysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(null, null, null, 
+      (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
+      new SysIdRoutine.Mechanism((voltage) -> {
+        m_shooterMotorBottom.setVoltage(voltage.in(Volts));
+        m_shooterMotorTop.setVoltage(voltage.in(Volts));
+    }, null, this));
   }
   
   private void updateVelocity() {
@@ -168,6 +185,14 @@ public class IntakeAndShooter extends SubsystemBase {
 
   public double intakeSpeed() {
     return m_intakeMotor.get();
+  }
+
+  public Command getSysIDQ(SysIdRoutine.Direction dir) {
+    return m_sysIdRoutine.quasistatic(dir);
+  }
+
+  public Command getSysIDD(SysIdRoutine.Direction dir) {
+    return m_sysIdRoutine.dynamic(dir);
   }
 
   public void periodic() {

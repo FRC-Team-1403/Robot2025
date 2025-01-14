@@ -39,7 +39,7 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private ArmWrist m_armwrist = new ArmWrist();
-  private IntakeAndShooter m_intakeShooter;
+  private IntakeAndShooter m_intakeShooter = new IntakeAndShooter();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -90,6 +90,11 @@ public class RobotContainer {
       autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
       autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
       autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+
+      autoChooser.addOption("Shooter SysID Dynamic Forward", m_intakeShooter.getSysIDD(Direction.kForward));
+      autoChooser.addOption("Shooter SysID Dynamic Reverse", m_intakeShooter.getSysIDD(Direction.kReverse));
+      autoChooser.addOption("Shooter SysID Quasistatic Forward", m_intakeShooter.getSysIDQ(Direction.kForward));
+      autoChooser.addOption("Shooter SysID Quasistatic Reverse", m_intakeShooter.getSysIDQ(Direction.kReverse));
     }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
