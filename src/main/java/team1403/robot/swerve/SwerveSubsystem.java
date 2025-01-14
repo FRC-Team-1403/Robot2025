@@ -261,7 +261,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * Reset the position of the drivetrain odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    resetOdometry(pose);
+    m_odometer.resetPosition(pose);
   }
 
   /**
