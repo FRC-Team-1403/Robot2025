@@ -37,6 +37,9 @@ public class Constants {
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = false;
   public static final boolean ENABLE_SYSID = false;
+  public static final ShuffleboardTab kDriverTab = Shuffleboard.getTab("Driver");
+  public static final ShuffleboardTab kDebugTab = Shuffleboard.getTab("Debug");
+  //controls if the debug tab is used on shuffleboard
 
   /**
    * Swerve Constants.
@@ -136,6 +139,10 @@ public class Constants {
   public static class RioPorts {
     public static final int kArmAbsoluteEncoder = 0;
     public static final int kwristAbsoluteEncoder = 1; // DIO
+
+    public static final int intakePhotogate1 = 3;
+    public static final int shooterPhotogate = 2;
+
   }
 
   /**
@@ -169,6 +176,10 @@ public class Constants {
     
     public static final int rightPivotMotorID = 5;
     public static final int leftPivotMotorID = 14;
+
+    public static final int shooterMotorTopID = 2;
+    public static final int shooterMotorBottomID = 1;
+    public static final int intakeMotorID = 4;
     
     public static final int wristMotorID = 15;
   }
@@ -207,6 +218,20 @@ public class Constants {
 
   public static class Vision {
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+  }
+
+  public static class IntakeAndShooter {
+    public static final double kFrameAngle = 250.24629;
+    public static final double kFrameClearanceAngle = 234.5; // cone angle
+    public static final double kHorizonAngle = 210; 
+    public static final double kSpeedReduction = 2.0; // test value
+    public static double kStageLineRPM = 5000; //To test
+    public static double kCenterLineRPM = 6000;
+    public static double kLaunchpadRPM = 5000;
+    public static double kFeedShotRPM = 4000;
+    public static final double kCloseRPM = 4800;
+    public static final double kExpelDeadzone = 0.15;
+    public static final int kIntakeCurrentLimit = 40;
   }
 
   public static class Arm {

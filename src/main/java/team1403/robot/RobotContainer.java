@@ -22,9 +22,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.CougarUtil;
-import team1403.robot.commands.ArmWristCommand;
+import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
+import team1403.robot.subsystems.IntakeAndShooter;
 import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
 
@@ -38,6 +39,7 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private ArmWrist m_armwrist = new ArmWrist();
+  private IntakeAndShooter m_intakeShooter;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -136,7 +138,7 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-        m_teleopCommand = new ArmWristCommand(m_armwrist, () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton());
+        m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightBumper(), () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
 
       m_armwrist.setDefaultCommand(m_teleopCommand);
 
