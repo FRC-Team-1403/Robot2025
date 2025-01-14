@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -60,10 +61,7 @@ public class RobotContainer {
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
-    if(Constants.DEBUG_MODE) Constants.kDebugTab.add("Power Distribution", m_powerDistribution);
-
-    Constants.kDriverTab.addDouble("Battery Voltage", () -> m_powerDistribution.getVoltage());
-    Constants.kDriverTab.addDouble("Match Time", () -> DriverStation.getMatchTime());
+    if(Constants.DEBUG_MODE) SmartDashboard.putData("Power Distribution", m_powerDistribution);
     // DogLog.setPdh(m_powerDistribution);
 
     // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
@@ -96,10 +94,10 @@ public class RobotContainer {
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    Constants.kDriverTab.add("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     if(Constants.DEBUG_MODE) {
-      Constants.kDebugTab.add("Command Scheduler", CommandScheduler.getInstance());
-      Constants.kDebugTab.add("Swerve Drive", m_swerve);
+      SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+      SmartDashboard.putData("Swerve Drive", m_swerve);
     }
 
     configureBindings();

@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -202,8 +203,8 @@ public class SwerveSubsystem extends SubsystemBase {
         }
       }, null, this));
 
-    Constants.kDriverTab.add("Gyro", m_navx2);
-    Constants.kDriverTab.add("Field", m_field);
+    SmartDashboard.putData("Gyro", m_navx2);
+    SmartDashboard.putData("Field", m_field);
   }
 
   public void setDisableVision(boolean disable) {

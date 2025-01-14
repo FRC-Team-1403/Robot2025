@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team1403.lib.util.TimeDelayedBoolean;
 import team1403.robot.Constants;
 
@@ -28,7 +29,7 @@ public class SwerveHeadingCorrector {
         m_controller.enableContinuousInput(-Math.PI, Math.PI);
 
         if (Constants.DEBUG_MODE) {
-            Constants.kDebugTab.add("SwerveHC PID", m_controller);
+            SmartDashboard.putData("SwerveHC PID", m_controller);
         }
     }
 

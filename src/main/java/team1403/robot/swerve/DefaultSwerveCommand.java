@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.lib.util.CircularSlewRateLimiter;
 import team1403.lib.util.CougarUtil;
@@ -114,10 +115,8 @@ public class DefaultSwerveCommand extends Command {
     m_controller = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(Swerve.kMaxAngularSpeed, 80));
     m_controller.enableContinuousInput(-Math.PI, Math.PI);
 
-    Constants.kDriverTab.addBoolean("isFieldRelative", () -> m_isFieldRelative);
-    if(Constants.DEBUG_MODE) {
-      Constants.kDebugTab.addBoolean("Aimbot", m_aimbotSupplier);
-      Constants.kDebugTab.add("Swerve Rotation PID", m_controller);
+    if (Constants.DEBUG_MODE) {
+      SmartDashboard.putData("Swerve Rotation PID", m_controller);
     }
 
     addRequirements(m_drivetrainSubsystem);
@@ -132,6 +131,9 @@ public class DefaultSwerveCommand extends Command {
 
   @Override
   public void execute() {
+    SmartDashboard.putBoolean("isFieldRelative", m_isFieldRelative);
+    if (Constants.DEBUG_MODE) SmartDashboard.putBoolean("Aimbot", m_aimbotSupplier.getAsBoolean());
+
     m_speedLimiter = 0.3 * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
   
     if (DriverStation.isAutonomousEnabled()) {

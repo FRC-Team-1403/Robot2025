@@ -67,11 +67,9 @@ public class ArmWrist extends SubsystemBase {
     m_wristMech = m_armMech.append(new MechanismLigament2d("Wrist", 0.3, getWristAngle()));
 
     if(Constants.DEBUG_MODE) {
-      Constants.kDebugTab.add("Arm Mechanism", m_mechanism);
-      Constants.kDebugTab.addBoolean("Wrist is at Setpoint", () -> isWristAtSetpoint());
-      Constants.kDebugTab.addBoolean("Arm IsAtSetpoint", () -> isArmAtSetpoint());
-      Constants.kDebugTab.add("Arm PIDController", m_armPid);
-      Constants.kDebugTab.add("Wrist PIDController", m_wristPid);
+      SmartDashboard.putData("Arm Mechanism", m_mechanism);
+      SmartDashboard.putData("Arm PIDController", m_armPid);
+      SmartDashboard.putData("Wrist PIDController", m_wristPid);
     }
 
     m_pivotAngleSetpoint = getPivotAngle();
@@ -174,6 +172,9 @@ public class ArmWrist extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    SmartDashboard.putBoolean("Wrist is at Setpoint", isWristAtSetpoint());
+    SmartDashboard.putBoolean("Arm IsAtSetpoint", isArmAtSetpoint());
 
     m_leftMotor.set(calcPivotSpeed());
     m_wristMotor.set(calcWristSpeed());

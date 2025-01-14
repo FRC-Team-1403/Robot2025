@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
@@ -75,9 +76,6 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     m_estPos = null;
     m_referencePose = referenceSupplier;
     m_cameraTransform = cameraTransform;
-    
-    //keep this enabled even without debug mode for logging purposes
-    Constants.kDebugTab.addBoolean(m_camera.getName() + " connected", () -> m_camera.isConnected());
   }
 
   @Override
@@ -156,6 +154,8 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
       VisionSimUtil.adjustCamera(m_cameraSim, m_cameraTransform.get());
     }
 
+    //keep this enabled even without debug mode for logging purposes
+    SmartDashboard.putBoolean(m_camera.getName() + " connected", m_camera.isConnected());
 
     for(PhotonPipelineResult result : m_camera.getAllUnreadResults())
     {
