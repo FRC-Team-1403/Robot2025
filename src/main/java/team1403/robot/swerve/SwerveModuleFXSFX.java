@@ -2,8 +2,10 @@ package team1403.robot.swerve;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -22,7 +24,7 @@ import team1403.robot.Constants.Swerve;
 //TODO: switch steer to TalonFXS when the API releases
 public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
 
-    private final SwerveModule<TalonFX, TalonFX, CANcoder> m_module;
+    private final SwerveModule<TalonFX, TalonFXS, CANcoder> m_module;
     private final ModuleRequest m_modRequest;
     private final SwerveModuleState m_targetState;
 
@@ -30,7 +32,7 @@ public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
     int canCoderPort, double offset, int index, Translation2d modulePose, boolean inverted) {
 
         SwerveModuleConstantsFactory<TalonFXConfiguration, 
-                                    TalonFXConfiguration, 
+                                    TalonFXSConfiguration, 
                                     CANcoderConfiguration> factory = 
                                     new SwerveModuleConstantsFactory<>();
 
@@ -58,7 +60,7 @@ public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
 
         m_targetState = new SwerveModuleState();
         m_modRequest = new ModuleRequest();
-        m_module = new SwerveModule<TalonFX, TalonFX, CANcoder>(TalonFX::new, TalonFX::new, CANcoder::new, 
+        m_module = new SwerveModule<TalonFX, TalonFXS, CANcoder>(TalonFX::new, TalonFXS::new, CANcoder::new, 
             factory.createModuleConstants(steerMotorPort, driveMotorPort, canCoderPort, offset, 
             modulePose.getX(), modulePose.getY(), inverted, false, false), 
             "rio", 0, index);
