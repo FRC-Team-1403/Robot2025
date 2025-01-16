@@ -21,7 +21,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants.Swerve;
 
-//TODO: switch steer to TalonFXS when the API releases
 public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
 
     private final SwerveModule<TalonFX, TalonFXS, CANcoder> m_module;
