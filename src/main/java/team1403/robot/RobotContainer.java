@@ -143,13 +143,13 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-        m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightBumper(), () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
+        m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
 
       m_armwrist.setDefaultCommand(m_teleopCommand);
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
-  
+   
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
