@@ -57,7 +57,7 @@ public class Arm extends SubsystemBase {
 
   public void periodic() {
     DogLog.log("Left Motor Encoder", m_motor.getEncoder().getPosition());
-    Logger.recordOutput("Left Motor Speed", m_motor.get());
+    DogLog.log("Left Motor Speed", m_motor.get());
 
   }
 }
