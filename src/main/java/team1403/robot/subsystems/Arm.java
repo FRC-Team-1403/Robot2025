@@ -19,7 +19,7 @@ public class Arm extends SubsystemBase {
   private ProfiledPIDController PID; 
 
   public Arm() {
-    m_motor = new SparkMax(Constants.Arm.motor, MotorType.kBrushless);
+    m_motor = new SparkMax(Constants.Arm.kmotor, MotorType.kBrushless);
     // m_leftMotor.restoreFactoryDefaults();
     // m_rightMotor.restoreFactoryDefaults();
     // m_rightMotor.setIdleMode(IdleMode.kBrake);
