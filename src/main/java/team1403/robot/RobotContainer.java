@@ -148,12 +148,13 @@ public class RobotContainer {
     // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
 
     // //disable NT publish if FMS is attached at any point
+
     new Trigger(() -> DriverStation.isFMSAttached())
     .onTrue(new InstantCommand(
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 1, m_elevator.getSpeed(), 10));
+    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 10, m_elevator.getSpeed(), 10));
   }
   
   /**

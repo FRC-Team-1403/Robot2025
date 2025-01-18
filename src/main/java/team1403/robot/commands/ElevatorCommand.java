@@ -2,8 +2,14 @@ package team1403.robot.commands;
 
 import org.littletonrobotics.junction.Logger;
 
+import dev.doglog.DogLog;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.subsystems.Elevator;
+
 
 public class ElevatorCommand extends Command {
   private Elevator m_elevator;
@@ -28,18 +34,21 @@ public class ElevatorCommand extends Command {
 
   @Override
   public void execute() {
-    counter ++;
-    Logger.recordOutput("time", time);
-    Logger.recordOutput("current velocity", currentVel);
-    Logger.recordOutput("target velocity", targetVel);
+    // counter ++;
+    DogLog.log("time", time);
+    DogLog.log("target velocity", targetVel);
+    DogLog.log("Error", targetVel - currentVel);
+
     acceleration = (targetVel - currentVel)/time;
 
-    if(currentVel < targetVel) {
+    if((currentVel + (100/(time/0.02)) < targetVel)) {
       //currentVel = targetVel - acceleration/(time / (50 * counter));
       currentVel = currentVel + (100/(time/0.02));
+      System.out.println(currentVel);
+      DogLog.log("current velocity", currentVel);
     }
     else {
-      targetVel = currentVel;
+      currentVel = targetVel;
     }
     //m_elevator.setMotorSpeed(currentVel);
     
