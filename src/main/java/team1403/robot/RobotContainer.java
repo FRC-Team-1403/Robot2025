@@ -38,9 +38,11 @@ import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants.Driver;
 import team1403.robot.Constants.Setpoints;
 import team1403.robot.autos.AutoHelper;
+import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.subsystems.Elevator;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,6 +53,7 @@ import team1403.robot.swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
+  private Elevator m_elevator = new Elevator();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
@@ -65,49 +68,49 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
 
-    m_swerve = new SwerveSubsystem();
-    // initialize the blackbox subsystem so that data can be reference later
-    Blackbox.getInstance();
+  //   m_swerve = new SwerveSubsystem();
+  //   // initialize the blackbox subsystem so that data can be reference later
+  //   Blackbox.getInstance();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
-    // Enables power distribution logging
+  //   // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
-    if(Constants.DEBUG_MODE) Constants.kDebugTab.add("Power Distribution", m_powerDistribution);
+  //   if(Constants.DEBUG_MODE) Constants.kDebugTab.add("Power Distribution", m_powerDistribution);
 
     Constants.kDriverTab.addDouble("Battery Voltage", () -> m_powerDistribution.getVoltage());
     Constants.kDriverTab.addDouble("Match Time", () -> DriverStation.getMatchTime());
-    DogLog.setPdh(m_powerDistribution);
+  //   DogLog.setPdh(m_powerDistribution);
 
-    // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
-    // NamedCommands.registerCommand("First Piece", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
-    // NamedCommands.registerCommand("Shoot Side", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, true, () -> false, false));
-    // NamedCommands.registerCommand("Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, false));
-    // NamedCommands.registerCommand("Reset Shooter", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
-    // NamedCommands.registerCommand("First Piece Side",  new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, true, () -> true, false));
-    // NamedCommands.registerCommand("Second Source Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, true));
-    // NamedCommands.registerCommand("IntakeClose", new IntakeCommand(m_endeff, m_arm, m_wrist,  Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint, Constants.IntakeAndShooter.kCloseRPM));    
-    // NamedCommands.registerCommand("ShootLoaded", new ShootCommand(m_endeff, m_arm, m_wrist));
-    // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand(m_endeff, m_wrist));
+  //   // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
+  //   // NamedCommands.registerCommand("First Piece", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
+  //   // NamedCommands.registerCommand("Shoot Side", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, true, () -> false, false));
+  //   // NamedCommands.registerCommand("Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, false));
+  //   // NamedCommands.registerCommand("Reset Shooter", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
+  //   // NamedCommands.registerCommand("First Piece Side",  new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, true, () -> true, false));
+  //   // NamedCommands.registerCommand("Second Source Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, true));
+  //   // NamedCommands.registerCommand("IntakeClose", new IntakeCommand(m_endeff, m_arm, m_wrist,  Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint, Constants.IntakeAndShooter.kCloseRPM));    
+  //   // NamedCommands.registerCommand("ShootLoaded", new ShootCommand(m_endeff, m_arm, m_wrist));
+  //   // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand(m_endeff, m_wrist));
 
-    // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
+  //   // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
-    autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
-    autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
-    autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+  //   autoChooser = AutoBuilder.buildAutoChooser();
+  //   autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
+  //   autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
+  //   autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
+  //   autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
 
-    // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
-    // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
+  //   // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
+  //   // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    Constants.kDriverTab.add("Auto Chooser", autoChooser);
-    if(Constants.DEBUG_MODE) {
+  //   Constants.kDriverTab.add("Auto Chooser", autoChooser);
+  //   if(Constants.DEBUG_MODE) {
       Constants.kDebugTab.add("Command Scheduler", CommandScheduler.getInstance());
-      Constants.kDebugTab.add("Swerve Drive", m_swerve);
-    }
+  //     Constants.kDebugTab.add("Swerve Drive", m_swerve);
+  //   }
 
-    configureBindings();
-  }
+       configureBindings();
+     }
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -125,30 +128,32 @@ public class RobotContainer {
     // Setting default command of swerve subPsystem
     // red
 
-    Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
-    Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
+    // Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
+    // Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
     
-    m_swerve.setDefaultCommand(new DefaultSwerveCommand(
-        m_swerve,
-        () -> -m_driverController.getLeftX(),
-        () -> -m_driverController.getLeftY(),
-        () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getYButtonPressed(),
-        () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getAButton(),
-        () -> m_driverController.getHID().getLeftBumperButton(),
-        () -> m_driverController.getHID().getRightBumperButton(),
-        () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
-        () -> m_driverController.getRightTriggerAxis(),
-        () -> m_driverController.getLeftTriggerAxis()));
+    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
+    //     m_swerve,
+    //     () -> -m_driverController.getLeftX(),
+    //     () -> -m_driverController.getLeftY(),
+    //     () -> -m_driverController.getRightX(),
+    //     () -> m_driverController.getHID().getYButtonPressed(),
+    //     () -> m_driverController.getHID().getXButton(),
+    //     () -> m_driverController.getHID().getAButton(),
+    //     () -> m_driverController.getHID().getLeftBumperButton(),
+    //     () -> m_driverController.getHID().getRightBumperButton(),
+    //     () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
+    //     () -> m_driverController.getRightTriggerAxis(),
+    //     () -> m_driverController.getLeftTriggerAxis()));
 
-    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
 
-    //disable NT publish if FMS is attached at any point
+    // //disable NT publish if FMS is attached at any point
     new Trigger(() -> DriverStation.isFMSAttached())
     .onTrue(new InstantCommand(
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
+
+    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 1, m_elevator.getSpeed(), 10));
   }
   
   /**
