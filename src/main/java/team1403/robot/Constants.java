@@ -244,86 +244,86 @@ public class Constants {
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
   }
 
-  public static class Arm {
+  // public static class Arm {
     // all angles are in degrees
-    public static final double KPArmPivot = 0.0135;
-    public static final double KIArmPivot = 0.0;
-    public static final double KDArmPivot = 0;
-    public static final double kAbsolutePivotOffset = 0;
-    public static final double kFeedforwardG = 0.03;
-    public static final double kFeedforwardV = 0.0001;
+  //   public static final double KPArmPivot = 0.0135;
+  //   public static final double KIArmPivot = 0.0;
+  //   public static final double KDArmPivot = 0;
+  //   public static final double kAbsolutePivotOffset = 0;
+  //   public static final double kFeedforwardG = 0.03;
+  //   public static final double kFeedforwardV = 0.0001;
 
-    public static final double kMaxPivotAngle = 230;//180
-    public static final double kMinPivotAngle = 75;
-    public static final double kPivotMotorMaxAmperage = 40;
+  //   public static final double kMaxPivotAngle = 230;//180
+  //   public static final double kMinPivotAngle = 75;
+  //   public static final double kPivotMotorMaxAmperage = 40;
 
-    public static final int kPivotMotorCurrentLimit = 30;
-    public static final double kPivotMotorVoltageLimit = 12;
+  //   public static final int kPivotMotorCurrentLimit = 30;
+  //   public static final double kPivotMotorVoltageLimit = 12;
 
-    public static double kIntakeSetpoint = 92; // 92
-    public static  double kAmpSetpoint = 210;
-    public static  double kLoadingSetpoint = 150; //150
-    public static  double kDriveSetpoint = 114;
-    public static  double kDefaultClose = 114;
-  }
+  //   public static double kIntakeSetpoint = 92; // 92
+  //   public static  double kAmpSetpoint = 210;
+  //   public static  double kLoadingSetpoint = 150; //150
+  //   public static  double kDriveSetpoint = 114;
+  //   public static  double kDefaultClose = 114;
+  // }
 
-  public static class Hanger {
-    public static final double kTopRightLimit = 70;
-    public static final double kTopLeftLimit = 70;
-    public static final double kBottomLeftLimit = 1;
-    public static final double kBottomRightLimit = 2;
-    public static final double kLeftLockAngle = 70;
-    public static final double kLeftUnlockAngle = 100;
-    public static final double kRightLockAngle = 90;
-    public static final double kRightUnlockAngle = 85;
+  // public static class Hanger {
+  //   public static final double kTopRightLimit = 70;
+  //   public static final double kTopLeftLimit = 70;
+  //   public static final double kBottomLeftLimit = 1;
+  //   public static final double kBottomRightLimit = 2;
+  //   public static final double kLeftLockAngle = 70;
+  //   public static final double kLeftUnlockAngle = 100;
+  //   public static final double kRightLockAngle = 90;
+  //   public static final double kRightUnlockAngle = 85;
 
-  }
+  // }
 
-  public static class IntakeAndShooter {
-    public static final double kFrameAngle = 250.24629;
-    public static final double kFrameClearanceAngle = 234.5; // cone angle
-    public static final double kHorizonAngle = 210; 
-    public static final double kSpeedReduction = 2.0; // test value
-    public static double kStageLineRPM = 5000; //To test
-    public static double kCenterLineRPM = 6000;
-    public static double kLaunchpadRPM = 5000;
-    public static double kFeedShotRPM = 4000;
-    public static final double kCloseRPM = 4800;
-    public static final double kExpelDeadzone = 0.15;
-    public static final int kIntakeCurrentLimit = 40;
-  }
+  // public static class IntakeAndShooter {
+  //   public static final double kFrameAngle = 250.24629;
+  //   public static final double kFrameClearanceAngle = 234.5; // cone angle
+  //   public static final double kHorizonAngle = 210; 
+  //   public static final double kSpeedReduction = 2.0; // test value
+  //   public static double kStageLineRPM = 5000; //To test
+  //   public static double kCenterLineRPM = 6000;
+  //   public static double kLaunchpadRPM = 5000;
+  //   public static double kFeedShotRPM = 4000;
+  //   public static final double kCloseRPM = 4800;
+  //   public static final double kExpelDeadzone = 0.15;
+  //   public static final int kIntakeCurrentLimit = 40;
+  // }
   
-  public static class Wrist {
-    public static final double kWristConversionFactor = 0;
-    public static final double kAbsoluteWristOffset = 0;
-    public static final double kWristVoltageComp = 12;
+  // public static class Wrist {
+  //   public static final double kWristConversionFactor = 0;
+  //   public static final double kAbsoluteWristOffset = 0;
+  //   public static final double kWristVoltageComp = 12;
 
-    public static final double KPWrist = 0.0097; //original value 0.0092 changed - 0.0097
-    public static final double KIWrist = 0.0000;
-    public static final double KDWrist = 0;
+  //   public static final double KPWrist = 0.0097; //original value 0.0092 changed - 0.0097
+  //   public static final double KIWrist = 0.0000;
+  //   public static final double KDWrist = 0;
 
-    public static final double kTopLimit = 180;
-    public static final double kBottomLimit = 0;
+  //   public static final double kTopLimit = 180;
+  //   public static final double kBottomLimit = 0;
 
-    public static  double kIntakeSetpoint = 134;
-    public static  double kAmpSetpoint = 160.5;
-    public static double kAmpShoootingSetpoint = 142;
-    public static  double kLoadingSetpoint = 90;
-    public static  double kDriveSetpoint = 140;//140
-    public static  double kDefaultClose = 136;
-    public static double kStageLineSetpoint = 138;//To test
-    public static double kStageLineSideSetpoint = 135;//136 version 2
-    public static double kSideLineSourceSetpoint = 130; 
-    public static double kLaunchpadSetpoint = 140;
-    public static double kCenterLineSetpoint = 133;//115
-    public static  double kShootingAngle = 147;//147 for teleop working
+  //   public static  double kIntakeSetpoint = 134;
+  //   public static  double kAmpSetpoint = 160.5;
+  //   public static double kAmpShoootingSetpoint = 142;
+  //   public static  double kLoadingSetpoint = 90;
+  //   public static  double kDriveSetpoint = 140;//140
+  //   public static  double kDefaultClose = 136;
+  //   public static double kStageLineSetpoint = 138;//To test
+  //   public static double kStageLineSideSetpoint = 135;//136 version 2
+  //   public static double kSideLineSourceSetpoint = 130; 
+  //   public static double kLaunchpadSetpoint = 140;
+  //   public static double kCenterLineSetpoint = 133;//115
+  //   public static  double kShootingAngle = 147;//147 for teleop working
 
 
-    public static final double kWristUpperLimit = 150;
-    public static final double kWristLowerLimit = 130;
-    public static final double kWristConstraint = 140;
-    public static final double kArmConstraint = 120;
-  }
+  //   public static final double kWristUpperLimit = 150;
+  //   public static final double kWristLowerLimit = 130;
+  //   public static final double kWristConstraint = 140;
+  //   public static final double kArmConstraint = 120;
+  // }
 
   public static class Setpoints { /*
     public static final SonicBlasterSetpoint kDriveSetpoint = 
@@ -344,5 +344,13 @@ public class Constants {
     // public static final SonicBlasterSetpoint kDownFeedSetpoint =
     //     new SonicBlasterSetpoint(Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint + 20, 0, 3500);
     */
+  }
+  public static class Elevator {
+      public static final double kPSparkMax = 0.0135;
+      public static final double kISparkMax = 0.0;
+      public static final double kDSparkMax = 0;
+      
+      public static final int leftMotor = 0;
+      public static final int rightMotor = 1;
   }
 }
