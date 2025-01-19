@@ -507,7 +507,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
     Logger.recordOutput("SwerveStates/PureTranslation", tState); */
-    Logger.recordOutput("SwerveStates/Measured", m_currentStates);
+    Logger.recordOutput
+    ("SwerveStates/Measured", m_currentStates);
     Logger.recordOutput("Odometry/Robot", getPose());
     Logger.recordOutput("Odometry/Rotation3d", m_navx2.getRotation3d());
   }

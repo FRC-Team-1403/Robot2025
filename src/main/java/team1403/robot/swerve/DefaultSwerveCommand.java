@@ -196,13 +196,14 @@ public class DefaultSwerveCommand extends Command {
     Rotation2d curRotation = curPose.getRotation();
     double given_current_angle = MathUtil.angleModulus(curRotation.getRadians());
     double given_target_angle = Math.atan2(m_targetPosSupplier.get().getY() - curPose.getY(), m_targetPosSupplier.get().getX() - curPose.getX());
-    given_target_angle = MathUtil.angleModulus(given_target_angle + Math.PI);
-    // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
+    //given_target_angle = MathUtil.angleModulus(given_target_angle + Math.PI);
+    //double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
 
     
     if(m_aimbotSupplier.getAsBoolean())
     {
-      angular = m_controller.calculate(given_current_angle, given_target_angle);   
+      angular = m_controller.calculate(given_current_angle, given_target_angle); 
+      Logger.recordOutput("SwerveDC/Current Angle", given_current_angle);
       Logger.recordOutput("SwerveDC/Target Angle", given_target_angle);
       Logger.recordOutput("SwerveDC/Aimbot Angular", angular);
     } else {
@@ -238,4 +239,13 @@ public class DefaultSwerveCommand extends Command {
   private static double squareNum(double num) {
     return Math.signum(num) * Math.pow(num, 2);
   }
+
+  // @Override
+  // private void periodic() {
+  //   Pose2d curPose = m_drivetrainSubsystem.getPose();
+  //   Rotation2d curRotation = curPose.getRotation();
+  //   double given_current_angle = MathUtil.angleModulus(curRotation.getRadians());
+  //   double given_target_angle = Math.atan2(m_targetPosSupplier.get().getY() - curPose.getY(), m_targetPosSupplier.get().getX() - curPose.getX());
+  //   given_target_angle = MathUtil.angleModulus(given_target_angle + Math.PI);
+  // }
 }

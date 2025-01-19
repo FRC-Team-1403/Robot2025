@@ -54,7 +54,8 @@ public class IntakeShooterLoop extends Command {
                 m_armwrist.setArmSetpoint(Constants.Arm.kIntakeSetpoint); 
             }
             if (m_armwrist.isArmAndWristAtSetpoint()) {
-                m_intakeAndShooter.setIntakeSpeed(0.2);
+                //m_intakeAndShooter.setIntakeSpeed(0.2);
+                m_intakeAndShooter.setIntakeSpeed(0);
             }
             if (!m_armwrist.isArmAndWristAtSetpoint()) {
                 m_intakeAndShooter.intakeStop();
