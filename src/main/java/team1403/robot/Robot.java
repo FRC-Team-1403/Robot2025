@@ -36,15 +36,10 @@ public class Robot extends LoggedRobot {
   public Robot() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    if (isReal()) {
+    if(isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-      // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-    } else {
-        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-        Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
     }
+    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
     Logger.start();
     /* Enable logging for motors, so we don't need logging in SysID routines */
     Logger.registerURCL(URCL.startExternal());
