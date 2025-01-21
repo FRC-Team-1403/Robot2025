@@ -39,6 +39,25 @@ public class CougarUtil {
         return new Pose2d(new Translation2d(1, 1), Rotation2d.kZero);
     }
 
+    public static double getDistance(Pose2d a, Pose2d b) {
+        return a.getTranslation().getDistance(b.getTranslation());
+    }
+
+    //saves allocation comared to Pose2d.nearest
+    public static Pose2d getNearest(Pose2d a, Pose2d[] list) {
+        if (list.length == 0) return null;
+        Pose2d min = list[0];
+        double min_dist = getDistance(a, list[0]);
+        for(Pose2d b : list) {
+            double dist = getDistance(a, b);
+            if(dist < min_dist) {
+                min_dist = dist;
+                min = b;
+            }
+        }
+        return min;
+    }
+
     //TODO: update when we get robot
     private static RobotConfig config = new RobotConfig(
         Pounds.of(120), 
