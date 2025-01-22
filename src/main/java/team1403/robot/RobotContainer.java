@@ -4,10 +4,14 @@
 
 package team1403.robot;
 
+import java.util.Set;
+
 import org.ejml.dense.row.MatrixFeatures_CDRM;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.FlippingUtil;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -18,16 +22,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
+import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.IntakeAndShooter;
 import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.vision.AprilTagCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -124,9 +132,6 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     // Setting default command of swerve subPsystem
     // red
-
-    Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
-    Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
     
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(
         m_swerve,
@@ -136,16 +141,23 @@ public class RobotContainer {
         () -> m_driverController.getHID().getYButtonPressed(),
         () -> m_driverController.getHID().getBButtonPressed(),
         () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getAButton(),
-        () -> m_driverController.getHID().getLeftBumperButton(),
-        () -> m_driverController.getHID().getRightBumperButton(),
-        () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-        m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
+    m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
 
-      m_armwrist.setDefaultCommand(m_teleopCommand);
+    m_armwrist.setDefaultCommand(m_teleopCommand);
+
+    m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
+    m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+
+    m_driverController.rightBumper().toggleOnTrue(new DeferredCommand(() -> {
+      Pose2d currentPose = m_swerve.getPose();
+      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+      if (target == null) return Commands.none();
+      return AutoUtil.pathFindToPose(target);
+     }, Set.of(m_swerve)));
+
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }

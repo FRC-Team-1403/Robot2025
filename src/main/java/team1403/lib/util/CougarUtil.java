@@ -8,6 +8,7 @@ import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -31,6 +32,11 @@ public class CougarUtil {
         return new Pose2d(pose.getTranslation(), rot);
     }
 
+    //rotates pose2d about itself :)
+    public static Pose2d rotatePose2d(Pose2d pose, Rotation2d rot) {
+        return new Pose2d(pose.getTranslation(), pose.getRotation().plus(rot));
+    }
+
     public static Pose2d getInitialRobotPose() {
         if(getAlliance() == Alliance.Red)
             //FIXME: put a valid red alliance position
@@ -41,6 +47,12 @@ public class CougarUtil {
 
     public static double getDistance(Pose2d a, Pose2d b) {
         return a.getTranslation().getDistance(b.getTranslation());
+    }
+
+    public static Pose2d addDistanceToPose(Pose2d pose, double distance) {
+        return new Pose2d(pose.getTranslation().plus(
+            new Translation2d(distance, pose.getRotation())), 
+            pose.getRotation());
     }
 
     //saves allocation comared to Pose2d.nearest

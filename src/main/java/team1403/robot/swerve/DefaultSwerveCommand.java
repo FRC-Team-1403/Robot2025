@@ -37,12 +37,8 @@ public class DefaultSwerveCommand extends Command {
   private final DoubleSupplier m_rotationSupplier;
   private final BooleanSupplier m_fieldRelativeSupplier;
   private final BooleanSupplier m_xModeSupplier;
-  private final BooleanSupplier m_aimbotSupplier;
   private final DoubleSupplier m_speedSupplier;
-  private final Supplier<Translation2d> m_targetPosSupplier;
   private final DoubleSupplier m_snipingMode;
-  private final BooleanSupplier m_ampSupplier;
-  private final BooleanSupplier m_alignSupplier;
   private final BooleanSupplier m_zeroGyroSupplier;
   private boolean m_isFieldRelative;
   
@@ -87,10 +83,6 @@ public class DefaultSwerveCommand extends Command {
       BooleanSupplier fieldRelativeSupplier,
       BooleanSupplier zeroGyroSupplier,
       BooleanSupplier xModeSupplier,
-      BooleanSupplier aimbotSupplier,
-      BooleanSupplier ampSupplier,
-      BooleanSupplier alignmentSupplier,
-      Supplier<Translation2d> targetSupplier,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
     this.m_drivetrainSubsystem = drivetrain;
@@ -100,11 +92,7 @@ public class DefaultSwerveCommand extends Command {
     this.m_fieldRelativeSupplier = fieldRelativeSupplier;
     this.m_speedSupplier = speedSupplier;
     this.m_xModeSupplier = xModeSupplier;
-    this.m_aimbotSupplier = aimbotSupplier;
-    this.m_targetPosSupplier = targetSupplier;
-    this.m_alignSupplier = alignmentSupplier;
     this.m_zeroGyroSupplier = zeroGyroSupplier;
-    m_ampSupplier = ampSupplier;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
 
@@ -132,7 +120,7 @@ public class DefaultSwerveCommand extends Command {
   @Override
   public void execute() {
     SmartDashboard.putBoolean("isFieldRelative", m_isFieldRelative);
-    if (Constants.DEBUG_MODE) SmartDashboard.putBoolean("Aimbot", m_aimbotSupplier.getAsBoolean());
+    //if (Constants.DEBUG_MODE) SmartDashboard.putBoolean("Aimbot", m_aimbotSupplier.getAsBoolean());
 
     m_speedLimiter = 0.3;// * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
   
@@ -194,36 +182,9 @@ public class DefaultSwerveCommand extends Command {
 
     Pose2d curPose = m_drivetrainSubsystem.getPose();
     Rotation2d curRotation = curPose.getRotation();
-    double given_current_angle = MathUtil.angleModulus(curRotation.getRadians());
-    double given_target_angle = Math.atan2(m_targetPosSupplier.get().getY() - curPose.getY(), m_targetPosSupplier.get().getX() - curPose.getX());
-    //given_target_angle = MathUtil.angleModulus(given_target_angle + Math.PI);
-    //double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
-
+    // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
     
-    if(m_aimbotSupplier.getAsBoolean())
     {
-      angular = m_controller.calculate(given_current_angle, given_target_angle); 
-      Logger.recordOutput("SwerveDC/Current Angle", given_current_angle);
-      Logger.recordOutput("SwerveDC/Target Angle", given_target_angle);
-      Logger.recordOutput("SwerveDC/Aimbot Angular", angular);
-    } else {
-      m_state.position = given_current_angle;
-      m_state.velocity = currentSpeeds.omegaRadiansPerSecond;
-      m_controller.reset(m_state);
-    }
-    
-    if((m_ampSupplier.getAsBoolean() || m_alignSupplier.getAsBoolean()) && Blackbox.isValidTargetPosition() && vel_hypot < 0.2) {
-      m_driveState.pose = Blackbox.getTargetPosition();
-      chassisSpeeds = m_driveController.calculateRobotRelativeSpeeds(curPose, m_driveState);
-      double output_speed = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
-      if(output_speed < 0.02) {
-        chassisSpeeds.vxMetersPerSecond = 0;
-        chassisSpeeds.vyMetersPerSecond = 0;
-      }
-      if(Math.abs(chassisSpeeds.omegaRadiansPerSecond) < 0.02) {
-        chassisSpeeds.omegaRadiansPerSecond = 0;
-      }
-    } else {
       if (m_isFieldRelative) {
         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, curRotation);
       } else {
