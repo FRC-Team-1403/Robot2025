@@ -7,6 +7,8 @@ import org.littletonrobotics.junction.Logger;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.sim.SparkFlexSim;
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -22,12 +24,12 @@ import team1403.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
-  
   private double m_speed;
 
   public Elevator() {
     m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
     m_rightMotor = new SparkMax(Constants.CanBus.rightHangerMotorID, MotorType.kBrushless);
+
     // m_leftMotor.restoreFactoryDefaults();
     // m_rightMotor.restoreFactoryDefaults();
     // m_rightMotor.setIdleMode(IdleMode.kBrake);
@@ -35,13 +37,15 @@ public class Elevator extends SubsystemBase {
     // m_rightMotor.setInverted(true);
     // m_leftMotor.setInverted(false);
 
-    // m_leftMotor.getEncoder().setPosition(0);
-    // m_rightMotor.getEncoder().setPosition(0);
+    m_leftMotor.getEncoder().setPosition(0);
+    m_rightMotor.getEncoder().setPosition(0);
 
   }
   public void setMotorSpeed(double speed) {
-    m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
-    m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
+    // m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
+    // m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
+    m_leftMotor.set(speed);
+    m_rightMotor.set(speed);
   }
 
   public void stopMotors() {
@@ -50,6 +54,10 @@ public class Elevator extends SubsystemBase {
   
   public double getSpeed() {
     return m_rightMotor.get();
+  }
+
+  public double getPosition() {
+    return m_rightMotor.getEncoder().getPosition();
   }
 
   public void periodic() {
