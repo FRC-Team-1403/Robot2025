@@ -17,18 +17,20 @@ import team1403.robot.subsystems.Elevator;
 public class ElevatorCommand extends Command {
   private Elevator m_elevator;
   
-  private double acceleration;
   private final double time = 10;
   private double currentVel;
   private double targetVel;
-  private int counter;
   private BooleanSupplier m_close;
   private BooleanSupplier m_far;
+  private BooleanSupplier m_backward;
+  private BooleanSupplier m_stop;
 
-  public ElevatorCommand(Elevator elevator, BooleanSupplier close, BooleanSupplier far) {
+  public ElevatorCommand(Elevator elevator, BooleanSupplier close, BooleanSupplier far, BooleanSupplier backward, BooleanSupplier stop) {
     m_elevator = elevator;
     m_close = close;
     m_far = far;
+    m_backward = backward;
+    m_stop = stop;
     
     addRequirements(m_elevator);
   }
@@ -38,16 +40,19 @@ public class ElevatorCommand extends Command {
 
   @Override
   public void execute() {
-    if (m_elevator.limitSwitch()) {
+    if (m_backward.getAsBoolean()) {
+      m_elevator.setMotorSpeed(-0.1);
+    }
+    else if (m_elevator.limitSwitch() || m_stop.getAsBoolean()) {
       m_elevator.moveToSetPoint(0);
     }
-    else if (m_close.getAsBoolean() && targetVel != 5) {
-      targetVel = 5;
-      m_elevator.moveToSetPoint(5);
+    else if (m_close.getAsBoolean() && targetVel != .5) {
+      targetVel = .5;
+      m_elevator.moveToSetPoint(.5);
     }
-    else if (m_close.getAsBoolean() && targetVel != 10) {
-      targetVel = 10;
-      m_elevator.moveToSetPoint(10);
+    else if (m_far.getAsBoolean() && targetVel != 1) {
+      targetVel = 1;
+      m_elevator.moveToSetPoint(1);
     }
 
     // DogLog.log("time", time);
@@ -69,7 +74,6 @@ public class ElevatorCommand extends Command {
     // else if (m_elevator.getSpeed() != currentVel) {
     //   m_elevator.setMotorSpeed(currentVel);
     // }    
-    // RampOutput = RampOutput + (UnitPerRampTime[100] / (RampTime[Input] / ProgRate[Rate Program Runs]))
     
   }
 

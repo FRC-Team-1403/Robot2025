@@ -154,7 +154,7 @@ public class RobotContainer {
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton()));
+    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getXButton(), () -> m_operatorController.getHID().getYButton()));
 
     //private Elevator m_Elevator;
 

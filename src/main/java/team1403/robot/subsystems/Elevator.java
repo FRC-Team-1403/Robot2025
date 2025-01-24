@@ -53,12 +53,13 @@ public class Elevator extends SubsystemBase {
   private void configMotors() {
     SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
     leftMotorConfig
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kBrake)
+        .inverted(true);
     m_leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
-    rightMotorConfig
-        .idleMode(IdleMode.kBrake);
-    m_rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
+    // rightMotorConfig
+    //     .idleMode(IdleMode.kBrake);
+    // m_rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public boolean limitSwitch() {
@@ -67,7 +68,7 @@ public class Elevator extends SubsystemBase {
   
   public void setMotorSpeed(double speed) {
     m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
-    m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
+    //m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
   }
 
   public void stopMotors() {
@@ -75,7 +76,7 @@ public class Elevator extends SubsystemBase {
   }
   
   public double getSpeed() {
-    return m_rightMotor.get();
+    return m_leftMotor.get();
   }
 
   public void moveToSetPoint(double goal) {
@@ -86,8 +87,8 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     DogLog.log("Limit Switch", limitSwitch());
     DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    //DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
     Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
-    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
+    //Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
   }
 }
