@@ -5,6 +5,7 @@
 package team1403.robot;
 
 import java.util.function.Supplier;
+import java.util.Set;
 
 import org.ejml.dense.row.MatrixFeatures_CDRM;
 
@@ -13,6 +14,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -23,13 +25,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
+import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.IntakeAndShooter;
 // import team1403.robot.swerve.DefaultSwerveCommand;
 // import team1403.robot.swerve.SwerveSubsystem;
@@ -133,9 +138,6 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     // Setting default command of swerve subPsystem
     // red
-
-    Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
-    Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
     
     // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
     //     m_swerve,
