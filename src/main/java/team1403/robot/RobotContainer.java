@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 //import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.IntakeShooterLoop;
+import team1403.robot.commands.LimelightCommand;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
@@ -160,6 +161,8 @@ public class RobotContainer {
     //     m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
 
     //   m_armwrist.setDefaultCommand(m_teleopCommand);
+
+    m_MovingLimelight.setDefaultCommand(new LimelightCommand(m_MovingLimelight, m_lightwrapper));
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }

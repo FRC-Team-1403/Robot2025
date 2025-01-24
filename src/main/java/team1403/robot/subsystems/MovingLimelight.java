@@ -2,6 +2,7 @@ package team1403.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ import team1403.robot.vision.LimelightWrapper;
 import edu.wpi.first.math.util.Units;
 
 
-public class MovingLimelight {
+public class MovingLimelight extends SubsystemBase {
     private static SparkMax m_Motor;
     private static String m_name;
 
