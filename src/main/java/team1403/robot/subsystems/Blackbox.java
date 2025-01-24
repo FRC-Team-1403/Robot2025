@@ -31,10 +31,10 @@ public class Blackbox extends SubsystemBase {
     private static Pose2d[] reefPosesRightRED;
     private static ReefSelect reefSide = ReefSelect.LEFT;
 
-    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(17);
+    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);
 
     //meters
-    private static final double kMaxAlignDist = 1.0;
+    private static final double kMaxAlignDist = 2.5;
 
     private Blackbox() {
         //12 different scoring locations on reef
@@ -80,8 +80,8 @@ public class Blackbox extends SubsystemBase {
     }
 
     //TODO: bind this command to some button
-    public static Command reefSelect(ReefSelect select) {
-        return new InstantCommand(() -> reefSide = select);
+    public static void reefSelect(ReefSelect select) {
+        reefSide = select;
     }
 
     private static Pose2d[] getReefPoses() {

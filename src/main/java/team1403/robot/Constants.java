@@ -124,7 +124,7 @@ public class Constants {
     //left-to-right-disp = 0 inches
     //top-to-bottom disp = 17.82426 inches
     public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426-48));
     public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
   }
 
@@ -141,6 +141,7 @@ public class Constants {
     public static final int kwristAbsoluteEncoder = 1; // DIO
 
     public static final int intakePhotogate1 = 3;
+    
     public static final int shooterPhotogate = 2;
 
   }

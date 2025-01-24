@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
+import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
@@ -148,14 +149,29 @@ public class RobotContainer {
 
     m_armwrist.setDefaultCommand(m_teleopCommand);
 
-    m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
-    m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+    //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
+    //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
 
-    m_driverController.rightBumper().toggleOnTrue(new DeferredCommand(() -> {
+    m_driverController.rightBumper().whileTrue(new DeferredCommand(() -> {
+      Blackbox.reefSelect(ReefSelect.RIGHT);
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
       if (target == null) return Commands.none();
-      return AutoUtil.pathFindToPose(target);
+      return Commands.sequence(
+        AutoUtil.pathFindToPose(target),
+        new AlignCommand(m_swerve, target)
+      );
+     }, Set.of(m_swerve)));
+
+     m_driverController.leftBumper().whileTrue(new DeferredCommand(() -> {
+      Blackbox.reefSelect(ReefSelect.LEFT);
+      Pose2d currentPose = m_swerve.getPose();
+      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+      if (target == null) return Commands.none();
+      return Commands.sequence(
+        AutoUtil.pathFindToPose(target),
+        new AlignCommand(m_swerve, target)
+      );
      }, Set.of(m_swerve)));
 
 
