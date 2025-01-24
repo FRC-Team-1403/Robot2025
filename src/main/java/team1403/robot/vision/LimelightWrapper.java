@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
+import team1403.robot.subsystems.MovingLimelight;
 
 //import frc.robot.LimelightHelpers; 
 
@@ -30,7 +31,9 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private EstimatedRobotPose m_estPos;
     private LimelightHelpers.PoseEstimate m_poseEstimate;
     private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
-    
+    Optional<Pose3d> tag = Constants.Vision.kFieldLayout.getTagPose(18); 
+
+    private MovingLimelight m_MovingLimelight;
 
     public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {
         m_name = name.toLowerCase(); //hostname must be lowercase
@@ -38,6 +41,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         m_camTransform = cameraTransform;
         m_poseEstimate = null;
         m_estPos = null;
+
 
     }
     //TODO: implement these functions
@@ -105,17 +109,29 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
             return true;
         }
     }
+
+    public double Hypo(){
+        return Math.sqrt(Math.pow(tag.get().getX() - m_poseEstimate.pose.getTranslation().getX(), 2) + Math.pow(tag.get().getY() - m_poseEstimate.pose.getTranslation().getY(), 2));
+    }
     
     @Override
     public void periodic() {    
         LimelightHelpers.SetRobotOrientation(m_name, m_imuRotation.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
-        
 
+        
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
         }
         
+        // if (Hypo() < 0.1){
+        //     m_MovingLimelight.startMotor(.1);
+        // } 
+
+        // if (Hypo() >= 0.1){
+        //     m_MovingLimelight.stopMotor();
+        // }
         
+
     }
 }

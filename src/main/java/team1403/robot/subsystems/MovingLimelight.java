@@ -32,14 +32,10 @@ public class MovingLimelight {
         return m_Motor.get();
     }
    
-    LimelightHelpers.PoseEstimate p = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
  
-    Optional<Pose3d> tag = Constants.Vision.kFieldLayout.getTagPose(18); 
 
     public void periodic(){
-       if (Math.sqrt(Math.pow(tag.get().getX() - p.pose.getTranslation().getX(), 2) + Math.pow(tag.get().getY() - p.pose.getTranslation().getY(), 2))) {
-        
-       }
+       
     }
 }
    
