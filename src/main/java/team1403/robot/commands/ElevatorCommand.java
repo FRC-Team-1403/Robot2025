@@ -18,18 +18,17 @@ public class ElevatorCommand extends Command {
   private Elevator m_elevator;
   
   private double acceleration;
-  private double time;
+  private final double time = 10;
   private double currentVel;
   private double targetVel;
   private int counter;
-  private BooleanSupplier m_slow;
-  private BooleanSupplier m_fast;
+  private BooleanSupplier m_close;
+  private BooleanSupplier m_far;
 
-  public ElevatorCommand(Elevator elevator, double m_time, BooleanSupplier slow, BooleanSupplier fast) {
+  public ElevatorCommand(Elevator elevator, BooleanSupplier close, BooleanSupplier far) {
     m_elevator = elevator;
-    time = m_time;
-    m_slow = slow;
-    m_fast = fast;
+    m_close = close;
+    m_far = far;
     
     addRequirements(m_elevator);
   }
@@ -39,33 +38,37 @@ public class ElevatorCommand extends Command {
 
   @Override
   public void execute() {
-    if (m_slow.getAsBoolean() && targetVel != 0.1) {
-      targetVel = 0.1;
+    if (m_elevator.limitSwitch()) {
+      m_elevator.moveToSetPoint(0);
     }
-    if (m_slow.getAsBoolean() && targetVel != 0.5) {
-      targetVel = 0.5;
+    else if (m_close.getAsBoolean() && targetVel != 5) {
+      targetVel = 5;
+      m_elevator.moveToSetPoint(5);
+    }
+    else if (m_close.getAsBoolean() && targetVel != 10) {
+      targetVel = 10;
+      m_elevator.moveToSetPoint(10);
     }
 
-    // counter ++;
-    DogLog.log("time", time);
+    // DogLog.log("time", time);
+    currentVel = m_elevator.getSpeed();
     DogLog.log("target velocity", targetVel);
     DogLog.log("Error", targetVel - currentVel);
     DogLog.log("current velocity", currentVel);
-    currentVel = m_elevator.getSpeed();
 
-    if((currentVel + (100/(time/0.02)) < targetVel)) {
-      currentVel = currentVel + (100/(time/0.02));
-      System.out.println(currentVel);
-    }
-    else {
-      currentVel = targetVel;
-    }
-    if (m_elevator.limitSwitch()) {
-      m_elevator.stopMotors();
-    }
-    else if (m_elevator.getSpeed() != currentVel) {
-      m_elevator.setMotorSpeed(currentVel);
-    }    
+    // if((currentVel + (100/(time/0.02)) < targetVel)) {
+    //   currentVel = currentVel + (100/(time/0.02));
+    //   System.out.println(currentVel);
+    // }
+    // else {
+    //   currentVel = targetVel;
+    // }
+    // if (m_elevator.limitSwitch()) {
+    //   m_elevator.stopMotors();
+    // }
+    // else if (m_elevator.getSpeed() != currentVel) {
+    //   m_elevator.setMotorSpeed(currentVel);
+    // }    
     // RampOutput = RampOutput + (UnitPerRampTime[100] / (RampTime[Input] / ProgRate[Rate Program Runs]))
     
   }

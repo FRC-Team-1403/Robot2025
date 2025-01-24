@@ -80,7 +80,7 @@ public class Elevator extends SubsystemBase {
 
   public void moveToSetPoint(double goal) {
     m_leftMotor.set(control.calculate(m_leftMotor.getEncoder().getPosition(), goal));
-    m_rightMotor.set(control.calculate(m_rightMotor.getEncoder().getPosition(), goal));
+    //m_rightMotor.set(control.calculate(m_rightMotor.getEncoder().getPosition(), goal));
   }
 
   public void periodic() {
