@@ -4,10 +4,15 @@
 
 package team1403.robot;
 
+import java.util.function.Supplier;
+
 import org.ejml.dense.row.MatrixFeatures_CDRM;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.FlippingUtil;
+
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -26,8 +31,10 @@ import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.IntakeAndShooter;
-import team1403.robot.swerve.DefaultSwerveCommand;
-import team1403.robot.swerve.SwerveSubsystem;
+// import team1403.robot.swerve.DefaultSwerveCommand;
+// import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.vision.LimelightWrapper;
+import team1403.robot.subsystems.Analog;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,9 +44,11 @@ import team1403.robot.swerve.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  private SwerveSubsystem m_swerve;
-  private ArmWrist m_armwrist = new ArmWrist();
+  //private SwerveSubsystem m_swerve;
+  //private ArmWrist m_armwrist = new ArmWrist();
   private IntakeAndShooter m_intakeShooter = new IntakeAndShooter();
+  private LimelightWrapper m_lightwrapper = new LimelightWrapper("Pipeline_Name", () -> Transform3d.kZero, () -> Rotation3d.kZero);
+  private Analog m_analog = new Analog();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -55,7 +64,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
 
-    m_swerve = new SwerveSubsystem();
+   // m_swerve = new SwerveSubsystem();
     // initialize the blackbox subsystem so that data can be reference later
     Blackbox.getInstance();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
@@ -78,36 +87,36 @@ public class RobotContainer {
 
     // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    //autoChooser = AutoBuilder.buildAutoChooser();
     
     //avoid cluttering up auto chooser at competitions
-    if (Constants.ENABLE_SYSID) {
-      autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
-      autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+    // if (Constants.ENABLE_SYSID) {
+    //   autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
+    //   autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+    //   autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
+    //   autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
 
-      autoChooser.addOption("Shooter SysID Dynamic Forward", m_intakeShooter.getSysIDD(Direction.kForward));
-      autoChooser.addOption("Shooter SysID Dynamic Reverse", m_intakeShooter.getSysIDD(Direction.kReverse));
-      autoChooser.addOption("Shooter SysID Quasistatic Forward", m_intakeShooter.getSysIDQ(Direction.kForward));
-      autoChooser.addOption("Shooter SysID Quasistatic Reverse", m_intakeShooter.getSysIDQ(Direction.kReverse));
+      // autoChooser.addOption("Shooter SysID Dynamic Forward", m_intakeShooter.getSysIDD(Direction.kForward));
+      // autoChooser.addOption("Shooter SysID Dynamic Reverse", m_intakeShooter.getSysIDD(Direction.kReverse));
+      // autoChooser.addOption("Shooter SysID Quasistatic Forward", m_intakeShooter.getSysIDQ(Direction.kForward));
+      // autoChooser.addOption("Shooter SysID Quasistatic Reverse", m_intakeShooter.getSysIDQ(Direction.kReverse));
     }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    if(Constants.DEBUG_MODE) {
-      SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
-      SmartDashboard.putData("Swerve Drive", m_swerve);
-    }
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    // if(Constants.DEBUG_MODE) {
+    //   SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+    //   SmartDashboard.putData("Swerve Drive", m_swerve);
+    // }
 
-    configureBindings();
-  }
+    // configureBindings();
+  //}
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -128,24 +137,24 @@ public class RobotContainer {
     Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
     Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
     
-    m_swerve.setDefaultCommand(new DefaultSwerveCommand(
-        m_swerve,
-        () -> -m_driverController.getLeftX(),
-        () -> -m_driverController.getLeftY(),
-        () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getYButtonPressed(),
-        () -> m_driverController.getHID().getBButtonPressed(),
-        () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getAButton(),
-        () -> m_driverController.getHID().getLeftBumperButton(),
-        () -> m_driverController.getHID().getRightBumperButton(),
-        () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
-        () -> m_driverController.getRightTriggerAxis(),
-        () -> m_driverController.getLeftTriggerAxis()));
+    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
+    //     m_swerve,
+    //     () -> -m_driverController.getLeftX(),
+    //     () -> -m_driverController.getLeftY(),
+    //     () -> -m_driverController.getRightX(),
+    //     () -> m_driverController.getHID().getYButtonPressed(),
+    //     () -> m_driverController.getHID().getBButtonPressed(),
+    //     () -> m_driverController.getHID().getXButton(),
+    //     () -> m_driverController.getHID().getAButton(),
+    //     () -> m_driverController.getHID().getLeftBumperButton(),
+    //     () -> m_driverController.getHID().getRightBumperButton(),
+    //     () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
+    //     () -> m_driverController.getRightTriggerAxis(),
+    //     () -> m_driverController.getLeftTriggerAxis()));
 
-        m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
+    //     m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
 
-      m_armwrist.setDefaultCommand(m_teleopCommand);
+    //   m_armwrist.setDefaultCommand(m_teleopCommand);
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
@@ -154,7 +163,7 @@ public class RobotContainer {
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
-   */
+  //  */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return autoChooser.getSelected();
