@@ -104,9 +104,9 @@ public class ElevatorCommand extends Command {
     }
 
     // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
-    // if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minVel) {
-    //   currMotorOutput = minVel;
-    // }
+    if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minVel) {
+      currMotorOutput = minVel;
+    }
 
     // invert output if elevator is moving down
     if(isGoingDown) {
