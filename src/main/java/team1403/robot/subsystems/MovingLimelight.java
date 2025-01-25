@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import team1403.robot.Constants;
 import team1403.robot.vision.LimelightHelpers;
 import team1403.robot.vision.LimelightWrapper;
@@ -18,7 +20,7 @@ public class MovingLimelight extends SubsystemBase {
     private static String m_name;
 
     public MovingLimelight() {
-        m_Motor = new SparkMax(0, null);
+        m_Motor = new SparkMax(9, MotorType.kBrushless);
     }
 
     public void startMotor(double speed) {

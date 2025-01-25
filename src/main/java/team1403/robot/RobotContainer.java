@@ -31,12 +31,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 //import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
-import team1403.robot.commands.IntakeShooterLoop;
-import team1403.robot.commands.LimelightCommand;
-import team1403.robot.subsystems.ArmWrist;
+//import team1403.robot.commands.IntakeShooterLoop;
+//import team1403.robot.commands.LimelightCommand;
+//import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
-import team1403.robot.subsystems.IntakeAndShooter;
+//import team1403.robot.subsystems.IntakeAndShooter;
 import team1403.robot.subsystems.MovingLimelight;
 // import team1403.robot.swerve.DefaultSwerveCommand;
 // import team1403.robot.swerve.SwerveSubsystem;
@@ -53,7 +53,7 @@ public class RobotContainer {
 
   //private SwerveSubsystem m_swerve;
   //private ArmWrist m_armwrist = new ArmWrist();
-  private IntakeAndShooter m_intakeShooter = new IntakeAndShooter();
+  //private IntakeAndShooter m_intakeShooter = new IntakeAndShooter();
   private LimelightWrapper m_lightwrapper = new LimelightWrapper("Pipeline_Name", () -> Transform3d.kZero, () -> Rotation3d.kZero);
   private Analog m_analog = new Analog();
 
@@ -67,7 +67,7 @@ public class RobotContainer {
   private Command m_pathFinder = Commands.none();
   private Command m_teleopCommand;
   private MovingLimelight m_MovingLimelight = new MovingLimelight();
-  
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -162,7 +162,9 @@ public class RobotContainer {
 
     //   m_armwrist.setDefaultCommand(m_teleopCommand);
 
-    m_MovingLimelight.setDefaultCommand(new LimelightCommand(m_MovingLimelight, m_lightwrapper));
+    //m_MovingLimelight.setDefaultCommand(new LimelightCommand(m_MovingLimelight, m_lightwrapper));
+
+    
 
     //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }

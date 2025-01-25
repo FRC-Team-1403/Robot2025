@@ -124,13 +124,13 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
         }
         
-        // if (Hypo() < 0.1){
-        //     m_MovingLimelight.startMotor(.1);
-        // } 
+        if (Hypo() < 0.5){
+            m_MovingLimelight.startMotor(.1);
+        } 
 
-        // if (Hypo() >= 0.1){
-        //     m_MovingLimelight.stopMotor();
-        // }
+        if (Hypo() >= 0.5){
+            m_MovingLimelight.stopMotor();
+        }
         
 
     }
