@@ -43,6 +43,7 @@ import team1403.robot.subsystems.Blackbox;
 import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.subsystems.Elevator;
+import team1403.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,6 +55,7 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private Elevator m_elevator = new Elevator();
+  private Arm m_arm = new Arm(); 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
@@ -145,9 +147,13 @@ public class RobotContainer {
     //     () -> m_driverController.getRightTriggerAxis(),
     //     () -> m_driverController.getLeftTriggerAxis()));
 
-    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()))
 
     // //disable NT publish if FMS is attached at any point
+
+    if (m_operatorController.getHID().getYButtonPressed()) {
+      m_arm.moveToSetPoint(10);
+    }; 
 
     new Trigger(() -> DriverStation.isFMSAttached())
     .onTrue(new InstantCommand(
@@ -156,6 +162,7 @@ public class RobotContainer {
 
     m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 10.0, m_elevator.getPosition(), 10, 30, m_elevator.getSpeed(), 50.0));
   }
+
   
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

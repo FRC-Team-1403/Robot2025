@@ -3,6 +3,8 @@ package team1403.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.Logger;
+import dev.doglog.DogLog;
+import edu.wpi.first.util.datalog.DataLog;
 
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -16,7 +18,15 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
@@ -41,6 +51,7 @@ public class Elevator extends SubsystemBase {
     m_rightMotor.getEncoder().setPosition(0);
 
   }
+  
   public void setMotorSpeed(double speed) {
     // m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
     // m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
@@ -53,7 +64,7 @@ public class Elevator extends SubsystemBase {
   }
   
   public double getSpeed() {
-    return m_rightMotor.get();
+    return m_motor.get();
   }
 
   public double getPosition() {
@@ -66,4 +77,15 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
     Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
   }
+  
+  @Override
+  public void simulationPeriodic() {
+
+    Elevator.m_elevatorSim.setInputVoltage(Elevator.m_motor.get() * RobotController.getBatteryVoltage());
+    Elevator.m_elevatorSim.update(0.020);
+    Elevator.m_motor.getEncoder().setPosition(Elevator.m_elevatorSim.getPositionMeters());
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(Elevator.m_elevatorSim.getCurrentDrawAmps()));
+    
+  }
+
 }
