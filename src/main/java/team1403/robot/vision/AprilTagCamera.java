@@ -37,7 +37,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
   private Supplier<Pose2d> m_referencePose;
-  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
+  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 10);
   private static final boolean kExtraVisionDebugInfo = true;
 
   public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {

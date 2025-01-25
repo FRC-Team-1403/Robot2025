@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
+import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
@@ -156,10 +157,11 @@ public class RobotContainer {
       Blackbox.reefSelect(ReefSelect.RIGHT);
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-      if (target == null) return Commands.none();
+      if (target == null) return Commands.none();  
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target)
+        new AlignCommand(m_swerve, target),
+        new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1)
       );
      }, Set.of(m_swerve)));
 
@@ -170,12 +172,15 @@ public class RobotContainer {
       if (target == null) return Commands.none();
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target)
+        new AlignCommand(m_swerve, target),
+        new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1)
       );
      }, Set.of(m_swerve)));
 
+    //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
+    //SmartDashboard.putNumber("vibration", 0);
 
-    //m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
    
   /**

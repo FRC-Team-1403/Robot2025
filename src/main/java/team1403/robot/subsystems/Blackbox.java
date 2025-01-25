@@ -60,14 +60,14 @@ public class Blackbox extends SubsystemBase {
         for(int i = 0; i < reefPosesLeftBLUE.length; i++) {
             reefPosesLeftBLUE[i] = CougarUtil.rotatePose2d(
                 CougarUtil.addDistanceToPose(reefPosesLeftBLUE[i], kHalfBumperLengthMeters), 
-                Rotation2d.k180deg);
+                Rotation2d.kZero);
             reefPosesLeftRED[i] = FlippingUtil.flipFieldPose(reefPosesLeftBLUE[i]);
         }
 
         for(int i = 0; i < reefPosesRightBLUE.length; i++) {
             reefPosesRightBLUE[i] = CougarUtil.rotatePose2d(
                 CougarUtil.addDistanceToPose(reefPosesRightBLUE[i], kHalfBumperLengthMeters), 
-                Rotation2d.k180deg);
+                Rotation2d.kZero);
             reefPosesRightRED[i] = FlippingUtil.flipFieldPose(reefPosesRightBLUE[i]);
         }
 
