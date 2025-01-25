@@ -37,12 +37,12 @@ public class ElevatorCommand extends Command {
     currentPos = m_currentPos;
     currMotorOutput = m_currentMotorOutput;
     isRampDone = false;
-    rampUpTimeUp = 0.01;
+    rampUpTimeUp = 1;
     rampUpTimeDown = 0.01;
     rampDownTimeDown = 0.01;
-    rampDownTimeUp = 0.01;
+    rampDownTimeUp = 1;
     upGain = 3.5;
-    downGain = 3.5;
+    downGain = 3.0;
     maxVel = 90;
     minVel = 5;
     setPointMargin = 0.5;
@@ -100,7 +100,7 @@ public class ElevatorCommand extends Command {
       currMotorOutput = ramp(rampUpTimeUp, rampUpTimeDown, currMotorOutput, desiredMotorOutput);
     }
     else if(isGoingDown) {
-      currMotorOutput = ramp(rampDownTimeUp, rampDownTimeDown, currMotorOutput, desiredMotorOutput);
+      currMotorOutput = ramp(rampDownTimeUp, rampDownTimeDown, Math.abs(currMotorOutput), desiredMotorOutput);
     }
 
     // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
@@ -152,12 +152,12 @@ public class ElevatorCommand extends Command {
 
   // ramp function gradually brings up the output of the motor to the desired motor output
   public double ramp(double rampUpTime, double rampDownTime, double currentOutput, double desiredOutput) {
+    System.out.println(currentOutput);
     // if desired output is greater than current output, run upwards ramp function 
     if(desiredOutput > currentOutput) {
-      // increment current output by 100/rampUpTime/cycle rate and run function again if that output is less than desired 
+      // increment current output by 100/rampUpTime/cycle rate and if that output is less than desired 
       if((currentOutput + (100/(rampUpTime/0.02)) < desiredOutput)) {
         currentOutput += (100/(rampUpTime/0.02));
-        currentOutput = ramp(rampUpTime, rampDownTime, currentOutput, desiredOutput);
       }
       // set current output to desired output
       else {
@@ -168,9 +168,8 @@ public class ElevatorCommand extends Command {
     else if(desiredOutput < currentOutput) {
       if((currentOutput - (100/(rampDownTime/0.02)) > desiredOutput)) 
       {
-        // decrement current output by 100/rampUpTime/cycle rate and run function again if that output is less than desired 
+        // decrement current output by 100/rampDownTime/cycle rate and if that output is less than desired 
         currentOutput -= (100/(rampDownTime/0.02));
-        currentOutput = ramp(rampUpTime, rampDownTime, currentOutput, desiredOutput);
 
       }
       else {
@@ -181,7 +180,6 @@ public class ElevatorCommand extends Command {
     if(desiredOutput == currentOutput) {
       isRampDone = true;
     }
-
     // returns our current output
     return currentOutput;
   }
