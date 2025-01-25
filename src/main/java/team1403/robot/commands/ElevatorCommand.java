@@ -1,6 +1,6 @@
 package team1403.robot.commands;
 
-import org.littletonrobotics.junction.Logger;
+import java.util.function.BooleanSupplier;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.util.datalog.DataLog;
@@ -19,12 +19,13 @@ public class ElevatorCommand extends Command {
   private double currentVel;
   private double targetVel;
   private int counter;
+  private BooleanSupplier m_button;
 
-  public ElevatorCommand(Elevator elevator, double m_time, double m_currentVel, double m_targetVel) {
+  public ElevatorCommand(Elevator elevator, double m_time, double m_currentVel, BooleanSupplier button) {
     m_elevator = elevator;
     time = m_time;
     currentVel = m_currentVel;
-    targetVel = m_targetVel;
+    m_button = button;
     
     addRequirements(m_elevator);
   }
@@ -39,8 +40,11 @@ public class ElevatorCommand extends Command {
     DogLog.log("target velocity", targetVel);
     DogLog.log("Error", targetVel - currentVel);
 
+    if (m_button.getAsBoolean()) {
+      targetVel = 10;
+    }
     acceleration = (targetVel - currentVel)/time;
-
+  
     if((currentVel + (100/(time/0.02)) < targetVel)) {
       //currentVel = targetVel - acceleration/(time / (50 * counter));
       currentVel = currentVel + (100/(time/0.02));
