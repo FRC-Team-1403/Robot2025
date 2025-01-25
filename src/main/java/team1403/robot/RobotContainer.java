@@ -43,7 +43,7 @@ import team1403.robot.subsystems.Blackbox;
 import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.subsystems.Elevator;
-import team1403.robot.subsystems.Arm;
+// import team1403.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -55,7 +55,7 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private Elevator m_elevator = new Elevator();
-  private Arm m_arm = new Arm(); 
+  // private Arm m_arm = new Arm(); 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
@@ -151,17 +151,16 @@ public class RobotContainer {
 
     // //disable NT publish if FMS is attached at any point
 
-    if (m_operatorController.getHID().getYButtonPressed()) {
-      m_arm.moveToSetPoint(10);
-    }; 
+    // if (m_operatorController.getHID().getYButtonPressed()) {
+    //   m_arm.moveToSetPoint(10);
+    // }; 
 
     new Trigger(() -> DriverStation.isFMSAttached())
     .onTrue(new InstantCommand(
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 70.0, m_elevator.getPosition(), m_elevator.getSpeed()));
+    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 70.0, 0, 0));
   }
 
   

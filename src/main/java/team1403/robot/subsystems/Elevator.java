@@ -34,28 +34,28 @@ import team1403.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
+  private double m_speed;
 
   public Elevator() {
-    m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
-    m_rightMotor = new SparkMax(Constants.CanBus.rightHangerMotorID, MotorType.kBrushless);
+    // m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
+    // m_rightMotor = new SparkMax(Constants.CanBus.rightHangerMotorID, MotorType.kBrushless);
 
-    // m_leftMotor.restoreFactoryDefaults();
-    // m_rightMotor.restoreFactoryDefaults();
-    // m_rightMotor.setIdleMode(IdleMode.kBrake);
-    // m_leftMotor.setIdleMode(IdleMode.kBrake);
-    // m_rightMotor.setInverted(true);
-    // m_leftMotor.setInverted(false);
+    // // m_leftMotor.restoreFactoryDefaults();
+    // // m_rightMotor.restoreFactoryDefaults();
+    // // m_rightMotor.setIdleMode(IdleMode.kBrake);
+    // // m_leftMotor.setIdleMode(IdleMode.kBrake);
+    // // m_rightMotor.setInverted(true);
+    // // m_leftMotor.setInverted(false);
 
-    m_leftMotor.getEncoder().setPosition(0);
-    m_rightMotor.getEncoder().setPosition(0);
-
+    // m_leftMotor.getEncoder().setPosition(0);
+    // m_rightMotor.getEncoder().setPosition(0);
   }
   
   public void setMotorSpeed(double speed) {
     // m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
     // m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
-    m_leftMotor.set(speed);
-    m_rightMotor.set(speed);
+    // m_leftMotor.set(speed);
+    // m_rightMotor.set(speed);
   }
 
   public void stopMotors() {
@@ -63,7 +63,7 @@ public class Elevator extends SubsystemBase {
   }
   
   public double getSpeed() {
-    return m_motor.get();
+    return m_leftMotor.get();
   }
 
   public double getPosition() {
@@ -71,20 +71,9 @@ public class Elevator extends SubsystemBase {
   }
 
   public void periodic() {
-    Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
-    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
+    // Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+    // Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    // Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
+    // Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
   }
-  
-  @Override
-  public void simulationPeriodic() {
-
-    Elevator.m_elevatorSim.setInputVoltage(Elevator.m_motor.get() * RobotController.getBatteryVoltage());
-    Elevator.m_elevatorSim.update(0.020);
-    Elevator.m_motor.getEncoder().setPosition(Elevator.m_elevatorSim.getPositionMeters());
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(Elevator.m_elevatorSim.getCurrentDrawAmps()));
-    
-  }
-
 }
