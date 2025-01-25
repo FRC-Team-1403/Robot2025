@@ -34,7 +34,6 @@ import team1403.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
-  private double m_speed;
 
   public Elevator() {
     // m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);

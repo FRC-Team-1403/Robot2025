@@ -51,11 +51,11 @@ public class ElevatorCommand extends Command {
     
 
     // check whether elevator needs to go up or down 
-    if(m_setPoint > m_currentMotorOutput - setPointMargin) {
+    if(m_setPoint > currentPos - setPointMargin) {
       isGoingUp = true;
       isGoingDown = false;
     } 
-    else if(m_setPoint < m_currentMotorOutput + setPointMargin) {
+    else if(m_setPoint < currentPos + setPointMargin) {
       isGoingUp = false;
       isGoingDown = true;
     } 
@@ -104,9 +104,9 @@ public class ElevatorCommand extends Command {
     }
 
     // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
-    if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minVel) {
-      currMotorOutput = minVel;
-    }
+    // if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minVel) {
+    //   currMotorOutput = minVel;
+    // }
 
     // invert output if elevator is moving down
     if(isGoingDown) {
@@ -139,7 +139,9 @@ public class ElevatorCommand extends Command {
     DogLog.log("set point", setPoint);
     DogLog.log("current position", currentPos);
     DogLog.log("position error", posError);
-    DogLog.log("motor output error", desiredMotorOutput - currMotorOutput );
+    DogLog.log("motor output error", desiredMotorOutput - currMotorOutput);
+    DogLog.log("is going up", isGoingUp);
+    DogLog.log("is going down", isGoingDown);
  
   }
 

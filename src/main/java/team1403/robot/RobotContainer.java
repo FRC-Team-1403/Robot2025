@@ -160,7 +160,7 @@ public class RobotContainer {
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 70.0, 0, 0));
+    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 10, 70, 0));
   }
 
   
