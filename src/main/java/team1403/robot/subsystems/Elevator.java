@@ -17,20 +17,25 @@ import com.revrobotics.spark.SparkRelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 
-public class Elevator extends SubsystemBase {
-  private SparkMax m_leftMotor; 
-  private SparkMax m_rightMotor;
+public class Elevator extends SubsystemBase { 
+  public static SparkMax m_motor;
   private ProfiledPIDController control; 
 
+  public static final ElevatorSim m_elevatorSim = new ElevatorSim(DCMotor.getNEO(1),1/9, 6.80389, 1.751, 0, 0.762, true, 0, 0.01, 0.0);
+
   public Elevator() {
-    m_leftMotor = new SparkMax(Constants.Elevator.leftMotor, MotorType.kBrushless);
-    m_rightMotor = new SparkMax(Constants.Elevator.rightMotor, MotorType.kBrushless);
+    m_motor = new SparkMax(Constants.Elevator.rightMotor, MotorType.kBrushless);
     // m_leftMotor.restoreFactoryDefaults();
     // m_rightMotor.restoreFactoryDefaults();
     // m_rightMotor.setIdleMode(IdleMode.kBrake);
@@ -38,8 +43,7 @@ public class Elevator extends SubsystemBase {
     // m_rightMotor.setInverted(true);
     // m_leftMotor.setInverted(false);
 
-    m_leftMotor.getEncoder().setPosition(0);
-    m_rightMotor.getEncoder().setPosition(0);
+    m_motor.getEncoder().setPosition(0);
     control = new ProfiledPIDController(
       Constants.Elevator.kPSparkMax,
       Constants.Elevator.kISparkMax,
@@ -50,8 +54,7 @@ public class Elevator extends SubsystemBase {
   }
   
   public void setMotorSpeed(double speed) {
-    m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
-    m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
+    m_motor.set(MathUtil.clamp(speed, -1, 1));
   }
 
   public void stopMotors() {
@@ -59,20 +62,28 @@ public class Elevator extends SubsystemBase {
   }
   
   public double getSpeed() {
-    return m_rightMotor.get();
+    return m_motor.get();
   }
 
   public void moveToSetPoint(double goal) {
-    m_leftMotor.set(control.calculate(m_leftMotor.getEncoder().getPosition(), goal));
-    m_rightMotor.set(control.calculate(m_rightMotor.getEncoder().getPosition(), goal));
+    m_motor.set(control.calculate(m_motor.getEncoder().getPosition(), goal));
   }
   
    
 
   public void periodic() {
-    DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
-    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
+    DogLog.log("Motor Encoder", m_motor.getEncoder().getPosition());
+    DogLog.log("Right Motor Speed", m_motor.get());
   }
+
+  @Override
+  public void simulationPeriodic() {
+
+    Elevator.m_elevatorSim.setInputVoltage(Elevator.m_motor.get() * RobotController.getBatteryVoltage());
+    Elevator.m_elevatorSim.update(0.020);
+    Elevator.m_motor.getEncoder().setPosition(Elevator.m_elevatorSim.getPositionMeters());
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(Elevator.m_elevatorSim.getCurrentDrawAmps()));
+    
+  }
+
 }
