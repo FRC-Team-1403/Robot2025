@@ -19,6 +19,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -32,7 +33,7 @@ public class Elevator extends SubsystemBase {
   public static SparkMax m_motor;
   private ProfiledPIDController control; 
 
-  public static final ElevatorSim m_elevatorSim = new ElevatorSim(DCMotor.getNEO(1),1/9, 6.80389, 1.751, 0, 0.762, true, 0, 0.01, 0.0);
+  public static final ElevatorSim m_elevatorSim = new ElevatorSim(DCMotor.getNEO(1),1/9, 6.80389, Units.inchesToMeters(1.751), 0, Units.inchesToMeters(30), true, 0, 0.01, 0.0);
 
   public Elevator() {
     m_motor = new SparkMax(Constants.Elevator.rightMotor, MotorType.kBrushless);
