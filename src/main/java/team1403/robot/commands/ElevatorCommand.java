@@ -1,14 +1,8 @@
 package team1403.robot.commands;
-
-import org.littletonrobotics.junction.Logger;
-
 import dev.doglog.DogLog;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.subsystems.Elevator;
+import team1403.robot.Constants;
 
 
 public class ElevatorCommand extends Command {
@@ -17,19 +11,9 @@ public class ElevatorCommand extends Command {
   private boolean isGoingUp;
   private boolean isGoingDown;
   private double setPoint;
-  private double rampUpTimeUp;
-  private double rampUpTimeDown;
-  private double rampDownTimeUp;
-  private double rampDownTimeDown;
   private double currMotorOutput;
   private double desiredMotorOutput; 
-  private double maxVel;
-  private double minVel;
   private double currentPos;
-  private double upGain;
-  private double downGain;
-  private double setPointMargin; 
-  private double simVar; 
 
   public ElevatorCommand(Elevator elevator, double m_setPoint, double m_currentPos, double m_currentMotorOutput) {
     m_elevator = elevator;
@@ -37,25 +21,15 @@ public class ElevatorCommand extends Command {
     currentPos = m_currentPos;
     currMotorOutput = m_currentMotorOutput;
     isRampDone = false;
-    rampUpTimeUp = 1;
-    rampUpTimeDown = 0.01;
-    rampDownTimeDown = 0.01;
-    rampDownTimeUp = 1;
-    upGain = 3.5;
-    downGain = 3.0;
-    maxVel = 90;
-    minVel = 5;
-    setPointMargin = 0.5;
     desiredMotorOutput = 0;
-    simVar = 1;
     
 
-    // check whether elevator needs to go up or down 
-    if(m_setPoint > currentPos - setPointMargin) {
+    // check whether elevator needs to go up, down, or not move 
+    if(m_setPoint > currentPos - Constants.Elevator.Command.setPointMargin) {
       isGoingUp = true;
       isGoingDown = false;
     } 
-    else if(m_setPoint < currentPos + setPointMargin) {
+    else if(m_setPoint < currentPos + Constants.Elevator.Command.setPointMargin) {
       isGoingUp = false;
       isGoingDown = true;
     } 
@@ -76,10 +50,10 @@ public class ElevatorCommand extends Command {
     // set desired motor output equal to the difference between current position and setpoint * a gain constant
     double posError = setPoint - currentPos;
     if(isGoingUp) {
-      posError *= upGain;
+      posError *= Constants.Elevator.Command.movementUpGain;
     } 
     else if(isGoingDown){
-      posError *= downGain;
+      posError *= Constants.Elevator.Command.movementDownGain;
     }
     
     desiredMotorOutput = posError;
@@ -91,21 +65,21 @@ public class ElevatorCommand extends Command {
 
     // clamp desired motor output to a maximum value
     desiredMotorOutput = Math.abs(desiredMotorOutput);
-    if(desiredMotorOutput > maxVel) {
-      desiredMotorOutput = maxVel;
+    if(desiredMotorOutput > Constants.Elevator.Command.maxSpeed) {
+      desiredMotorOutput = Constants.Elevator.Command.maxSpeed;
     }
 
     // run ramp function with parameters depending on whether elevator needs to go up or down
     if(isGoingUp) {
-      currMotorOutput = ramp(rampUpTimeUp, rampUpTimeDown, currMotorOutput, desiredMotorOutput);
+      currMotorOutput = ramp(Constants.Elevator.Command.elevatorUpRampUpTime, Constants.Elevator.Command.elevatorUpRampDownTime, currMotorOutput, desiredMotorOutput);
     }
     else if(isGoingDown) {
-      currMotorOutput = ramp(rampDownTimeUp, rampDownTimeDown, Math.abs(currMotorOutput), desiredMotorOutput);
+      currMotorOutput = ramp(Constants.Elevator.Command.elevatorDownRampUpTime, Constants.Elevator.Command.elevatorDownRampDownTime, Math.abs(currMotorOutput), desiredMotorOutput);
     }
 
     // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
-    if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minVel) {
-      currMotorOutput = minVel;
+    if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < Constants.Elevator.Command.minSpeed) {
+      currMotorOutput = Constants.Elevator.Command.minSpeed;
     }
 
     // invert output if elevator is moving down
@@ -114,24 +88,26 @@ public class ElevatorCommand extends Command {
     }
 
     // if elevator is within the window of the setpoint, stop the motor from running and set booleans to false
-    if(currentPos > setPoint - setPointMargin && currentPos < setPoint + setPointMargin) {
+    if(currentPos > setPoint - Constants.Elevator.Command.setPointMargin && currentPos < setPoint + Constants.Elevator.Command.setPointMargin) {
       currMotorOutput = 0;
       isGoingUp = false;
       isGoingDown = false;
 
     }
-    //else set isRampDone to false and continue the following steps above 
+    // else set isRampDone to false and continue the following steps above 
     else {
       isRampDone = false;
     }
 
-    currentPos += (currMotorOutput / 100) * simVar;
+    // simulate position of elevator 
+    currentPos += (currMotorOutput / 100) * Constants.Elevator.Command.simPositionFactor;
     if(currentPos > 150) {
       currentPos = 150;
     }
     else if (currentPos < 0) {
       currentPos = 0;
     }
+
     // logs all values of elevator motion
     DogLog.log("desired motor output velocity", desiredMotorOutput);
     DogLog.log("current motor output", currMotorOutput);
