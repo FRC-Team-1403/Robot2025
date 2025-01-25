@@ -1506,7 +1506,7 @@ public class LimelightHelpers {
         setLimelightNTDouble(limelightName, "fiducial_downscale_set", d);
     }
     
-        /**
+    /**
      * Sets the camera pose relative to the robot.
      * @param limelightName Name of the Limelight camera
      * @param transform transform of the camera relative to the robot

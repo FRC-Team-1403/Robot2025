@@ -78,7 +78,7 @@ public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
     }
 
     @Override
-    public SwerveModulePosition getModulePosition() {
+    public synchronized SwerveModulePosition getModulePosition() {
         return m_module.getPosition(true);
     }
 
