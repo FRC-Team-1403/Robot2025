@@ -2,18 +2,11 @@ package team1403.robot.swerve;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,7 +17,6 @@ import team1403.lib.util.CircularSlewRateLimiter;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.Constants.Swerve;
-import team1403.robot.subsystems.Blackbox;
 
 /**
  * The default command for the swerve drivetrain subsystem.
@@ -48,13 +40,6 @@ public class DefaultSwerveCommand extends Command {
   private static final double kDirectionSlewRateLimit = 22;
 
   private ProfiledPIDController m_controller;
-  private TrapezoidProfile.State m_state = new TrapezoidProfile.State();
-  private PPHolonomicDriveController m_driveController = new PPHolonomicDriveController(
-    Constants.PathPlanner.kTranslationPID,
-    Constants.PathPlanner.kRotationPID,
-    Constants.kLoopTime
-  );
-  private PathPlannerTrajectoryState m_driveState = new PathPlannerTrajectoryState();
 
   private double m_speedLimiter = 0.2;
 
@@ -114,7 +99,6 @@ public class DefaultSwerveCommand extends Command {
   public void initialize() {
     ChassisSpeeds speeds = m_drivetrainSubsystem.getCurrentChassisSpeed();
     m_controller.reset(MathUtil.angleModulus(m_drivetrainSubsystem.getRotation().getRadians()), speeds.omegaRadiansPerSecond);
-    m_driveController.reset(m_drivetrainSubsystem.getPose(), speeds);
   }
 
   @Override
@@ -190,7 +174,6 @@ public class DefaultSwerveCommand extends Command {
       } else {
         chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }
-      m_driveController.reset(curPose, currentSpeeds);
       //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     }
 
