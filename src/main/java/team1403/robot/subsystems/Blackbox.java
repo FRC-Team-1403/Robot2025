@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
 
 //WIP (work in progress)
+//Stores data that is shared between subsystems
 public class Blackbox extends SubsystemBase {
 
     private static Pose2d target = null;
