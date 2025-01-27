@@ -16,9 +16,11 @@ public class ElevatorCommand extends Command {
   private BooleanSupplier m_second;
   private BooleanSupplier m_third;
   private BooleanSupplier m_down;
+  private double setpoint;
 
   public ElevatorCommand(Elevator elevator, BooleanSupplier first, BooleanSupplier second, BooleanSupplier third, BooleanSupplier down) {
     m_elevator = elevator;
+    setpoint = 0;
     currentPos = 0;
     m_first = first;
     m_second = second;
@@ -36,17 +38,18 @@ public class ElevatorCommand extends Command {
   @Override
   public void execute() {
     if (m_down.getAsBoolean()) {
-      profiler.moveToSetPoint(0);
+      setpoint = 0;
     }
     else if (m_first.getAsBoolean()) {
-      profiler.moveToSetPoint(10);
+      setpoint = 10;
     }
     else if (m_second.getAsBoolean()) {
-      profiler.moveToSetPoint(30);
+      setpoint = 40;
     }
     else if (m_third.getAsBoolean()) {
-      profiler.moveToSetPoint(50);
+      setpoint = 70;
     }
+    profiler.moveToSetPoint(setpoint);
   }
 
   @Override
