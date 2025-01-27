@@ -2,7 +2,6 @@ package team1403.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.littletonrobotics.junction.Logger;
 import dev.doglog.DogLog;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
