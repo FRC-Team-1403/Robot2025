@@ -19,8 +19,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -65,6 +67,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
   private Command m_pathFinder = Commands.none();
   private Command m_teleopCommand = Commands.none();
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -160,7 +163,9 @@ public class RobotContainer {
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 0, 0));
+    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
+    () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton(), 
+    () -> m_operatorController.getHID().getYButton(), () -> m_operatorController.getHID().getXButton()));
   }
 
   

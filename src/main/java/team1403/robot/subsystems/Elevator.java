@@ -36,7 +36,7 @@ public class Elevator extends SubsystemBase {
   private SparkMax m_rightMotor;
 
   public Elevator() {
-    // m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
+    m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
     // m_rightMotor = new SparkMax(Constants.CanBus.rightHangerMotorID, MotorType.kBrushless);
 
     // // m_leftMotor.restoreFactoryDefaults();
