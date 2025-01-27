@@ -168,7 +168,7 @@ public class RobotContainer {
     () -> m_operatorController.getHID().getYButton(), () -> m_operatorController.getHID().getXButton()));
   }
 
-  
+  // Diameter/Gear Ratio/CPR = Distance/Tick
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
