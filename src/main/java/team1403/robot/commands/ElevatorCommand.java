@@ -33,21 +33,23 @@ public class ElevatorCommand extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_down = () -> true;
+  }
 
   @Override
   public void execute() {
     if (m_down.getAsBoolean()) {
-      setpoint = 0;
+      setpoint = Constants.Elevator.down; // 0
     }
     else if (m_first.getAsBoolean()) {
-      setpoint = 10;
+      setpoint = Constants.Elevator.first; // 10
     }
     else if (m_second.getAsBoolean()) {
-      setpoint = 40;
+      setpoint = Constants.Elevator.second; // 40
     }
     else if (m_third.getAsBoolean()) {
-      setpoint = 70;
+      setpoint = Constants.Elevator.third; // 70
     }
     profiler.moveToSetPoint(setpoint);
   }

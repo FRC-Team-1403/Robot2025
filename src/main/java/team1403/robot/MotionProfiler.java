@@ -1,7 +1,6 @@
 package team1403.robot;
 
 import dev.doglog.DogLog;
-import team1403.robot.Constants.Setpoints;
 
 public class MotionProfiler {
     private double currentPos;
