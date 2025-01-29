@@ -2,6 +2,7 @@ package team1403.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
@@ -98,7 +99,7 @@ public class IntakeAndShooter extends SubsystemBase {
 
     m_sysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(null, null, null, 
-      (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
+      (state) -> SignalLogger.writeString("SysIDShooter", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
         m_shooterMotorBottom.setVoltage(voltage.in(Volts));
         m_shooterMotorTop.setVoltage(voltage.in(Volts));
