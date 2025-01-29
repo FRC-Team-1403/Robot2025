@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Pigeon2Wrapper implements IGyroDevice {
 
@@ -13,6 +14,7 @@ public class Pigeon2Wrapper implements IGyroDevice {
 
     public Pigeon2Wrapper(int id, String canbus) {
         m_pigeon = new Pigeon2(id, canbus);
+        SmartDashboard.putData("Gyro", m_pigeon);
     }
 
     public Pigeon2Wrapper(int id) {
