@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -17,6 +17,7 @@ import team1403.lib.util.CircularSlewRateLimiter;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.Constants.Swerve;
+import team1403.robot.swerve.SwerveSubsystem;
 
 /**
  * The default command for the swerve drivetrain subsystem.

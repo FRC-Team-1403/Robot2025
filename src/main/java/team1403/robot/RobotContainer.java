@@ -30,12 +30,12 @@ import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
+import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.IntakeAndShooter;
-import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
 

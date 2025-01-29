@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.module;
 
 import java.util.concurrent.locks.ReentrantLock;
 

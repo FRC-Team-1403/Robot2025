@@ -46,8 +46,15 @@ import team1403.robot.Constants;
 import team1403.robot.Robot;
 import team1403.robot.Constants.CanBus;
 import team1403.robot.Constants.Swerve;
-import team1403.robot.swerve.ISwerveModule.DriveControlType;
-import team1403.robot.swerve.ISwerveModule.SteerControlType;
+import team1403.robot.swerve.imu.IGyroDevice;
+import team1403.robot.swerve.imu.NavXWrapper;
+import team1403.robot.swerve.module.ISwerveModule;
+import team1403.robot.swerve.module.SimSwerveModule;
+import team1403.robot.swerve.module.SwerveModule;
+import team1403.robot.swerve.module.ISwerveModule.DriveControlType;
+import team1403.robot.swerve.module.ISwerveModule.SteerControlType;
+import team1403.robot.swerve.util.SwerveHeadingCorrector;
+import team1403.robot.swerve.util.SyncSwerveDrivePoseEstimator;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.VisionSimUtil;
@@ -59,7 +66,7 @@ import static edu.wpi.first.units.Units.Volts;
  * gyroscope.
  */
 public class SwerveSubsystem extends SubsystemBase {
-  private final AHRS m_navx2;
+  private final IGyroDevice m_gyro;
   private final ISwerveModule[] m_modules;
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds();
   private final SwerveModuleState[] m_currentStates = new SwerveModuleState[4];
@@ -116,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public SwerveSubsystem() {
     // increase update rate because of async odometery
-    m_navx2 = new AHRS(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
+    m_gyro = new NavXWrapper(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
     if(Robot.isReal()) {
       m_modules = new ISwerveModule[] {
           new SwerveModule("Front Left Module",
@@ -170,8 +177,6 @@ public class SwerveSubsystem extends SubsystemBase {
     });
 
     // addDevice(m_navx2.getName(), m_navx2);
-    if (m_navx2.isConnected())
-      while (m_navx2.isCalibrating());
 
     zeroGyroscope();
 
@@ -203,8 +208,6 @@ public class SwerveSubsystem extends SubsystemBase {
           m.set(DriveControlType.Voltage, 0, SteerControlType.Voltage, voltage.in(Volts));
         }
       }, null, this));
-
-    SmartDashboard.putData("Gyro", m_navx2);
     SmartDashboard.putData("Field", m_field);
   }
 
@@ -231,7 +234,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   private void zeroGyroscope() {
     // tracef("zeroGyroscope %f", getGyroscopeRotation());
-    m_navx2.reset();
+    m_gyro.reset();
   }
 
   public void zeroHeading() {
@@ -271,7 +274,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return a Rotation3d object that contains the gyroscope's heading
    */
   private Rotation2d getGyroscopeRotation() {
-    return m_navx2.getRotation2d();
+    return m_gyro.getRotation2d();
   }
 
   
@@ -287,7 +290,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return the corrected chassisspeeds
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    double dtheta = Units.degreesToRadians(m_navx2.getRate()) * Constants.Swerve.kAngVelCoeff;
+    double dtheta = Units.degreesToRadians(m_gyro.getAngularVelocity()) * Constants.Swerve.kAngVelCoeff;
     Logger.recordOutput("test", dtheta);
     if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
       Rotation2d rot = getRotation();
@@ -394,7 +397,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation(), m_navx2.getRate());
+    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getGyroscopeRotation(), m_gyro.getAngularVelocity());
     if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
     {
       return corrected;
@@ -526,9 +529,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
     Logger.recordOutput("SwerveStates/PureTranslation", tState); */
-    Logger.recordOutput
-    ("SwerveStates/Measured", m_currentStates);
+    Logger.recordOutput("SwerveStates/Measured", m_currentStates);
     Logger.recordOutput("Odometry/Robot", getPose());
-    Logger.recordOutput("Odometry/Rotation3d", m_navx2.getRotation3d());
+    Logger.recordOutput("Odometry/Rotation3d", m_gyro.getRotation3d());
   }
 }

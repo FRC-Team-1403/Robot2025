@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.module;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -111,7 +111,7 @@ public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
         if(type == DriveControlType.Velocity && s_type == SteerControlType.Angle)
             m_module.apply(m_modRequest);
         else if(type == DriveControlType.Velocity && s_type == SteerControlType.Angle)
-            m_module.apply(new PositionVoltage(Units.radiansToRotations(steerValue)), new VoltageOut(driveValue));
+            m_module.apply(new PositionVoltage(Units.radiansToRotations(steerValue)), new VoltageOut(driveValue)); //use torque current FOC if needed for both
         else throw new UnsupportedOperationException(); //todo: implement other combinations of flags
     }
 

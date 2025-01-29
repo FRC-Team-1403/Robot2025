@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;

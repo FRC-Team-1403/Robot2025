@@ -23,9 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
-import team1403.robot.swerve.ISwerveModule;
-import team1403.robot.swerve.ISwerveModule.DriveControlType;
-import team1403.robot.swerve.ISwerveModule.SteerControlType;
 
 import static edu.wpi.first.units.Units.Volts;
 

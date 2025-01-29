@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.module;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
