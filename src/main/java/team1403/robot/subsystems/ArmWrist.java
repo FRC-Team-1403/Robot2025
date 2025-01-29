@@ -47,7 +47,7 @@ public class ArmWrist extends SubsystemBase {
   private MechanismLigament2d m_wristMech;
 
   public ArmWrist() {
-    m_feedforward = new ArmFeedforward(0, Constants.Arm.kFeedforwardG, Constants.Arm.kFeedforwardV);
+    m_feedforward = new ArmFeedforward(0, Constants.Arm.kFeedforwardG, Constants.Arm.kFeedforwardV, 0, Constants.kLoopTime);
     m_leftMotor = new SparkMax(Constants.CanBus.leftPivotMotorID, MotorType.kBrushless);
     m_rightMotor = new SparkMax(Constants.CanBus.rightPivotMotorID, MotorType.kBrushless);
     m_wristMotor = new SparkMax(Constants.CanBus.wristMotorID, MotorType.kBrushless);
@@ -56,8 +56,8 @@ public class ArmWrist extends SubsystemBase {
 
     configMotors();
 
-    m_armPid = new ProfiledPIDController(Constants.Arm.KPArmPivot, Constants.Arm.KIArmPivot, Constants.Arm.KDArmPivot, new TrapezoidProfile.Constraints(370, 500));
-    m_wristPid = new PIDController(Constants.Wrist.KPWrist, Constants.Wrist.KIWrist, Constants.Wrist.KDWrist);
+    m_armPid = new ProfiledPIDController(Constants.Arm.KPArmPivot, Constants.Arm.KIArmPivot, Constants.Arm.KDArmPivot, new TrapezoidProfile.Constraints(370, 500), Constants.kLoopTime);
+    m_wristPid = new PIDController(Constants.Wrist.KPWrist, Constants.Wrist.KIWrist, Constants.Wrist.KDWrist, Constants.kLoopTime);
     m_armPid.reset(getPivotAngle(), 0);
     //m_wristPid.reset(getWristAngle(), 0);
 

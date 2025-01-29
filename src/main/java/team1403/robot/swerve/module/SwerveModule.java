@@ -59,7 +59,8 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
                               = new SimpleMotorFeedforward(
                                 Constants.Swerve.kSDrive, 
                                 Constants.Swerve.kVDrive,
-                                Constants.Swerve.kADrive); 
+                                Constants.Swerve.kADrive,
+                                Constants.kLoopTime); 
 
 
     /**
