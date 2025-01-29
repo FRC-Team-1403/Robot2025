@@ -5,10 +5,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
 
 public interface IGyroDevice {
     
+    //both are CCW+
     public Rotation2d getRotation2d();
-
     public Rotation3d getRotation3d();
 
+    //degrees per second, CW+
     public double getAngularVelocity();
     
     //reset gyro z-axis heading to 0
