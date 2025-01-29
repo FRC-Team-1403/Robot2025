@@ -291,7 +291,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
     double dtheta = Units.degreesToRadians(m_gyro.getAngularVelocity()) * Constants.Swerve.kAngVelCoeff;
-    Logger.recordOutput("test", dtheta);
+    // Logger.recordOutput("test", dtheta);
     if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
       Rotation2d rot = getRotation();
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
