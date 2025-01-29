@@ -58,7 +58,6 @@ public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
 
   private SendableChooser<Command> autoChooser;
-  private Command m_pathFinder = Commands.none();
   private Command m_teleopCommand;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
