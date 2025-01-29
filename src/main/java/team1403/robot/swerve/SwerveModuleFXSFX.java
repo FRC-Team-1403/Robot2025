@@ -3,6 +3,9 @@ package team1403.robot.swerve;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
@@ -13,11 +16,13 @@ import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants.Swerve;
 
@@ -83,26 +88,31 @@ public class SwerveModuleFXSFX extends SubsystemBase implements ISwerveModule {
     }
 
     @Override
-    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue) {
-        if(type == DriveControlType.Velocity) m_modRequest.DriveRequest = DriveRequestType.Velocity;
-        else if(type == DriveControlType.Voltage) /* todo: support this */ throw new UnsupportedOperationException();
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue, DriveFeedforwards ff, int index) {
 
+        if(type == DriveControlType.Velocity) m_modRequest.DriveRequest = DriveRequestType.Velocity;
         if(s_type == SteerControlType.Angle) { 
             m_modRequest.SteerRequest = SteerRequestType.Position; /* todo: try motion magic expo */ 
             m_targetState.angle = Rotation2d.fromRadians(steerValue);
         }
-        else if (s_type == SteerControlType.Voltage) /* todo: support this */ throw new UnsupportedOperationException();
 
         //enable FOC cuz it's goated :)
         m_modRequest.EnableFOC = true;
-        //TODO: useful feature pls implement
         m_modRequest.WheelForceFeedforwardX = 0;
         m_modRequest.WheelForceFeedforwardY = 0;
+        if(ff != null && index > 0) {
+            m_modRequest.WheelForceFeedforwardX = ff.robotRelativeForcesXNewtons()[index];
+            m_modRequest.WheelForceFeedforwardY = ff.robotRelativeForcesYNewtons()[index];
+        }
 
         m_targetState.speedMetersPerSecond = driveValue;
 
         //apply the request because we are done
-        m_module.apply(m_modRequest);
+        if(type == DriveControlType.Velocity && s_type == SteerControlType.Angle)
+            m_module.apply(m_modRequest);
+        else if(type == DriveControlType.Velocity && s_type == SteerControlType.Angle)
+            m_module.apply(new PositionVoltage(Units.radiansToRotations(steerValue)), new VoltageOut(driveValue));
+        else throw new UnsupportedOperationException(); //todo: implement other combinations of flags
     }
 
     

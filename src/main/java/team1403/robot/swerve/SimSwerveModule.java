@@ -2,6 +2,8 @@ package team1403.robot.swerve;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.pathplanner.lib.util.DriveFeedforwards;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -77,7 +79,7 @@ public class SimSwerveModule extends SubsystemBase implements ISwerveModule {
     }
 
     @Override
-    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue) {
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue, DriveFeedforwards ff, int index) {
         m_lock.lock();
         if (s_type == SteerControlType.Angle) {
             m_steerController.setSetpoint(MathUtil.angleModulus(steerValue));

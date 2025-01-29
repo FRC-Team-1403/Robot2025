@@ -11,6 +11,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -148,7 +149,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this::getPose, // Robot pose supplier
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getCurrentChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (ChassisSpeeds s) -> drive(s, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        (ChassisSpeeds s, DriveFeedforwards ff) -> drive(s, ff, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new PPHolonomicDriveController(
           Constants.PathPlanner.kTranslationPID, 
           Constants.PathPlanner.kRotationPID, 
@@ -310,10 +311,18 @@ public class SwerveSubsystem extends SubsystemBase {
    * Sets the target chassis speeds
    * @param chassisSpeeds
    */
-  public void drive(ChassisSpeeds chassisSpeeds, boolean discretize) {
+  public void drive(ChassisSpeeds chassisSpeeds, DriveFeedforwards ff, boolean discretize) {
     m_chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     //update here to reduce latency
-    updateTargetModuleStates(discretize);
+    updateTargetModuleStates(ff, discretize);
+  }
+
+  /**
+   * Sets the target chassis speeds
+   * @param chassisSpeeds
+   */
+  public void drive(ChassisSpeeds chassisSpeeds, boolean discretize) {
+    drive(chassisSpeeds, null, discretize);
   }
 
   /**
@@ -330,7 +339,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param states an array of states for each module.
    */
   
-  public void setModuleStates(SwerveModuleState[] states, boolean discretize) {
+  public void setModuleStates(SwerveModuleState[] states, DriveFeedforwards ff, boolean discretize) {
     SwerveModuleState[] currentStates = getModuleStates();
 
     //desaturate sandwich :)
@@ -345,10 +354,15 @@ public class SwerveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_modules.length; i++) {
       states[i].optimize(currentStates[i].angle);
       m_modules[i].set(DriveControlType.Velocity, states[i].speedMetersPerSecond,
-          SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()));
+          SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()),
+          ff, ff == null ? -1 : i);
     }
 
     Logger.recordOutput("SwerveStates/Target", states);
+  }
+
+  public void setModuleStates(SwerveModuleState[] states, boolean discretize) {
+    setModuleStates(states, null, discretize);
   }
 
 
@@ -445,12 +459,17 @@ public class SwerveSubsystem extends SubsystemBase {
     return ret;
   }
 
-  private void updateTargetModuleStates(boolean discretize) {
+  private void updateTargetModuleStates(DriveFeedforwards ff, boolean discretize) {
     ChassisSpeeds corrected = rotationalDriftCorrection(m_chassisSpeeds);
 
     Logger.recordOutput("SwerveStates/Corrected Target Chassis Speeds", corrected);
 
-    setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), discretize);
+    setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), ff, discretize);
+  }
+
+  private void updateTargetModuleStates(boolean discretize)
+  {
+    updateTargetModuleStates(null, discretize);
   }
 
   @Override
