@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
+import team1403.robot.Constants.Arm;
 
 public class ArmWrist extends SubsystemBase {
   // lead motor
@@ -136,7 +137,7 @@ public class ArmWrist extends SubsystemBase {
   }
 
   private double calcPivotSpeed() {
-    double setpoint = getPivotSetpoint();
+    double setpoint = getPivotAngle();
 
     if(setpoint < 110 && !isWristInSafeBounds()) setpoint = MathUtil.clamp(setpoint, 110, Constants.Arm.kMaxPivotAngle);
 
@@ -165,9 +166,35 @@ public class ArmWrist extends SubsystemBase {
     return speed;
   }
 
-  public double getPivotSetpoint() {
-    return m_pivotAngleSetpoint;
+
+  
+  // Start of's wonderful code
+  
+  
+  
+  
+
+  
+public double ArmandWristpoint(double armAngle, double wristAngle) {
+  setArmSetpoint(armAngle);
+  setWristSetpoint(wristAngle);
+  
+  if (!isWristInSafeBounds()) {
+    setWristSetpoint(145);
   }
+  
+  if (!isWristInSafeBounds()) {
+    setArmSetpoint(armAngle);
+  }
+  
+  return wristAngle;
+}
+  
+
+
+
+
+
 
 
   @Override
