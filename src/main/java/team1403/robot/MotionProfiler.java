@@ -14,7 +14,7 @@ public class MotionProfiler {
     private boolean directionFlag;
     private double posError;
     private double feedforward;
-    private Elevator m_elevator;
+    private Elevator m_elevator = new Elevator();
     private double setpoint;
 
 
