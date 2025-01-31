@@ -149,6 +149,8 @@ public class RobotContainer {
 
     m_armwrist.setDefaultCommand(m_teleopCommand);
 
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+
     //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
     //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
 
@@ -159,8 +161,9 @@ public class RobotContainer {
       if (target == null) return Commands.none();  
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target),
-        new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1)
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
       );
      }, Set.of(m_swerve)));
 
@@ -171,8 +174,9 @@ public class RobotContainer {
       if (target == null) return Commands.none();
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target),
-        new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1)
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
       );
      }, Set.of(m_swerve)));
 
