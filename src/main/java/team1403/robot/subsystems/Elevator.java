@@ -18,6 +18,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -34,6 +35,7 @@ import team1403.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
+  private final ElevatorFeedforward m_ElevatorFeedforward;
 
   public Elevator() {
     // m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
@@ -48,6 +50,7 @@ public class Elevator extends SubsystemBase {
 
     // m_leftMotor.getEncoder().setPosition(0);
     // m_rightMotor.getEncoder().setPosition(0);
+    m_ElevatorFeedforward = new ElevatorFeedforward(0, Constants.Elevator.kFeedforwardG, Constants.Elevator.kFeedforwardV, 0, Constants.kLoopTime);
   }
   
   public void setMotorSpeed(double speed) {
@@ -69,7 +72,12 @@ public class Elevator extends SubsystemBase {
     return m_rightMotor.getEncoder().getPosition();
   }
 
+  public double calculation(double pos, double setpoint) {
+    return m_ElevatorFeedforward.calculate(pos, setpoint);
+  }
+
   public void periodic() {
+
     // Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
     // Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
     // Logger.recordOutput("Left Motor Speed", m_leftMotor.get());

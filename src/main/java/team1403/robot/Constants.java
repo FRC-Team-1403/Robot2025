@@ -45,6 +45,7 @@ public class Constants {
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = true;
   
+ 
   /**
    * Ports on the RoboRIO.
    */
@@ -92,6 +93,8 @@ public class Constants {
       public static final double second = 40;
       public static final double third = 70;
       public static final double down = 0;
+      public static final double kFeedforwardG = 0.01;
+      public static final double kFeedforwardV = 0.0001;
 
       public static class Command {
         public static final double movementUpGain = 3.5;

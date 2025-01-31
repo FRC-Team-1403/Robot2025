@@ -2,6 +2,8 @@ package team1403.robot;
 
 import dev.doglog.DogLog;
 
+import team1403.robot.subsystems.Elevator;
+
 public class MotionProfiler {
     private double currentPos;
     private double currMotorOutput;
@@ -12,6 +14,8 @@ public class MotionProfiler {
     private boolean directionFlag;
     private double posError;
     private double feedforward;
+    private Elevator m_elevator;
+    private double setpoint;
 
 
     public MotionProfiler(double m_currentPos) {
@@ -24,7 +28,7 @@ public class MotionProfiler {
     }
 
     public void moveToSetPoint(double setPoint) {
-        
+        setpoint = setPoint;
         if(directionFlag && Math.abs(setPoint - currentPos) > Constants.Elevator.Command.setPointMargin) {
             checkDirection(setPoint);
         }
@@ -127,7 +131,7 @@ public class MotionProfiler {
     private void adjustCurrentOutput() {
         // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
         if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < Constants.Elevator.Command.minSpeed) {
-            currMotorOutput = Constants.Elevator.Command.minSpeed;
+            currMotorOutput = Constants.Elevator.Command.minSpeed + m_elevator.calculation(currentPos, setpoint);
         }
 
         // invert output if elevator is moving down
@@ -175,5 +179,6 @@ public class MotionProfiler {
         DogLog.log("is going up", isGoingUp);
         DogLog.log("is going down", isGoingDown);
         DogLog.log("checking direction", directionFlag);
+        DogLog.log("Feedforward", m_elevator.calculation(currentPos, setpoint));
     }
 }
