@@ -8,7 +8,6 @@ import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -56,6 +55,12 @@ public class CougarUtil {
     public static Pose2d addDistanceToPose(Pose2d pose, double distance) {
         return new Pose2d(pose.getTranslation().plus(
             new Translation2d(distance, pose.getRotation())), 
+            pose.getRotation());
+    }
+
+    public static Pose2d addDistanceToPoseLeft(Pose2d pose, double distance) {
+        return new Pose2d(pose.getTranslation().plus(
+            new Translation2d(distance, pose.getRotation().plus(Rotation2d.kCCW_90deg))), 
             pose.getRotation());
     }
 
