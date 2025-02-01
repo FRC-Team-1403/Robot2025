@@ -13,7 +13,6 @@ public class MotionProfiler {
     private boolean isGoingDown;
     private boolean directionFlag;
     private double posError;
-    private double feedforward;
     private Elevator m_elevator = new Elevator();
     private double setpoint;
 
@@ -24,7 +23,6 @@ public class MotionProfiler {
         currMotorOutput = 0;
         isRampDone = false;
         directionFlag = true;
-        feedforward = 0.05;
     }
 
     public void moveToSetPoint(double setPoint) {
@@ -44,14 +42,13 @@ public class MotionProfiler {
 
         adjustCurrentOutput();
         checkIfReachedSetPoint(setPoint);
-        currMotorOutput += feedforward; 
+        currMotorOutput += m_elevator.calculation(currentPos, setpoint); 
         simulatePos();
         logValues();
     }
 
     //check whether component is moving up or down
     private void checkDirection(double setPoint) {
-        System.out.println(setPoint + " " + currentPos);
         if(setPoint > currentPos - Constants.Elevator.Command.setPointMargin) {
             isGoingUp = true;
             isGoingDown = false;

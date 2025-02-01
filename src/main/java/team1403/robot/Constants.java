@@ -94,14 +94,14 @@ public class Constants {
       public static final double third = 70;
       public static final double down = 0;
       public static final double kFeedforwardG = 0.01;
-      public static final double kFeedforwardV = 0.0001;
+      public static final double kFeedforwardV = 0.001;
 
       public static class Command {
         public static final double movementUpGain = 3.5;
         public static final double movementDownGain = 3.0;
         public static final double maxSpeed = 90;
         public static final double minSpeed = 5;
-        public static final double setPointMargin = 0.5;
+        public static final double setPointMargin = 0.1;
         public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1;
         public static final double elevatorUpRampDownTime = 0.01;
