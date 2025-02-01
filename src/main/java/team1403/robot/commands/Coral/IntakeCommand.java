@@ -21,7 +21,7 @@ public class IntakeCommand extends Command{
     }
 
     public void execute() {
-        if (m_subsystem.getEncoderValue() != 135) { //check with design
+        if (m_subsystem.getEncoderValue() != 30) {
             m_subsystem.setIntakeMotorSpeed(0.3);
         }
     } 

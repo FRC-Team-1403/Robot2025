@@ -21,7 +21,7 @@ public class PlacerCommand extends Command{
     }
 
     public void execute() {
-        if (m_subsystem.getEncoderValue() != 145) { //check angle with design
+        if (m_subsystem.getEncoderValue() != -30) {
             m_subsystem.setWristMotorSpeed(-0.3);
         }
         m_subsystem.setIntakeMotorSpeed(-0.3);
@@ -29,7 +29,7 @@ public class PlacerCommand extends Command{
 
     public void end(boolean interrupted) {
         m_subsystem.setIntakeMotorSpeed(0);
-        while (m_subsystem.getEncoderValue() != 0) { //check angle with design
+        while (m_subsystem.getEncoderValue() != 0) {
             if (m_subsystem.getEncoderValue() > 0) {
                 m_subsystem.setWristMotorSpeed(-0.3);
             } else if (m_subsystem.getEncoderValue() < 0) {
