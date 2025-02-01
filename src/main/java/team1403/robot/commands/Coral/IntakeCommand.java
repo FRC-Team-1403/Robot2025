@@ -25,15 +25,7 @@ public class IntakeCommand extends Command{
     } 
 
     public void end(boolean interrupted) {
-        m_subsystem.setIntakeMotorSpeed(0);
-        while (m_subsystem.getEncoderValue() != 0) {
-            if (m_subsystem.getEncoderValue() > 0) {
-                m_subsystem.setWristMotorSpeed(-0.3);
-            } else if (m_subsystem.getEncoderValue() < 0) {
-                m_subsystem.setWristMotorSpeed(0.3);
-            }
-        }
-        // Wrist start position is at 90???
+        m_subsystem.setIntakeMotorSpeed(0);   
     }
 
     public boolean isFinished() {

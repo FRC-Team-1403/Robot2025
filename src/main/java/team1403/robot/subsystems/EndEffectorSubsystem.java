@@ -18,7 +18,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor; 
     private SparkMax m_wristMotor;
     private ArmFeedforward m_feedforward;
-    private Ultrasonic m_ultrasonic;
+    private Ultrasonic m_ultrasonic; // change
     private DutyCycleEncoder m_encoder;
 
     //private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
