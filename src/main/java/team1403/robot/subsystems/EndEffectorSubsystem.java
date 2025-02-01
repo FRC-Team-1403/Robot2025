@@ -2,8 +2,10 @@ package team1403.robot.subsystems;
 
 //import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,17 +13,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 
 
-public class Coral_Intake extends SubsystemBase {
+public class EndEffectorSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor; 
     private Ultrasonic m_ultrasonic;
+    private DutyCycleEncoder m_encoder;
 
     //private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
     
     //private SysIdRoutine m_SysIdRoutine;
     
-    public Coral_Intake() {
+    public EndEffectorSubsystem() {
         m_intakeMotor = new SparkMax(Constants.Coral.motor, MotorType.kBrushless);
         m_ultrasonic = new Ultrasonic(Constants.Coral.pingChannel, Constants.Coral.echoChannel);
+        m_encoder = new DutyCycleEncoder(0);
     }
 
     public void setMotorSpeed(double speed) {
