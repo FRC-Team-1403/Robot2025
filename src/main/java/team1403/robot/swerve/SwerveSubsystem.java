@@ -41,6 +41,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import team1403.lib.elastic.Elastic;
+import team1403.lib.elastic.Elastic.Notification.NotificationLevel;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
@@ -108,6 +110,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
             CougarUtil.loadRobotConfig())
         .andThen(Commands.print("[PathPlanner] PathfindingCommand finished warmup"))
+        .andThen(() -> Elastic.sendNotification(
+          new Elastic.Notification(
+            NotificationLevel.INFO, 
+            "PathfindingCommand finished warmup",
+           "Path finding now up and running!")))
         .ignoringDisable(true);
   }
 

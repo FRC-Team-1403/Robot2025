@@ -41,7 +41,7 @@ public class Blackbox {
     //meters
     private static final double kMaxAlignDist = 2.5;
 
-    private Blackbox() {
+    public static void init() {
         //12 different scoring locations on reef
         reefPosesLeftBLUE = new Pose2d[6];
         reefPosesRightBLUE = new Pose2d[6];

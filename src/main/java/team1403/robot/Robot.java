@@ -17,6 +17,8 @@ import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import team1403.lib.elastic.Elastic;
+import team1403.lib.elastic.Elastic.Notification.NotificationLevel;
 import team1403.robot.subsystems.Blackbox;
 
 /**
@@ -26,8 +28,6 @@ import team1403.robot.subsystems.Blackbox;
  */
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-  private Command m_teleopCommand;
-
   private final RobotContainer m_robotContainer;
 
   /**
@@ -38,7 +38,7 @@ public class Robot extends LoggedRobot {
     super(Constants.kLoopTime);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    if(isReal()) {
+    if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     }
     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
@@ -47,6 +47,9 @@ public class Robot extends LoggedRobot {
     Logger.registerURCL(URCL.startExternal());
     SignalLogger.start();
     m_robotContainer = new RobotContainer();
+
+    //notify driver that robot code has started
+    Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Robot Startup Complete!", "Yay!"));
   }
 
   /**
