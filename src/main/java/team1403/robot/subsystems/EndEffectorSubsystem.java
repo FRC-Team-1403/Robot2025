@@ -2,9 +2,10 @@ package team1403.robot.subsystems;
 
 //import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.AbsoluteEncoder;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
@@ -15,6 +16,8 @@ import team1403.robot.Constants;
 
 public class EndEffectorSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor; 
+    private SparkMax m_wristMotor;
+    private ArmFeedforward m_feedforward;
     private Ultrasonic m_ultrasonic;
     private DutyCycleEncoder m_encoder;
 
@@ -23,13 +26,19 @@ public class EndEffectorSubsystem extends SubsystemBase {
     //private SysIdRoutine m_SysIdRoutine;
     
     public EndEffectorSubsystem() {
-        m_intakeMotor = new SparkMax(Constants.Coral.motor, MotorType.kBrushless);
+        m_intakeMotor = new SparkMax(Constants.Coral.intakeMotor, MotorType.kBrushless);
+        m_wristMotor = new SparkMax(Constants.Coral.wristMotor, MotorType.kBrushless);
         m_ultrasonic = new Ultrasonic(Constants.Coral.pingChannel, Constants.Coral.echoChannel);
         m_encoder = new DutyCycleEncoder(0);
+        m_feedforward = new ArmFeedforward(0, Constants.Coral.kFeedforwardG, Constants.Coral.kFeedforwardV);
     }
 
-    public void setMotorSpeed(double speed) {
+    public void setIntakeMotorSpeed(double speed) {
         m_intakeMotor.set(speed);
+    }
+
+    public void setWristMotorSpeed(double speed) {
+        m_wristMotor.set(speed);
     }
 
     public double getDistance() {
@@ -43,5 +52,9 @@ public class EndEffectorSubsystem extends SubsystemBase {
         } else {
             return false;
         }
+    }
+
+    public double getEncoderValue() {
+        return m_encoder.get();
     }
 }
