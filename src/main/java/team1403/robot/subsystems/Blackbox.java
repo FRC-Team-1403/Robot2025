@@ -18,12 +18,16 @@ import team1403.lib.util.CougarUtil;
 //Stores data that is shared between subsystems
 public class Blackbox extends SubsystemBase {
 
-    private static Pose2d target = null;
-    private static Blackbox instance = null;
-
     public enum ReefSelect {
         LEFT,
         RIGHT
+    }
+
+    public enum ReefScoreLocations {
+        L1,
+        L2,
+        L3, 
+        L4
     }
 
     private static Pose2d[] reefPosesLeftBLUE;
@@ -74,15 +78,12 @@ public class Blackbox extends SubsystemBase {
         //Manipulate red alliance positions here in case field elems move this year as well
     }
 
-    public static Blackbox getInstance() {
-
-        if (instance == null) instance = new Blackbox();
-        return instance;
-    }
-
-    //TODO: bind this command to some button
     public static void reefSelect(ReefSelect select) {
         reefSide = select;
+    }
+
+    public static Command reefSelectCmd(ReefSelect select) {
+        return new InstantCommand(() -> reefSelect(select));
     }
 
     private static Pose2d[] getReefPoses() {
