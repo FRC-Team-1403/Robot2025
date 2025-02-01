@@ -287,4 +287,10 @@ public class Constants {
     public static final double kWristConstraint = 140;
     public static final double kArmConstraint = 120;
   }
+
+  public static class Coral {
+    public static int motor = 0;
+    public static int pingChannel = 0;
+    public static int echoChannel = 0;
+  }
 }
