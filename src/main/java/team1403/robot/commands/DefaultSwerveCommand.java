@@ -40,8 +40,6 @@ public class DefaultSwerveCommand extends Command {
   private double prev_vertical = 0;
   private static final double kMaxVelocityChange = 13 * Constants.kLoopTime;
 
-  private ProfiledPIDController m_controller;
-
   private double m_speedLimiter = 0.2;
 
   /**
@@ -81,23 +79,13 @@ public class DefaultSwerveCommand extends Command {
     this.m_zeroGyroSupplier = zeroGyroSupplier;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
-
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
-
-    m_controller = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(Swerve.kMaxAngularSpeed, 80));
-    m_controller.enableContinuousInput(-Math.PI, Math.PI);
-
-    if (Constants.DEBUG_MODE) {
-      SmartDashboard.putData("Swerve Rotation PID", m_controller);
-    }
 
     addRequirements(m_drivetrainSubsystem);
   }
 
   @Override
   public void initialize() {
-    ChassisSpeeds speeds = m_drivetrainSubsystem.getCurrentChassisSpeed();
-    m_controller.reset(MathUtil.angleModulus(m_drivetrainSubsystem.getRotation().getRadians()), speeds.omegaRadiansPerSecond);
     prev_horizontal = prev_vertical = 0;
   }
 
