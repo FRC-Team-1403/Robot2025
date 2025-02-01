@@ -34,6 +34,7 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   public Robot() {
+    super(Constants.kLoopTime);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     if(isReal()) {
