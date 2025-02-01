@@ -41,7 +41,13 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("2025 Robot", 
       "Debug Mode: " + Constants.DEBUG_MODE +
       "\nSysID Enabled: " + Constants.ENABLE_SYSID +
-      "\nLoop Time: " + Constants.kLoopTime);
+      "\nLoop Time: " + Constants.kLoopTime*1000 + " ms" +
+      "\nGit Commit: " + BuildConstants.GIT_SHA +
+      "\nGit Branch: " + BuildConstants.GIT_BRANCH +
+      "\nGit Dirty: " + BuildConstants.DIRTY +
+      "\nBuild Date: " + BuildConstants.BUILD_DATE +
+      "\n"
+      );
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     }

@@ -188,3 +188,6 @@ compile_commands.json
 
 # simgui-ds
 simgui-ds.json
+
+# Generated at compile time, so remove from git
+BuildConstants.java
