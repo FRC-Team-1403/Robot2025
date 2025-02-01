@@ -16,7 +16,7 @@ import team1403.lib.util.CougarUtil;
 
 //WIP (work in progress)
 //Stores data that is shared between subsystems
-public class Blackbox extends SubsystemBase {
+public class Blackbox {
 
     public enum ReefSelect {
         LEFT,
@@ -101,8 +101,7 @@ public class Blackbox extends SubsystemBase {
         return nearest;
     }
 
-    @Override
-    public void periodic() {
+    public static void periodic() {
         //compute target position and other data here
         Logger.recordOutput("ReefPositions Blue Right", reefPosesRightBLUE);
         Logger.recordOutput("ReefPositions Blue Left", reefPosesLeftBLUE);

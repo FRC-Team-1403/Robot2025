@@ -65,8 +65,6 @@ public class RobotContainer {
     // Configure the trigger bindings
 
     m_swerve = new SwerveSubsystem();
-    // initialize the blackbox subsystem so that data can be reference later
-    Blackbox.getInstance();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
