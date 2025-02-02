@@ -8,11 +8,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
+import team1403.robot.Constants;
 
 //WIP (work in progress)
 //Stores data that is shared between subsystems
@@ -40,6 +43,11 @@ public class Blackbox {
 
     //meters
     private static final double kMaxAlignDist = 2.5;
+
+    private static final Alert debugModeAlert = 
+        new Alert("Debug Mode Active, Expect Reduced Performance", AlertType.kWarning);
+    private static final Alert sysIdActiveAlert =
+        new Alert("SysID is enabled", AlertType.kInfo);
 
     public static void init() {
         //12 different scoring locations on reef
@@ -107,5 +115,8 @@ public class Blackbox {
         Logger.recordOutput("ReefPositions Blue Left", reefPosesLeftBLUE);
         Logger.recordOutput("ReefPositions Red Right", reefPosesRightRED);
         Logger.recordOutput("ReefPositions Red Left", reefPosesLeftRED);
+
+        debugModeAlert.set(Constants.DEBUG_MODE);
+        sysIdActiveAlert.set(Constants.ENABLE_SYSID);
     }
 }
