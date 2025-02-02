@@ -35,7 +35,7 @@ import team1403.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
-  private final ElevatorFeedforward m_ElevatorFeedforward;
+  private ElevatorFeedforward m_ElevatorFeedforward;
   private double currentPos;
   private double currMotorOutput;
   private double desiredMotorOutput;
@@ -54,22 +54,22 @@ public class Elevator extends SubsystemBase {
     m_ElevatorFeedforward = new ElevatorFeedforward(0, Constants.Elevator.kFeedforwardG, Constants.Elevator.kFeedforwardV, 0, Constants.kLoopTime);
   }
 
-//   private void configMotors() {
-//     SparkMaxConfig leftconfig = new SparkMaxConfig();
-//     leftconfig
-//         .idleMode(IdleMode.kBrake)
-//         .follow(m_rightMotor, true);
-//     SparkMaxConfig rightconfig = new SparkMaxConfig();
-//     rightconfig
-//         .idleMode(IdleMode.kBrake)
-//         .inverted(true);
+   private void configMotors() {
+    SparkMaxConfig leftconfig = new SparkMaxConfig();
+    leftconfig
+        .idleMode(IdleMode.kBrake)
+        .follow(m_rightMotor, true);
+    SparkMaxConfig rightconfig = new SparkMaxConfig();
+    rightconfig
+        .idleMode(IdleMode.kBrake)
+        .inverted(true);
 
-//     m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-//     m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-//    }
+    m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+   }
   
   public void setMotorSpeed(double speed) {
-    // m_rightMotor.set(MathUtil.clamp(speed, -0.1, 0.1));
+    m_rightMotor.set(MathUtil.clamp(speed, -0.1, 0.1));
   }
 
   public void stopMotors() {
@@ -89,21 +89,25 @@ public class Elevator extends SubsystemBase {
   }
 
   public void periodic() {
-    // DogLog.log("Right Motor RPM", getSpeed());
-    // DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    // DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    // DogLog.log("Left Motor Speed", m_leftMotor.get());
-    // DogLog.log("Right Motor Speed", m_rightMotor.get());
+    DogLog.log("Right Motor RPM", getSpeed());
+    DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+    DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    DogLog.log("Left Motor Speed", m_leftMotor.get());
+    DogLog.log("Right Motor Speed", m_rightMotor.get());
   }
 
+  /*
     public void MotionProfiler() {
         currentPos = 0;
         currMotorOutput = 0;
         isRampDone = false;
         directionFlag = true;
     }
+    */
 
     public void moveToSetPoint(double setPoint) {
+        // update current position with encoder
+        currentPos = getPosition();
         setpoint = setPoint;
         if(directionFlag && Math.abs(setPoint - currentPos) > Constants.Elevator.Command.setPointMargin) {
             checkDirection(setPoint);
@@ -117,21 +121,21 @@ public class Elevator extends SubsystemBase {
         else if(isGoingDown) {
             currMotorOutput = ramp(Constants.Elevator.Command.elevatorDownRampUpTime, Constants.Elevator.Command.elevatorDownRampDownTime, Math.abs(currMotorOutput), desiredMotorOutput);
         }
-
+        checkDirection(setPoint);
         adjustCurrentOutput();
         checkIfReachedSetPoint(setPoint);
         currMotorOutput += calculation(currentPos, setpoint); 
-        simulatePos();
+        //simulatePos();
         logValues();
     }
 
     //check whether component is moving up or down
     private void checkDirection(double setPoint) {
-        if(setPoint > currentPos - Constants.Elevator.Command.setPointMargin) {
+        if(setPoint > currentPos + Constants.Elevator.Command.setPointMargin) {
             isGoingUp = true;
             isGoingDown = false;
         } 
-        else if(setPoint < currentPos + Constants.Elevator.Command.setPointMargin) {
+        else if(setPoint < currentPos - Constants.Elevator.Command.setPointMargin) {
             isGoingUp = false;
             isGoingDown = true;
         } 
@@ -139,8 +143,7 @@ public class Elevator extends SubsystemBase {
             isGoingUp = false;
             isGoingDown = false;
         } 
-
-        directionFlag = false;
+        //directionFlag = false;
     }
     
     private double getDesiredOutput(double setPoint) {
@@ -197,7 +200,7 @@ public class Elevator extends SubsystemBase {
         }
         // if current motor output reaches the desired output set isRampDone to true
         if(desiredOutput == currentOutput) {
-        isRampDone = true;
+            isRampDone = true;
         }
         // returns our current output
         return currentOutput;
@@ -222,7 +225,6 @@ public class Elevator extends SubsystemBase {
             isGoingUp = false;
             isGoingDown = false;
             directionFlag = true;
-
         }
         // else set isRampDone to false and continue the following steps above 
         else {
@@ -230,6 +232,8 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    //no need to simulate position when we can get position from encoder
+    /*
     private void simulatePos() {
         // simulate position of elevator 
         currentPos += ((currMotorOutput / 100) * Constants.Elevator.Command.simPositionFactor);
@@ -241,8 +245,7 @@ public class Elevator extends SubsystemBase {
             currentPos = 0;
         }
     }
-
-
+    */
 
     private void logValues() {
         DogLog.log("desired motor output velocity", desiredMotorOutput);
