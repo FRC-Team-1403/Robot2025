@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 
 public interface IGyroDevice {
     
+    public boolean isConnected();
+
     //both are CCW+
     public Rotation2d getRotation2d();
     public Rotation3d getRotation3d();

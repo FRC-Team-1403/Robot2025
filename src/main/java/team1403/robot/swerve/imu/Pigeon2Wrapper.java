@@ -29,6 +29,10 @@ public class Pigeon2Wrapper implements IGyroDevice {
         this(id, ""); //uses default canbus
     }
 
+    @Override
+    public boolean isConnected() {
+        return m_pigeon.isConnected();
+    }
 
     @Override
     public Rotation2d getRotation2d() {

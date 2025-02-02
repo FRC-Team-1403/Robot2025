@@ -24,6 +24,11 @@ public class NavXWrapper implements IGyroDevice {
     }
 
     @Override
+    public boolean isConnected() {
+        return m_navx.isConnected();
+    }
+
+    @Override
     public Rotation2d getRotation2d() {
         return m_navx.getRotation2d();
     }

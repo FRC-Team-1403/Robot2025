@@ -34,6 +34,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -97,6 +99,9 @@ public class SwerveSubsystem extends SubsystemBase {
   };
 
   private final Notifier m_odometeryNotifier;
+
+  private final Alert m_gryoConnectedAlert = 
+    new Alert("Gyroscope disconnected!", AlertType.kError);
 
   //patched warmup command so it's not slow af
   public static Command swerveWarmupCommand() {
@@ -503,6 +508,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     m_field.setRobotPose(getPose());
     if (Constants.DEBUG_MODE) m_field.getObject("xModules").setPoses(getModulePoses());
+    m_gryoConnectedAlert.set(!m_gyro.isConnected());
     // Logging Output
 
     Logger.recordOutput("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
