@@ -47,26 +47,29 @@ public class Elevator extends SubsystemBase {
   private double setpoint;
 
   public Elevator() {
-    // m_leftMotor = new SparkMax(Constants.CanBus.leftHangerMotorID, MotorType.kBrushless);
-    // m_rightMotor = new SparkMax(Constants.CanBus.rightHangerMotorID, MotorType.kBrushless);
+    //m_leftMotor = new SparkMax(Constants.Canbus.leftElevatorMotorID, MotorType.kBrushless);
+    // m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
+    // configMotors();
 
-    // // m_leftMotor.restoreFactoryDefaults();
-    // // m_rightMotor.restoreFactoryDefaults();
-    // // m_rightMotor.setIdleMode(IdleMode.kBrake);
-    // // m_leftMotor.setIdleMode(IdleMode.kBrake);
-    // // m_rightMotor.setInverted(true);
-    // // m_leftMotor.setInverted(false);
-
-    // m_leftMotor.getEncoder().setPosition(0);
-    // m_rightMotor.getEncoder().setPosition(0);
     m_ElevatorFeedforward = new ElevatorFeedforward(0, Constants.Elevator.kFeedforwardG, Constants.Elevator.kFeedforwardV, 0, Constants.kLoopTime);
   }
+
+//   private void configMotors() {
+//     SparkMaxConfig leftconfig = new SparkMaxConfig();
+//     leftconfig
+//         .idleMode(IdleMode.kBrake)
+//         .follow(m_rightMotor, true);
+//     SparkMaxConfig rightconfig = new SparkMaxConfig();
+//     rightconfig
+//         .idleMode(IdleMode.kBrake)
+//         .inverted(true);
+
+//     m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+//     m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+//    }
   
   public void setMotorSpeed(double speed) {
-    // m_leftMotor.set(MathUtil.clamp(speed, -1, 1));
-    // m_rightMotor.set(MathUtil.clamp(speed, -1, 1));
-    // m_leftMotor.set(speed);
-    // m_rightMotor.set(speed);
+    // m_rightMotor.set(MathUtil.clamp(speed, -0.1, 0.1));
   }
 
   public void stopMotors() {
@@ -74,7 +77,7 @@ public class Elevator extends SubsystemBase {
   }
   
   public double getSpeed() {
-    return m_leftMotor.get();
+    return m_rightMotor.getEncoder().getVelocity();
   }
 
   public double getPosition() {
@@ -86,15 +89,14 @@ public class Elevator extends SubsystemBase {
   }
 
   public void periodic() {
-
-    // Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    // Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    // Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
-    // Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
+    // DogLog.log("Right Motor RPM", getSpeed());
+    // DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+    // DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    // DogLog.log("Left Motor Speed", m_leftMotor.get());
+    // DogLog.log("Right Motor Speed", m_rightMotor.get());
   }
 
     public void MotionProfiler() {
-        //setPoint = m_setPoint;
         currentPos = 0;
         currMotorOutput = 0;
         isRampDone = false;

@@ -56,6 +56,9 @@ public class Constants {
   public static class CanBus {
     
     public static final int powerDistributionID = 60;
+
+    public static final int leftElevatorMotorID = 3;
+    public static final int rightElevatorMotorID = 2;
   
   }
 
@@ -85,13 +88,10 @@ public class Constants {
       public static final double kPSparkMax = 0.0135;
       public static final double kISparkMax = 0.0;
       public static final double kDSparkMax = 0;
-      
-      public static final int leftMotor = 0;
-      public static final int rightMotor = 1;
 
-      public static final double first = 10;
-      public static final double second = 40;
-      public static final double third = 70;
+      public static final double first = 5;
+      public static final double second = 10;
+      public static final double third = 20;
       public static final double down = 0;
       public static final double kFeedforwardG = 0.01;
       public static final double kFeedforwardV = 0.001;
@@ -101,7 +101,7 @@ public class Constants {
         public static final double movementDownGain = 3.0;
         public static final double maxSpeed = 90;
         public static final double minSpeed = 5;
-        public static final double setPointMargin = 0.1;
+        public static final double setPointMargin = 0.5;
         public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1;
         public static final double elevatorUpRampDownTime = 0.01;

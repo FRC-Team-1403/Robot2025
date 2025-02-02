@@ -37,13 +37,13 @@ public class ElevatorCommand extends Command {
       setpoint = Constants.Elevator.down; // 0
     }
     else if (m_first.getAsBoolean() && setpoint != Constants.Elevator.first) {
-      setpoint = Constants.Elevator.first; // 10
+      setpoint = Constants.Elevator.first; // 5
     }
     else if (m_second.getAsBoolean() && setpoint != Constants.Elevator.second) {
-      setpoint = Constants.Elevator.second; // 40
+      setpoint = Constants.Elevator.second; // 10
     }
     else if (m_third.getAsBoolean() && setpoint != Constants.Elevator.third) {
-      setpoint = Constants.Elevator.third; // 70
+      setpoint = Constants.Elevator.third; // 20
     }
     setpoint = 70;
     m_elevator.moveToSetPoint(setpoint);
