@@ -38,7 +38,7 @@ public class Robot extends LoggedRobot {
     super(Constants.kLoopTime);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    Logger.recordMetadata("2025 Robot", 
+    String description = 
       "Debug Mode: " + Constants.DEBUG_MODE +
       "\nSysID Enabled: " + Constants.ENABLE_SYSID +
       "\nLoop Time: " + (int)(Constants.kLoopTime*1000) + " ms" +
@@ -48,8 +48,8 @@ public class Robot extends LoggedRobot {
       "\nGit Revision: " + BuildConstants.GIT_REVISION +
       "\nGit Dirty: " + BuildConstants.DIRTY +
       "\nBuild Date: " + BuildConstants.BUILD_DATE +
-      "\n"
-      );
+      "\n";
+    Logger.recordMetadata("2025 Robot", description);
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     }
@@ -61,7 +61,11 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     //notify driver that robot code has started
-    Elastic.sendNotification(new Elastic.Notification(NotificationLevel.INFO, "Robot Startup Complete!", "Yay!"));
+    Elastic.sendNotification(
+      new Elastic.Notification(
+        NotificationLevel.INFO, 
+        "Robot Startup Complete!", 
+        description, 4000, 350, 500));
   }
 
   /**
