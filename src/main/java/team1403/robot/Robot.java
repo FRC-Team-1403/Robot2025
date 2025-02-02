@@ -43,7 +43,9 @@ public class Robot extends LoggedRobot {
       "\nSysID Enabled: " + Constants.ENABLE_SYSID +
       "\nLoop Time: " + (int)(Constants.kLoopTime*1000) + " ms" +
       "\nGit Commit: " + BuildConstants.GIT_SHA +
+      "\nGit Commit Date: " + BuildConstants.GIT_DATE +
       "\nGit Branch: " + BuildConstants.GIT_BRANCH +
+      "\nGit Revision: " + BuildConstants.GIT_REVISION +
       "\nGit Dirty: " + BuildConstants.DIRTY +
       "\nBuild Date: " + BuildConstants.BUILD_DATE +
       "\n"
