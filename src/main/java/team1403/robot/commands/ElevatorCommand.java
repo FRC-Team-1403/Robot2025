@@ -27,7 +27,7 @@ public class ElevatorCommand extends Command {
 
   @Override
   public void initialize() {
-    m_elevator.MotionProfiler();
+    // m_elevator.MotionProfiler();
     m_down = () -> true;
   }
 

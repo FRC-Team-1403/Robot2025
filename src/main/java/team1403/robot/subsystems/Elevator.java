@@ -16,6 +16,8 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -47,9 +49,9 @@ public class Elevator extends SubsystemBase {
   private double setpoint;
 
   public Elevator() {
-    //m_leftMotor = new SparkMax(Constants.Canbus.leftElevatorMotorID, MotorType.kBrushless);
-    // m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
-    // configMotors();
+    m_leftMotor = new SparkMax(Constants.CanBus.leftElevatorMotorID, MotorType.kBrushless);
+    m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
+    configMotors();
 
     m_ElevatorFeedforward = new ElevatorFeedforward(0, Constants.Elevator.kFeedforwardG, Constants.Elevator.kFeedforwardV, 0, Constants.kLoopTime);
   }
@@ -124,7 +126,9 @@ public class Elevator extends SubsystemBase {
         checkDirection(setPoint);
         adjustCurrentOutput();
         checkIfReachedSetPoint(setPoint);
-        currMotorOutput += calculation(currentPos, setpoint); 
+        currMotorOutput += calculation(currentPos, setpoint);
+        // set the speed to the motors
+        setMotorSpeed(currMotorOutput); 
         //simulatePos();
         logValues();
     }
