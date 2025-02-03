@@ -102,7 +102,7 @@ public class Blackbox {
     }
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {
-        Pose2d nearest = CougarUtil.getNearest(currentPose, getReefPoses());
+        Pose2d nearest = CougarUtil.getNearestHeuristic(currentPose, getReefPoses());
         if (nearest == null) return null;
         if (CougarUtil.getDistance(currentPose, nearest) > kMaxAlignDist) return null;
 

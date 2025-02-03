@@ -79,6 +79,21 @@ public class CougarUtil {
         return min;
     }
 
+    private static final double kDotWeight = -0.5;
+    public static Pose2d getNearestHeuristic(Pose2d a, Pose2d[] list) {
+        if (list.length == 0) return null;
+        Pose2d min = list[0];
+        double min_dist = getDistance(a, list[0]) + kDotWeight * dot(a.getRotation(), list[0].getRotation());
+        for(Pose2d b : list) {
+            double dist = getDistance(a, b) + kDotWeight * dot(a.getRotation(), b.getRotation());
+            if(dist < min_dist) {
+                min_dist = dist;
+                min = b;
+            }
+        }
+        return min;
+    }
+
     //TODO: update when we get robot
     private static RobotConfig config = new RobotConfig(
         Pounds.of(120), 
