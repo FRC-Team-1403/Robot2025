@@ -514,8 +514,9 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
 
     //wip: slip detection based on orbit's swerve presentation
-    /*
     ChassisSpeeds temp = getCurrentChassisSpeed();
+    SmartDashboard.putNumber("Robot Velocity", Math.hypot(temp.vxMetersPerSecond, temp.vyMetersPerSecond));
+    /*
     temp.vxMetersPerSecond = 0;
     temp.vyMetersPerSecond = 0;
     SwerveModuleState[] rotStates = Swerve.kDriveKinematics.toSwerveModuleStates(temp);
