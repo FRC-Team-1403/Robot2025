@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.module;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -58,7 +59,8 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
                               = new SimpleMotorFeedforward(
                                 Constants.Swerve.kSDrive, 
                                 Constants.Swerve.kVDrive,
-                                Constants.Swerve.kADrive); 
+                                Constants.Swerve.kADrive,
+                                Constants.kLoopTime); 
 
 
     /**
@@ -203,7 +205,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
      * @param steerValue           steering angle.
      *
      */
-    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue) {
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue, DriveFeedforwards ff, int index) {
       // Set driveMotor according to velocity input
       // System.out.println("drive input speed: " + driveMetersPerSecond);
 

@@ -30,12 +30,12 @@ import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
+import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.IntakeShooterLoop;
 import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.IntakeAndShooter;
-import team1403.robot.swerve.DefaultSwerveCommand;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
 
@@ -58,16 +58,13 @@ public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
 
   private SendableChooser<Command> autoChooser;
-  private Command m_pathFinder = Commands.none();
   private Command m_teleopCommand;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-
+    Blackbox.init();
     m_swerve = new SwerveSubsystem();
-    // initialize the blackbox subsystem so that data can be reference later
-    Blackbox.getInstance();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
@@ -150,6 +147,8 @@ public class RobotContainer {
 
     m_armwrist.setDefaultCommand(m_teleopCommand);
 
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+
     //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
     //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
 
@@ -160,8 +159,9 @@ public class RobotContainer {
       if (target == null) return Commands.none();  
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target),
-        new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1)
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
       );
      }, Set.of(m_swerve)));
 
@@ -172,8 +172,9 @@ public class RobotContainer {
       if (target == null) return Commands.none();
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target),
-        new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1)
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
       );
      }, Set.of(m_swerve)));
 

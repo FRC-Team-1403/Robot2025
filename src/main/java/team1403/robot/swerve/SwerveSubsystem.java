@@ -11,6 +11,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -33,6 +34,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,13 +43,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import team1403.lib.elastic.Elastic;
+import team1403.lib.elastic.Elastic.Notification.NotificationLevel;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
 import team1403.robot.Constants.CanBus;
 import team1403.robot.Constants.Swerve;
-import team1403.robot.swerve.ISwerveModule.DriveControlType;
-import team1403.robot.swerve.ISwerveModule.SteerControlType;
+import team1403.robot.swerve.imu.IGyroDevice;
+import team1403.robot.swerve.imu.NavXWrapper;
+import team1403.robot.swerve.module.ISwerveModule;
+import team1403.robot.swerve.module.SimSwerveModule;
+import team1403.robot.swerve.module.SwerveModule;
+import team1403.robot.swerve.module.ISwerveModule.DriveControlType;
+import team1403.robot.swerve.module.ISwerveModule.SteerControlType;
+import team1403.robot.swerve.util.SwerveHeadingCorrector;
+import team1403.robot.swerve.util.SyncSwerveDrivePoseEstimator;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.VisionSimUtil;
@@ -58,7 +70,7 @@ import static edu.wpi.first.units.Units.Volts;
  * gyroscope.
  */
 public class SwerveSubsystem extends SubsystemBase {
-  private final AHRS m_navx2;
+  private final IGyroDevice m_gyro;
   private final ISwerveModule[] m_modules;
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds();
   private final SwerveModuleState[] m_currentStates = new SwerveModuleState[4];
@@ -88,6 +100,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final Notifier m_odometeryNotifier;
 
+  private final Alert m_gryoConnectedAlert = 
+    new Alert("Gyroscope disconnected!", AlertType.kError);
+
   //patched warmup command so it's not slow af
   public static Command swerveWarmupCommand() {
     return new PathfindingCommand(
@@ -100,6 +115,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
             CougarUtil.loadRobotConfig())
         .andThen(Commands.print("[PathPlanner] PathfindingCommand finished warmup"))
+        .andThen(() -> Elastic.sendNotification(
+          new Elastic.Notification(
+            NotificationLevel.INFO, 
+            "PathfindingCommand finished warmup",
+           "Path finding now up and running!")))
         .ignoringDisable(true);
   }
 
@@ -115,7 +135,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public SwerveSubsystem() {
     // increase update rate because of async odometery
-    m_navx2 = new AHRS(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
+    m_gyro = new NavXWrapper(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
     if(Robot.isReal()) {
       m_modules = new ISwerveModule[] {
           new SwerveModule("Front Left Module",
@@ -148,7 +168,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this::getPose, // Robot pose supplier
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getCurrentChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (ChassisSpeeds s) -> drive(s, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        (ChassisSpeeds s, DriveFeedforwards ff) -> drive(s, ff, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new PPHolonomicDriveController(
           Constants.PathPlanner.kTranslationPID, 
           Constants.PathPlanner.kRotationPID, 
@@ -169,8 +189,6 @@ public class SwerveSubsystem extends SubsystemBase {
     });
 
     // addDevice(m_navx2.getName(), m_navx2);
-    if (m_navx2.isConnected())
-      while (m_navx2.isCalibrating());
 
     zeroGyroscope();
 
@@ -202,8 +220,6 @@ public class SwerveSubsystem extends SubsystemBase {
           m.set(DriveControlType.Voltage, 0, SteerControlType.Voltage, voltage.in(Volts));
         }
       }, null, this));
-
-    SmartDashboard.putData("Gyro", m_navx2);
     SmartDashboard.putData("Field", m_field);
   }
 
@@ -230,7 +246,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   private void zeroGyroscope() {
     // tracef("zeroGyroscope %f", getGyroscopeRotation());
-    m_navx2.reset();
+    m_gyro.reset();
   }
 
   public void zeroHeading() {
@@ -270,7 +286,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return a Rotation3d object that contains the gyroscope's heading
    */
   private Rotation2d getGyroscopeRotation() {
-    return m_navx2.getRotation2d();
+    return m_gyro.getRotation2d();
   }
 
   
@@ -286,8 +302,8 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return the corrected chassisspeeds
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    double dtheta = Units.degreesToRadians(m_navx2.getRate()) * Constants.Swerve.kAngVelCoeff;
-    Logger.recordOutput("test", dtheta);
+    double dtheta = Units.degreesToRadians(m_gyro.getAngularVelocity()) * Constants.Swerve.kAngVelCoeff;
+    // Logger.recordOutput("test", dtheta);
     if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
       Rotation2d rot = getRotation();
       chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
@@ -310,10 +326,18 @@ public class SwerveSubsystem extends SubsystemBase {
    * Sets the target chassis speeds
    * @param chassisSpeeds
    */
-  public void drive(ChassisSpeeds chassisSpeeds, boolean discretize) {
+  public void drive(ChassisSpeeds chassisSpeeds, DriveFeedforwards ff, boolean discretize) {
     m_chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     //update here to reduce latency
-    updateTargetModuleStates(discretize);
+    updateTargetModuleStates(ff, discretize);
+  }
+
+  /**
+   * Sets the target chassis speeds
+   * @param chassisSpeeds
+   */
+  public void drive(ChassisSpeeds chassisSpeeds, boolean discretize) {
+    drive(chassisSpeeds, null, discretize);
   }
 
   /**
@@ -330,7 +354,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param states an array of states for each module.
    */
   
-  public void setModuleStates(SwerveModuleState[] states, boolean discretize) {
+  public void setModuleStates(SwerveModuleState[] states, DriveFeedforwards ff, boolean discretize) {
     SwerveModuleState[] currentStates = getModuleStates();
 
     //desaturate sandwich :)
@@ -345,10 +369,15 @@ public class SwerveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_modules.length; i++) {
       states[i].optimize(currentStates[i].angle);
       m_modules[i].set(DriveControlType.Velocity, states[i].speedMetersPerSecond,
-          SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()));
+          SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()),
+          ff, ff == null ? -1 : i);
     }
 
     Logger.recordOutput("SwerveStates/Target", states);
+  }
+
+  public void setModuleStates(SwerveModuleState[] states, boolean discretize) {
+    setModuleStates(states, null, discretize);
   }
 
 
@@ -380,7 +409,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation(), m_navx2.getRate());
+    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getGyroscopeRotation(), m_gyro.getAngularVelocity());
     if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
     {
       return corrected;
@@ -445,12 +474,17 @@ public class SwerveSubsystem extends SubsystemBase {
     return ret;
   }
 
-  private void updateTargetModuleStates(boolean discretize) {
+  private void updateTargetModuleStates(DriveFeedforwards ff, boolean discretize) {
     ChassisSpeeds corrected = rotationalDriftCorrection(m_chassisSpeeds);
 
     Logger.recordOutput("SwerveStates/Corrected Target Chassis Speeds", corrected);
 
-    setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), discretize);
+    setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), ff, discretize);
+  }
+
+  private void updateTargetModuleStates(boolean discretize)
+  {
+    updateTargetModuleStates(null, discretize);
   }
 
   @Override
@@ -474,13 +508,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
     m_field.setRobotPose(getPose());
     if (Constants.DEBUG_MODE) m_field.getObject("xModules").setPoses(getModulePoses());
+    m_gryoConnectedAlert.set(!m_gyro.isConnected());
     // Logging Output
 
     Logger.recordOutput("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
 
     //wip: slip detection based on orbit's swerve presentation
-    /*
     ChassisSpeeds temp = getCurrentChassisSpeed();
+    SmartDashboard.putNumber("Robot Velocity", Math.hypot(temp.vxMetersPerSecond, temp.vyMetersPerSecond));
+    /*
     temp.vxMetersPerSecond = 0;
     temp.vyMetersPerSecond = 0;
     SwerveModuleState[] rotStates = Swerve.kDriveKinematics.toSwerveModuleStates(temp);
@@ -507,9 +543,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
     Logger.recordOutput("SwerveStates/PureTranslation", tState); */
-    Logger.recordOutput
-    ("SwerveStates/Measured", m_currentStates);
+    Logger.recordOutput("SwerveStates/Measured", m_currentStates);
     Logger.recordOutput("Odometry/Robot", getPose());
-    Logger.recordOutput("Odometry/Rotation3d", m_navx2.getRotation3d());
+    Logger.recordOutput("Odometry/Rotation3d", m_gyro.getRotation3d());
   }
 }

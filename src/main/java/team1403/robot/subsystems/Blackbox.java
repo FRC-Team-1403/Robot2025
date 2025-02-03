@@ -8,22 +8,29 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
+import team1403.robot.Constants;
 
 //WIP (work in progress)
 //Stores data that is shared between subsystems
-public class Blackbox extends SubsystemBase {
-
-    private static Pose2d target = null;
-    private static Blackbox instance = null;
+public class Blackbox {
 
     public enum ReefSelect {
         LEFT,
         RIGHT
+    }
+
+    public enum ReefScoreLocations {
+        L1,
+        L2,
+        L3, 
+        L4
     }
 
     private static Pose2d[] reefPosesLeftBLUE;
@@ -37,7 +44,12 @@ public class Blackbox extends SubsystemBase {
     //meters
     private static final double kMaxAlignDist = 2.5;
 
-    private Blackbox() {
+    private static final Alert debugModeAlert = 
+        new Alert("Debug Mode Active, Expect Reduced Performance", AlertType.kWarning);
+    private static final Alert sysIdActiveAlert =
+        new Alert("SysID is enabled", AlertType.kInfo);
+
+    public static void init() {
         //12 different scoring locations on reef
         reefPosesLeftBLUE = new Pose2d[6];
         reefPosesRightBLUE = new Pose2d[6];
@@ -74,15 +86,12 @@ public class Blackbox extends SubsystemBase {
         //Manipulate red alliance positions here in case field elems move this year as well
     }
 
-    public static Blackbox getInstance() {
-
-        if (instance == null) instance = new Blackbox();
-        return instance;
-    }
-
-    //TODO: bind this command to some button
     public static void reefSelect(ReefSelect select) {
         reefSide = select;
+    }
+
+    public static Command reefSelectCmd(ReefSelect select) {
+        return new InstantCommand(() -> reefSelect(select));
     }
 
     private static Pose2d[] getReefPoses() {
@@ -93,19 +102,21 @@ public class Blackbox extends SubsystemBase {
     }
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {
-        Pose2d nearest = CougarUtil.getNearest(currentPose, getReefPoses());
+        Pose2d nearest = CougarUtil.getNearestHeuristic(currentPose, getReefPoses());
         if (nearest == null) return null;
         if (CougarUtil.getDistance(currentPose, nearest) > kMaxAlignDist) return null;
 
         return nearest;
     }
 
-    @Override
-    public void periodic() {
+    public static void periodic() {
         //compute target position and other data here
         Logger.recordOutput("ReefPositions Blue Right", reefPosesRightBLUE);
         Logger.recordOutput("ReefPositions Blue Left", reefPosesLeftBLUE);
         Logger.recordOutput("ReefPositions Red Right", reefPosesRightRED);
         Logger.recordOutput("ReefPositions Red Left", reefPosesLeftRED);
+
+        debugModeAlert.set(Constants.DEBUG_MODE);
+        sysIdActiveAlert.set(Constants.ENABLE_SYSID);
     }
 }

@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.util;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ import team1403.robot.Constants;
 public class SwerveHeadingCorrector {
     //initial rotation is unknown
     private Optional<Double> yaw_setpoint = Optional.empty();
-    private PIDController m_controller = new PIDController(5, 0, 0);
+    private PIDController m_controller = new PIDController(5, 0, 0, Constants.kLoopTime);
     private TimeDelayedBoolean m_yawZeroDetector = new TimeDelayedBoolean();
     private LinearFilter m_gyroVelFilter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 5, Constants.kLoopTime);
     private ChassisSpeeds m_retSpeeds = new ChassisSpeeds();
