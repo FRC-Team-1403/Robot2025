@@ -97,8 +97,8 @@ public class Constants {
       public static final double kFeedforwardV = 0.001;
 
       public static class Command {
-        public static final double movementUpGain = 4.0;
-        public static final double movementDownGain = 3.0;
+        public static final double movementUpGain = 9.0;
+        public static final double movementDownGain = 6.0;
         public static final double maxSpeed = 100;
         public static final double minSpeed = 5;
         public static final double setPointMargin = 0.1;
