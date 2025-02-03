@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
    }
   
   public void setMotorSpeed(double speed) {
-    m_rightMotor.set(MathUtil.clamp(speed, -0.1, 0.1));
+    m_rightMotor.set(MathUtil.clamp(speed, -0.5, 0.5));
   }
 
   public void stopMotors() {
