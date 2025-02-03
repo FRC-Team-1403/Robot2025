@@ -128,7 +128,7 @@ public class Elevator extends SubsystemBase {
         checkIfReachedSetPoint(setPoint);
         currMotorOutput += calculation(currentPos, setpoint);
         // set the speed to the motors
-        setMotorSpeed(currMotorOutput); 
+        setMotorSpeed(currMotorOutput / 100.0); 
         //simulatePos();
         logValues();
     }
@@ -159,21 +159,16 @@ public class Elevator extends SubsystemBase {
         else if(isGoingDown){
             posError *= Constants.Elevator.Command.movementDownGain;
         }
-
         double desiredOutput = posError;
-
         // checks conditions that don't require any output by the motor 
         if(!isGoingUp && !isGoingDown || (isGoingUp && desiredOutput < 0) || (isGoingDown && desiredOutput > 0)) {
             desiredOutput = 0;
         }
-
         // clamp desired motor output to a maximum value
         desiredOutput = Math.abs(desiredOutput);
         if(desiredOutput > Constants.Elevator.Command.maxSpeed) {
             desiredOutput = Constants.Elevator.Command.maxSpeed;
-        }
-
-        
+        }      
         return desiredOutput;
     }
 
@@ -192,15 +187,13 @@ public class Elevator extends SubsystemBase {
         }
         // if desired output is less than current output, run downwards ramp function 
         else if(desiredOutput < currentOutput) {
-        if((currentOutput - (100/(rampDownTime/0.02)) > desiredOutput)) 
-        {
-            // decrement current output by 100/rampDownTime/cycle rate and if that output is less than desired 
-            currentOutput -= (100/(rampDownTime/0.02));
-
-        }
-        else {
-            currentOutput = desiredOutput;
-        }
+            if((currentOutput - (100/(rampDownTime/0.02)) > desiredOutput)) {
+                // decrement current output by 100/rampDownTime/cycle rate and if that output is less than desired 
+                currentOutput -= (100/(rampDownTime/0.02));
+            }
+            else {
+                currentOutput = desiredOutput;
+            }
         }
         // if current motor output reaches the desired output set isRampDone to true
         if(desiredOutput == currentOutput) {
@@ -215,7 +208,6 @@ public class Elevator extends SubsystemBase {
         if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < Constants.Elevator.Command.minSpeed) {
             currMotorOutput = Constants.Elevator.Command.minSpeed + calculation(currentPos, setpoint);
         }
-
         // invert output if elevator is moving down
         if(isGoingDown) {
             currMotorOutput *= -1;
