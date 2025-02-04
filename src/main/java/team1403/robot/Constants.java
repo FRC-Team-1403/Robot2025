@@ -285,5 +285,8 @@ public class Constants {
     public static final double kWristLowerLimit = 130;
     public static final double kWristConstraint = 140;
     public static final double kArmConstraint = 120;
+   //Algae intake speed for Arjuna practicing
+    public static final double motorSpeed = 0.2;
+    
   }
 }

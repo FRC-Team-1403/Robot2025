@@ -9,21 +9,18 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
-import dev.doglog.DogLog;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
 
-public class AlgaeIntake extends SubsystemBase{
+public class algaeIntake extends SubsystemBase{
     private final SparkMax m_algaeIntakeMotor;
     private DigitalInput m_algaeIntakePhotogate;
     private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
     private SysIdRoutine m_sysIdRoutine;
     
-    public AlgaeIntake() {
+    public algaeIntake() {
         m_algaeIntakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
         configMotors();
         m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.intakePhotogate1);
@@ -55,6 +52,30 @@ public boolean hasAlgae() {
     return m_algaeIntakeMotor.get();
   }
 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   // Logger.recordOutput("Intake/Motor Temp", m_algaeIntakeMotor.getMotorTemperature());
   // Logger.recordOutput("Intake/gate", isAlgaeIntakePhotogateTriggered());
   // Logger.recordOutput("Is Loaded", isLoaded());
