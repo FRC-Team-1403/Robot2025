@@ -69,7 +69,6 @@ public class RobotContainer {
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
-    if(Constants.DEBUG_MODE) SmartDashboard.putData("Power Distribution", m_powerDistribution);
     // DogLog.setPdh(m_powerDistribution);
 
     // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
@@ -111,6 +110,7 @@ public class RobotContainer {
     if(Constants.DEBUG_MODE) {
       SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
       SmartDashboard.putData("Swerve Drive", m_swerve);
+      SmartDashboard.putData("Power Distribution", m_powerDistribution);
     }
 
     configureBindings();

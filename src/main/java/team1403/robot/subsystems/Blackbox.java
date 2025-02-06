@@ -26,7 +26,7 @@ public class Blackbox {
         RIGHT
     }
 
-    public enum ReefScoreLocations {
+    public enum ReefScoreLevel {
         L1,
         L2,
         L3, 
@@ -38,6 +38,9 @@ public class Blackbox {
     private static Pose2d[] reefPosesLeftRED;
     private static Pose2d[] reefPosesRightRED;
     private static ReefSelect reefSide = ReefSelect.LEFT;
+    private static ReefScoreLevel reefLevel = ReefScoreLevel.L2; //todo: figure out what we want to default to
+    private static boolean coralLoaded = false;
+    private static boolean algaeLoaded = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);
 
@@ -90,8 +93,16 @@ public class Blackbox {
         reefSide = select;
     }
 
+    public static void reefScoreLevel(ReefScoreLevel level) {
+        reefLevel = level;
+    }
+
     public static Command reefSelectCmd(ReefSelect select) {
         return new InstantCommand(() -> reefSelect(select));
+    }
+
+    public static Command reefScoreLevelCmd(ReefScoreLevel level) {
+        return new InstantCommand(() -> reefScoreLevel(level));
     }
 
     private static Pose2d[] getReefPoses() {
@@ -100,9 +111,26 @@ public class Blackbox {
         else
             return CougarUtil.getAlliance() == Alliance.Blue ? reefPosesRightBLUE : reefPosesRightRED;
     }
+
+    public static void setAlgaeLoaded(boolean loaded) {
+        algaeLoaded = loaded;
+    }
+
+    public static void setCoralLoaded(boolean loaded) {
+        coralLoaded = loaded;
+    }
+
+    public static boolean isCoralLoaded() {
+        return coralLoaded;
+    }
+
+    public static boolean isAlgaeLoaded() {
+        return algaeLoaded;
+    }
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {
-        Pose2d nearest = CougarUtil.getNearestHeuristic(currentPose, getReefPoses());
+        Pose2d nearest = null;
+        if (isCoralLoaded()) nearest = CougarUtil.getNearestHeuristic(currentPose, getReefPoses());
         if (nearest == null) return null;
         if (CougarUtil.getDistance(currentPose, nearest) > kMaxAlignDist) return null;
 
