@@ -44,6 +44,7 @@ public class Constants {
   public static final ShuffleboardTab kDebugTab = Shuffleboard.getTab("Debug");
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = true;
+  // public static final String Wrist = null;
 
   /**
    * Swerve Constants.
@@ -295,37 +296,38 @@ public class Constants {
   //   public static final int kIntakeCurrentLimit = 40;
   // }
   
-  // public static class Wrist {
-  //   public static final double kWristConversionFactor = 0;
-  //   public static final double kAbsoluteWristOffset = 0;
-  //   public static final double kWristVoltageComp = 12;
+  public static class Wrist {
+    public static final double kWristConversionFactor = 0;
+    public static final double kAbsoluteWristOffset = 0;
+    public static final double kWristVoltageComp = 12;
 
-  //   public static final double KPWrist = 0.0097; //original value 0.0092 changed - 0.0097
-  //   public static final double KIWrist = 0.0000;
-  //   public static final double KDWrist = 0;
+    public static final double KPWrist = 0.0097; //original value 0.0092 changed - 0.0097
+    public static final double KIWrist = 0.0000;
+    public static final double KDWrist = 0;
 
-  //   public static final double kTopLimit = 180;
-  //   public static final double kBottomLimit = 0;
+    public static final double kTopLimit = 180;
+    public static final double kBottomLimit = 0;
 
-  //   public static  double kIntakeSetpoint = 134;
-  //   public static  double kAmpSetpoint = 160.5;
-  //   public static double kAmpShoootingSetpoint = 142;
-  //   public static  double kLoadingSetpoint = 90;
-  //   public static  double kDriveSetpoint = 140;//140
-  //   public static  double kDefaultClose = 136;
-  //   public static double kStageLineSetpoint = 138;//To test
-  //   public static double kStageLineSideSetpoint = 135;//136 version 2
-  //   public static double kSideLineSourceSetpoint = 130; 
-  //   public static double kLaunchpadSetpoint = 140;
-  //   public static double kCenterLineSetpoint = 133;//115
-  //   public static  double kShootingAngle = 147;//147 for teleop working
+    public static  double kIntakeSetpoint = 134;
+    public static  double kAmpSetpoint = 160.5;
+    public static double kAmpShoootingSetpoint = 142;
+    public static  double kLoadingSetpoint = 90;
+    public static  double kDriveSetpoint = 140;//140
+    public static  double kDefaultClose = 136;
+    public static double kStageLineSetpoint = 138;//To test
+    public static double kStageLineSideSetpoint = 135;//136 version 2
+    public static double kSideLineSourceSetpoint = 130; 
+    public static double kLaunchpadSetpoint = 140;
+    public static double kCenterLineSetpoint = 133;//115
+    public static  double kShootingAngle = 147;//147 for teleop working
 
 
-  //   public static final double kWristUpperLimit = 150;
-  //   public static final double kWristLowerLimit = 130;
-  //   public static final double kWristConstraint = 140;
-  //   public static final double kArmConstraint = 120;
-  // }
+    public static final double kWristUpperLimit = 150;
+    public static final double kWristLowerLimit = 130;
+    public static final double kWristConstraint = 140;
+    public static final double kArmConstraint = 120;
+    public static final int kWristID = 0; //change later
+  }
 
   public static class Setpoints { /*
     public static final SonicBlasterSetpoint kDriveSetpoint = 
