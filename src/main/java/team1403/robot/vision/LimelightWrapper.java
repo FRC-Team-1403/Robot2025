@@ -89,7 +89,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     public boolean checkVisionResult() {
         if(!hasPose()) return false;
 
-        if(getTagAreas() < 0.3) return false;
+        //if(getTagAreas() < 0.3) return false;
 
         if(getPose().getZ() > 1) return false;
 
@@ -97,11 +97,9 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
             if(getTargets()[0].ambiguity > 0.6) {
                 return false;
             }
-            return false;
         }
-        else {
-            return true;
-        }
+
+        return true;
     }
     
     @Override
@@ -113,6 +111,8 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
+            if(getTargets().length > 0);
+                Logger.recordOutput(m_name + "/ambiguity", getTargets()[0].ambiguity);
         }
         
         
