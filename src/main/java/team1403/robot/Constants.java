@@ -289,8 +289,8 @@ public class Constants {
   }
 
   public static class Coral {
-    public static final int wristMotor = 0;
-    public static int intakeMotor = 0;
+    //public static final int wristMotor = 0;
+    public static int intakeMotor = 9;
     public static int pingChannel = 0;
     public static int echoChannel = 0;
     public static double kFeedforwardG = 0;

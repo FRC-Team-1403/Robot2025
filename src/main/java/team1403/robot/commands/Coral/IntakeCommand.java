@@ -21,9 +21,11 @@ public class IntakeCommand extends Command{
     }
 
     public void execute() {
-        if (m_subsystem.getEncoderValue() != 30) {
-            m_subsystem.setIntakeMotorSpeed(0.3);
-        }
+        m_subsystem.CoralPosition();
+        m_subsystem.setIntakeMotorSpeed(0.3);
+        // if (m_subsystem.getEncoderValue() != 30) {
+        //     m_subsystem.setIntakeMotorSpeed(0.3);
+        // }
     } 
 
     public void end(boolean interrupted) {
@@ -31,6 +33,7 @@ public class IntakeCommand extends Command{
     }
 
     public boolean isFinished() {
-        return m_subsystem.isIntakeLoaded();
+        return false;
+        //return m_subsystem.isIntakeLoaded();
     }
 }

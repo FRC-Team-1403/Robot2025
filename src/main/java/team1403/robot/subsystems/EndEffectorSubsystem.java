@@ -25,16 +25,21 @@ public class EndEffectorSubsystem extends SubsystemBase {
     private CANrange m_rangeFinder; // change
     private DutyCycleEncoder m_encoder;
 
+    double x1;
+    double x2;
+    double x3;
+    double x4;
     //private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
     
     //private SysIdRoutine m_SysIdRoutine;
     
     public EndEffectorSubsystem() {
         m_intakeMotor = new SparkMax(Constants.Coral.intakeMotor, MotorType.kBrushless);
-        m_wristMotor = new SparkMax(Constants.Coral.wristMotor, MotorType.kBrushless);
+        //m_wristMotor = new SparkMax(Constants.Coral.wristMotor, MotorType.kBrushless);
         m_rangeFinder = new CANrange(8);
         m_encoder = new DutyCycleEncoder(0);
         m_feedforward = new ArmFeedforward(0, Constants.Coral.kFeedforwardG, Constants.Coral.kFeedforwardV);
+    
     }
 
     public void setIntakeMotorSpeed(double speed) {
@@ -55,6 +60,28 @@ public class EndEffectorSubsystem extends SubsystemBase {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public double getCANrange(){
+        return m_rangeFinder.getDistance().getValue().in(Meters) - 0.02;
+    }
+
+    public void CoralPosition(){
+        if (getCANrange()>=0 && getCANrange()<=x1){
+            System.out.println("1");
+        }
+        else if (getCANrange()>x1 && getCANrange()<=x2){
+            System.out.println("2");
+        }
+        else if (getCANrange()>x2 && getCANrange()<=x3){
+            System.out.println("3");
+        }
+        else if (getCANrange()>x3 && getCANrange()<=x4){
+            System.out.println("4");
+        }
+        else{
+            System.out.println("nothing");
         }
     }
 
