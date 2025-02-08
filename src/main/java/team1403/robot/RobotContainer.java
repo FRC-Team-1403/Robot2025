@@ -24,7 +24,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import team1403.robot.subsystems.AlgaeIntake;
 import team1403.robot.Constants.Driver;
+import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.subsystems.Elevator;
 
@@ -40,6 +42,8 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
+
+  private final AlgaeIntake m_AlgaeIntake = new AlgaeIntake();
 
   private final PowerDistribution m_powerDistribution;
 
@@ -77,9 +81,10 @@ public class RobotContainer {
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
-    () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton(), 
-    () -> m_operatorController.getHID().getYButton(), () -> m_operatorController.getHID().getXButton()));
+    m_AlgaeIntake.setDefaultCommand(new AlgaeIntakeCommand(m_AlgaeIntake, 
+    () -> m_operatorController.getHID().getAButton(), // down
+    () -> m_operatorController.getHID().getBButton(), // up
+    () -> m_operatorController.getHID().getYButton())); //expel
   }
 
   /**

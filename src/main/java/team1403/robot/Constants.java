@@ -51,6 +51,8 @@ public class Constants {
    */
   public static class RioPorts {
     
+    public static final int photoswitchID = 1;
+
   }
 
   public static class CanBus {
@@ -59,6 +61,9 @@ public class Constants {
 
     public static final int leftElevatorMotorID = 3;
     public static final int rightElevatorMotorID = 2;
+    public static final int elbowMotorID = 1;
+    public static final int algaeIntakeMotorID = 4;
+
   
   }
 
@@ -82,6 +87,11 @@ public class Constants {
      * The joystick port for the operator's controller.
      */
     public static final int pilotPort = 1;
+  }
+
+  public static class AlgaeIntake {
+    public static final double upPos = 1;
+    public static final double downPos = 0;
   }
 
   public static class Elevator {

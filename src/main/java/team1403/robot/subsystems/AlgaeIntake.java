@@ -18,15 +18,17 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
 
 public class AlgaeIntake extends SubsystemBase{
-    private final SparkMax m_algaeIntakeMotor;
+    private SparkMax m_algaeIntakeMotor;
+    private SparkMax m_elbowMotor;
     private DigitalInput m_algaeIntakePhotogate;
     private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
     private SysIdRoutine m_sysIdRoutine;
     
     public AlgaeIntake() {
-        m_algaeIntakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
+        m_algaeIntakeMotor = new SparkMax(Constants.CanBus.algaeIntakeMotorID, MotorType.kBrushless);
+        m_elbowMotor = new SparkMax(Constants.CanBus.elbowMotorID, MotorType.kBrushless);
         configMotors();
-        m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.intakePhotogate1);
+        m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.photoswitchID);
     }
     private void configMotors() {
     SparkMaxConfig intakeconfig = new SparkMaxConfig();
@@ -34,6 +36,7 @@ public class AlgaeIntake extends SubsystemBase{
         .idleMode(IdleMode.kBrake);
     m_algaeIntakeMotor.configure(intakeconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
+
   public boolean isAlgaeIntakePhotogateTriggered() {
     return !m_algaeIntakePhotogate.get();
   }
@@ -42,17 +45,32 @@ public class AlgaeIntake extends SubsystemBase{
     m_algaeIntakeMotor.set(0);
   }
    
-
  public void setIntakeSpeed(double speed) {
-   
    m_algaeIntakeMotor.set(speed);
 }
+
 public boolean hasAlgae() {
     return isAlgaeIntakePhotogateTriggered();
   }
 
   public double algaeIntakeSpeed() {
     return m_algaeIntakeMotor.get();
+  }
+
+  public void setElbowSpeed(double speed) {
+    m_elbowMotor.set(speed);
+  }
+
+  public void stopElbow() {
+    m_elbowMotor.set(0);
+  }
+
+  public boolean ready() {
+    return (getAngle() == Constants.AlgaeIntake.upPos && !isAlgaeIntakePhotogateTriggered() && m_elbowMotor.get() == 0);
+  }
+
+  public double getAngle() {
+    return m_elbowMotor.getEncoder().getPosition();
   }
 
   // Logger.recordOutput("Intake/Motor Temp", m_algaeIntakeMotor.getMotorTemperature());
