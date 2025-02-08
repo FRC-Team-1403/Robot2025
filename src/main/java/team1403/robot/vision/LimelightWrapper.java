@@ -1,16 +1,8 @@
 package team1403.robot.vision;
 
-import static edu.wpi.first.units.Units.Rotation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -19,7 +11,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import team1403.robot.Constants;
 
 //import frc.robot.LimelightHelpers; 
 
@@ -36,12 +27,11 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         m_imuRotation = imuRotation;
         m_camTransform = cameraTransform;
         m_poseEstimate = null;
-
     }
     
     @Override
     public boolean hasPose() {
-        return m_poseEstimate != null && LimelightHelpers.validPoseEstimate(m_poseEstimate);
+        return LimelightHelpers.validPoseEstimate(m_poseEstimate);
     }
 
     @Override
