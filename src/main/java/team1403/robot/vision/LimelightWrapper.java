@@ -67,12 +67,8 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
 
     
     private double getTagAreas() {
-        double ret = 0;
         if(!hasPose()) return 0;
-        for(LimelightHelpers.RawFiducial t : getTargets()) {
-          ret += t.ta;
-        }
-        return ret;
+        return m_poseEstimate.avgTagArea * m_poseEstimate.tagCount;
     }
 
     private LimelightHelpers.RawFiducial[] getTargets() {
@@ -110,6 +106,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
+            Logger.recordOutput(m_name + "/ambiguity", getTargets()[0].ambiguity);
         }
         
         
