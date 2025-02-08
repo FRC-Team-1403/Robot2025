@@ -46,14 +46,14 @@ public class AlgaeIntakeCommand extends Command {
         m_algaeIntake.stopElbow();
     }
 
-    if (m_algaeIntake.hasAlgae()) {
+    if (m_algaeIntake.isAlgaeIntaked()) {
         m_algaeIntake.intakeStop();
     }
     else if (m_algaeIntake.ready()) {
         m_algaeIntake.setIntakeSpeed(0.3);
     }
 
-    if (m_algaeIntake.hasAlgae() && m_expel.getAsBoolean()) {
+    if (m_algaeIntake.isAlgaeIntaked() && m_expel.getAsBoolean()) {
         m_algaeIntake.setIntakeSpeed(-0.3);
     }
   }

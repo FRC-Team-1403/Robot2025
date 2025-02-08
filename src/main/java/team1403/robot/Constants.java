@@ -52,12 +52,18 @@ public class Constants {
   public static class RioPorts {
     
     public static final int photoswitchID = 1;
+    public static final int WristEncoderID = 0;
+    public static final int AlgaeIntakePhotogateID = 0;
 
   }
 
   public static class CanBus {
     
     public static final int powerDistributionID = 60;
+    public static final int intakeMotorID = 0;
+    public static final int CANRangeID = 0;
+    public static final int wristMotorID = 0;
+
 
     public static final int leftElevatorMotorID = 3;
     public static final int rightElevatorMotorID = 2;
@@ -103,6 +109,7 @@ public class Constants {
       public static final double second = 10;
       public static final double third = 20;
       public static final double down = 0;
+      public static final double source = 0;
       public static final double kFeedforwardG = 0.01;
       public static final double kFeedforwardV = 0.001;
 
@@ -118,5 +125,25 @@ public class Constants {
         public static final double elevatorDownRampUpTime = 1;
         public static final double elevatorDownRampDownTime = 0.01;
       }
+  }
+
+  public static class Intake {
+
+  }
+
+  public static class Wrist {
+    public static class Setpoints{
+      public static final double L1Setpoint = 0;
+      public static final double L2Setpoint = 0;
+      public static final double L3Setpoint = 0;
+      public static final double L4Setpoint = 0;
+    }
+
+    public static final double WristKP = 0;
+    public static final double WristKI = 0;
+    public static final double WristKD = 0;
+    public static final double WristKS = 0;
+    public static final double WristKG = 0;
+    public static final double WristKV = 0;
   }
 }

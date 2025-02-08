@@ -103,7 +103,7 @@ public class Elevator extends SubsystemBase {
         directionFlag = true;
     }
 
-    public void moveToSetPoint(double setPoint) {
+    public void moveToSetpoint(double setPoint) {
         setpoint = setPoint;
         if(directionFlag && Math.abs(setPoint - currentPos) > Constants.Elevator.Command.setPointMargin) {
             checkDirection(setPoint);

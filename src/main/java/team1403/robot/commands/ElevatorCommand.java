@@ -32,7 +32,7 @@ public class ElevatorCommand extends Command {
   }
 
   @Override
-  public void execute() {
+  public void execute() {    
     if (m_down.getAsBoolean() && setpoint != Constants.Elevator.down) {
       setpoint = Constants.Elevator.down; // 0
     }
@@ -46,7 +46,7 @@ public class ElevatorCommand extends Command {
       setpoint = Constants.Elevator.third; // 20
     }
     setpoint = 70;
-    m_elevator.moveToSetPoint(setpoint);
+    m_elevator.moveToSetpoint(setpoint);
   }
 
   @Override

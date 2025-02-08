@@ -3,6 +3,7 @@ package team1403.robot.subsystems;
 import java.util.logging.Logger;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -20,15 +21,14 @@ import team1403.robot.Constants;
 public class AlgaeIntake extends SubsystemBase{
     private SparkMax m_algaeIntakeMotor;
     private SparkMax m_elbowMotor;
-    private DigitalInput m_algaeIntakePhotogate;
-    private final MotionMagicVelocityDutyCycle m_request = new MotionMagicVelocityDutyCycle(0);
+    private DigitalInput m_photogate;
     private SysIdRoutine m_sysIdRoutine;
     
     public AlgaeIntake() {
         m_algaeIntakeMotor = new SparkMax(Constants.CanBus.algaeIntakeMotorID, MotorType.kBrushless);
         m_elbowMotor = new SparkMax(Constants.CanBus.elbowMotorID, MotorType.kBrushless);
         configMotors();
-        m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.photoswitchID);
+        m_photogate = new DigitalInput(Constants.RioPorts.photoswitchID);
     }
     private void configMotors() {
     SparkMaxConfig intakeconfig = new SparkMaxConfig();
@@ -36,24 +36,19 @@ public class AlgaeIntake extends SubsystemBase{
         .idleMode(IdleMode.kBrake);
     m_algaeIntakeMotor.configure(intakeconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
-
-  public boolean isAlgaeIntakePhotogateTriggered() {
-    return !m_algaeIntakePhotogate.get();
+  public boolean isAlgaeIntaked() {
+    return !m_photogate.get();
   }
   
   public void intakeStop() {
     m_algaeIntakeMotor.set(0);
   }
-   
- public void setIntakeSpeed(double speed) {
-   m_algaeIntakeMotor.set(speed);
-}
 
-public boolean hasAlgae() {
-    return isAlgaeIntakePhotogateTriggered();
+  public void setIntakeSpeed(double speed) {
+    m_algaeIntakeMotor.set(speed);
   }
 
-  public double algaeIntakeSpeed() {
+  public double getAlgaeIntakeSpeed() {
     return m_algaeIntakeMotor.get();
   }
 
@@ -66,17 +61,11 @@ public boolean hasAlgae() {
   }
 
   public boolean ready() {
-    return (getAngle() == Constants.AlgaeIntake.upPos && !isAlgaeIntakePhotogateTriggered() && m_elbowMotor.get() == 0);
+    return (getAngle() == Constants.AlgaeIntake.upPos && !isAlgaeIntaked() && m_elbowMotor.get() == 0);
   }
 
   public double getAngle() {
     return m_elbowMotor.getEncoder().getPosition();
   }
 
-  // Logger.recordOutput("Intake/Motor Temp", m_algaeIntakeMotor.getMotorTemperature());
-  // Logger.recordOutput("Intake/gate", isAlgaeIntakePhotogateTriggered());
-  // Logger.recordOutput("Is Loaded", isLoaded());
-  // Logger.recordOutput("Intake/Speed Setpoint", m_algaeintakeMotor.get());
-  // Logger.recordOutput("Intake/Current", m_algaeintakeMotor.getOutputCurrent());
-  
 }
