@@ -108,7 +108,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     public void periodic() {    
         LimelightHelpers.SetRobotOrientation(m_name, m_imuRotation.get());
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
-        m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+        m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
         
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
