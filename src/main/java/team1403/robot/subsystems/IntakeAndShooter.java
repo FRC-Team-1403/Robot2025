@@ -2,6 +2,7 @@ package team1403.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
@@ -18,13 +19,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
-// import team1403.robot.swerve.ISwerveModule;
-// import team1403.robot.swerve.ISwerveModule.DriveControlType;
-// import team1403.robot.swerve.ISwerveModule.SteerControlType;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -90,15 +89,11 @@ public class IntakeAndShooter extends SubsystemBase {
     m_topVel = m_shooterMotorTop.getVelocity().getValueAsDouble();
     m_bottomVel = m_shooterMotorBottom.getVelocity().getValueAsDouble();
 
-    if(Constants.DEBUG_MODE) {
-      Constants.kDebugTab.addBoolean("Intake Sensor", () -> isIntakePhotogateTriggered());
-      Constants.kDebugTab.addBoolean("Shooter Sensor", () -> isShooterPhotogateTriggered());
-      Constants.kDebugTab.addBoolean("Shooter (teleop) Ready", () -> teleopIsReady());
-    }
+
 
     m_sysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(null, null, null, 
-      (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
+      (state) -> SignalLogger.writeString("SysIDShooter", state.toString())),
       new SysIdRoutine.Mechanism((voltage) -> {
         m_shooterMotorBottom.setVoltage(voltage.in(Volts));
         m_shooterMotorTop.setVoltage(voltage.in(Volts));
@@ -201,6 +196,12 @@ public class IntakeAndShooter extends SubsystemBase {
     m_shooterMotorBottom.setControl(m_request);
 
     //Blackbox.setLoaded(isIntakePhotogateTriggered() && !isShooterPhotogateTriggered());
+
+    if(Constants.DEBUG_MODE) {
+      SmartDashboard.putBoolean("Intake Sensor", isIntakePhotogateTriggered());
+      SmartDashboard.putBoolean("Shooter Sensor", isShooterPhotogateTriggered());
+      SmartDashboard.putBoolean("Shooter (teleop) Ready", teleopIsReady());
+    }
 
     Logger.recordOutput("Intake/Motor Temp", m_intakeMotor.getMotorTemperature());
     Logger.recordOutput("Shooter/Speed", m_shooterMotorTop.get());

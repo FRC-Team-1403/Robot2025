@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
+import team1403.robot.Constants.Arm;
 
 public class ArmWrist extends SubsystemBase {
   // lead motor
@@ -47,7 +48,7 @@ public class ArmWrist extends SubsystemBase {
   private MechanismLigament2d m_wristMech;
 
   public ArmWrist() {
-    m_feedforward = new ArmFeedforward(0, Constants.Arm.kFeedforwardG, Constants.Arm.kFeedforwardV);
+    m_feedforward = new ArmFeedforward(0, Constants.Arm.kFeedforwardG, Constants.Arm.kFeedforwardV, 0, Constants.kLoopTime);
     m_leftMotor = new SparkMax(Constants.CanBus.leftPivotMotorID, MotorType.kBrushless);
     m_rightMotor = new SparkMax(Constants.CanBus.rightPivotMotorID, MotorType.kBrushless);
     m_wristMotor = new SparkMax(Constants.CanBus.wristMotorID, MotorType.kBrushless);
@@ -56,8 +57,8 @@ public class ArmWrist extends SubsystemBase {
 
     configMotors();
 
-    m_armPid = new ProfiledPIDController(Constants.Arm.KPArmPivot, Constants.Arm.KIArmPivot, Constants.Arm.KDArmPivot, new TrapezoidProfile.Constraints(370, 500));
-    m_wristPid = new PIDController(Constants.Wrist.KPWrist, Constants.Wrist.KIWrist, Constants.Wrist.KDWrist);
+    m_armPid = new ProfiledPIDController(Constants.Arm.KPArmPivot, Constants.Arm.KIArmPivot, Constants.Arm.KDArmPivot, new TrapezoidProfile.Constraints(370, 500), Constants.kLoopTime);
+    m_wristPid = new PIDController(Constants.Wrist.KPWrist, Constants.Wrist.KIWrist, Constants.Wrist.KDWrist, Constants.kLoopTime);
     m_armPid.reset(getPivotAngle(), 0);
     //m_wristPid.reset(getWristAngle(), 0);
 
@@ -136,7 +137,7 @@ public class ArmWrist extends SubsystemBase {
   }
 
   private double calcPivotSpeed() {
-    double setpoint = getPivotSetpoint();
+    double setpoint = getPivotAngle();
 
     if(setpoint < 110 && !isWristInSafeBounds()) setpoint = MathUtil.clamp(setpoint, 110, Constants.Arm.kMaxPivotAngle);
 
@@ -165,9 +166,35 @@ public class ArmWrist extends SubsystemBase {
     return speed;
   }
 
-  public double getPivotSetpoint() {
-    return m_pivotAngleSetpoint;
+
+  
+  // Start of's wonderful code
+  
+  
+  
+  
+
+  
+public double ArmandWristpoint(double armAngle, double wristAngle) {
+  setArmSetpoint(armAngle);
+  setWristSetpoint(wristAngle);
+  
+  if (!isWristInSafeBounds()) {
+    setWristSetpoint(145);
   }
+  
+  if (!isWristInSafeBounds()) {
+    setArmSetpoint(armAngle);
+  }
+  
+  return wristAngle;
+}
+  
+
+
+
+
+
 
 
   @Override

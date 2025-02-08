@@ -25,6 +25,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
@@ -34,10 +36,11 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final PhotonCamera m_camera;
   private PhotonCameraSim m_cameraSim;
   private PhotonPoseEstimator m_poseEstimator;
-  private Supplier<Transform3d> m_cameraTransform;
+  private final Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
-  private Supplier<Pose2d> m_referencePose;
-  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
+  private final Supplier<Pose2d> m_referencePose;
+  private final Alert m_cameraAlert;
+  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 10);
   private static final boolean kExtraVisionDebugInfo = true;
 
   public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
@@ -76,6 +79,8 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     m_estPos = null;
     m_referencePose = referenceSupplier;
     m_cameraTransform = cameraTransform;
+
+    m_cameraAlert = new Alert("Photon Camera " + cameraName + " Disconnected!", AlertType.kError);
   }
 
   @Override
@@ -154,8 +159,10 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
       VisionSimUtil.adjustCamera(m_cameraSim, m_cameraTransform.get());
     }
 
-    //keep this enabled even without debug mode for logging purposes
-    SmartDashboard.putBoolean(m_camera.getName() + " connected", m_camera.isConnected());
+    //replaced this with an alert
+    // SmartDashboard.putBoolean(m_camera.getName() + " connected", m_camera.isConnected());
+
+    m_cameraAlert.set(!m_camera.isConnected());
 
     for(PhotonPipelineResult result : m_camera.getAllUnreadResults())
     {

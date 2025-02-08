@@ -37,8 +37,6 @@ public class Constants {
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = false;
   public static final boolean ENABLE_SYSID = false;
-  public static final ShuffleboardTab kDriverTab = Shuffleboard.getTab("Driver");
-  public static final ShuffleboardTab kDebugTab = Shuffleboard.getTab("Debug");
   //controls if the debug tab is used on shuffleboard
 
   /**
@@ -107,7 +105,7 @@ public class Constants {
     public static final int kSteerCurrentLimit = 25;
 
     //swerve drive motor
-    public static final double kPDrive = 0.04; //0.1
+    public static final double kPDrive = 0.1; //0.1
     public static final double kIDrive = 0.0;
     public static final double kDDrive = 0.0;
     public static final double kSDrive = 0.11331; //tune using sysid (volts)
@@ -115,7 +113,7 @@ public class Constants {
     public static final double kADrive = 0.35086; //tune with sysid (volts)
 
     //swerve module azimuth
-    public static final double kPTurning = 0.55; //0.7
+    public static final double kPTurning = 0.7; //0.7
     public static final double kITurning = 0.0;
     public static final double kDTurning = 0.11;
     public static final double kSTurning = 0.0;
@@ -287,7 +285,8 @@ public class Constants {
     public static final double kWristLowerLimit = 130;
     public static final double kWristConstraint = 140;
     public static final double kArmConstraint = 120;
+   //Algae intake speed for Arjuna practicing
+    public static final double motorSpeed = 0.2;
+    
   }
-
- 
 }
