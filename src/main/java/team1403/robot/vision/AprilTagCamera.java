@@ -41,7 +41,6 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final Supplier<Pose2d> m_referencePose;
   private final Alert m_cameraAlert;
   private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 10);
-  private static final boolean kExtraVisionDebugInfo = true;
 
   public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
@@ -171,7 +170,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
 
         Logger.recordOutput(m_camera.getName() + "/Target Visible", result.hasTargets());
 
-        if(kExtraVisionDebugInfo)
+        if(Constants.Vision.kExtraVisionDebugInfo)
         {
           Pose3d robot_pose3d = new Pose3d(m_referencePose.get());
           Pose3d robot_pose_transformed = robot_pose3d.transformBy(m_cameraTransform.get());

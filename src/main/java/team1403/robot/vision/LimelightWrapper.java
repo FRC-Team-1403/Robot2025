@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import team1403.robot.Constants;
 
 //import frc.robot.LimelightHelpers; 
 
@@ -96,7 +97,21 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
-            Logger.recordOutput(m_name + "/ambiguity", getTargets()[0].ambiguity);
+
+            /* if the pose estimate is valid then getTargets() != null */
+            LimelightHelpers.RawFiducial[] fiducials = getTargets();
+            Logger.recordOutput(m_name + "/ambiguity", fiducials.length == 1 ? fiducials[0].ambiguity : 0);
+          
+            if(Constants.Vision.kExtraVisionDebugInfo)
+            {
+                Pose3d[] targets = new Pose3d[fiducials.length];
+                for(int i = 0; i < fiducials.length; i++)
+                {
+                    LimelightHelpers.RawFiducial f = fiducials[i];
+                    targets[i] = Constants.Vision.kFieldLayout.getTagPose(f.id).orElse(Pose3d.kZero);
+                }
+                Logger.recordOutput(m_name + "/visionTargets", targets);
+            }
         }
         
         
