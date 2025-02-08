@@ -24,6 +24,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -61,6 +62,7 @@ import team1403.robot.swerve.util.SwerveHeadingCorrector;
 import team1403.robot.swerve.util.SyncSwerveDrivePoseEstimator;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
+import team1403.robot.vision.LimelightWrapper;
 import team1403.robot.vision.VisionSimUtil;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -201,6 +203,7 @@ public class SwerveSubsystem extends SubsystemBase {
     VisionSimUtil.initVisionSim();
 
     m_cameras.add(new AprilTagCamera("Unknown_Camera", () -> Swerve.kCameraTransfrom, this::getPose));
+    m_cameras.add(new LimelightWrapper("limelight", () -> Swerve.kLimelightTransform, () -> new Rotation3d(getRotation())));
 
     m_odometeryNotifier = new Notifier(m_odometer::update);
     m_odometeryNotifier.setName("SwerveOdoNotifer");

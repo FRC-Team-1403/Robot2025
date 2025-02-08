@@ -193,8 +193,4 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return autoChooser.getSelected();
   }
-
-  public Command getTeleopCommand() {
-    return m_teleopCommand;
-  }
 }
