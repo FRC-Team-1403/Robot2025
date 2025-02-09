@@ -1,9 +1,5 @@
 package team1403.lib.util;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Pounds;
-
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,7 +10,6 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import team1403.robot.Constants;
 
 public class CougarUtil {
     
@@ -94,21 +89,12 @@ public class CougarUtil {
         return min;
     }
 
-    //TODO: update when we get robot
-    private static RobotConfig config = new RobotConfig(
-        Pounds.of(120), 
-        KilogramSquareMeters.of(1),
-        new ModuleConfig(
-            Constants.Swerve.kWheelDiameterMeters / 2., 
-            Constants.Swerve.kMaxSpeed, 
-            1.4, 
-            DCMotor.getNEO(1).withReduction(1.0/Constants.Swerve.kDriveReduction), 
-            Constants.Swerve.kDriveCurrentLimit, 
-            1), 
-        Constants.Swerve.kModulePositions);
-
     public static RobotConfig loadRobotConfig() {
-        return config;
+        try {
+            return RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static DCMotorSim createDCMotorSim(DCMotor motor, double gearing, double MOI) {
