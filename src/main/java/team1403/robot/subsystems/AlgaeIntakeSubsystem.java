@@ -32,10 +32,6 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     m_algaeIntakeMotor.configure(intakeconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public boolean isAlgaeIntakePhotogateTriggered() {
-    return !m_algaeIntakePhotogate.get();
-  }
-
   public void intakeStop() {
     m_algaeIntakeMotor.set(0);
   }
@@ -45,11 +41,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   }
 
   public boolean hasAlgae() {
-    return isAlgaeIntakePhotogateTriggered();
-  }
-
-  public double algaeIntakeSpeed() {
-    return m_algaeIntakeMotor.get();
+    return !m_algaeIntakePhotogate.get();
   }
 
   // Logger.recordOutput("Intake/Motor Temp",

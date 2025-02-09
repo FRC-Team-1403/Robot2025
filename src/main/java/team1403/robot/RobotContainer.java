@@ -33,7 +33,6 @@ import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
-import team1403.robot.subsystems.IntakeAndShooter;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
 
