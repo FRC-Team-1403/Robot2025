@@ -1,7 +1,6 @@
 package team1403.robot.commands;
-import java.util.function.BooleanSupplier;
 
-import dev.doglog.DogLog;
+import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.subsystems.Elevator;
 import team1403.robot.Constants;

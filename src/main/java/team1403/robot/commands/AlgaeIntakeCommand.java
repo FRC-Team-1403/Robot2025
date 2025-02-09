@@ -1,7 +1,6 @@
 package team1403.robot.commands;
-import java.util.function.BooleanSupplier;
 
-import dev.doglog.DogLog;
+import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.subsystems.AlgaeIntake;
 import team1403.robot.Constants;
@@ -49,7 +48,7 @@ public class AlgaeIntakeCommand extends Command {
     if (m_algaeIntake.isAlgaeIntaked()) {
         m_algaeIntake.intakeStop();
     }
-    else if (m_algaeIntake.ready()) {
+    else if (m_algaeIntake.isReady()) {
         m_algaeIntake.setIntakeSpeed(0.3);
     }
 

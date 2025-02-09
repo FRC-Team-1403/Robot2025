@@ -3,7 +3,6 @@ package team1403.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.Logger;
-import dev.doglog.DogLog;
 import edu.wpi.first.util.datalog.DataLog;
 
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -245,15 +244,15 @@ public class Elevator extends SubsystemBase {
 
 
     private void logValues() {
-        DogLog.log("desired motor output velocity", desiredMotorOutput);
-        DogLog.log("current motor output", currMotorOutput);
-        DogLog.log("is ramp done", isRampDone);
-        DogLog.log("current position", currentPos);
-        DogLog.log("position error", posError);
-        DogLog.log("motor output error", desiredMotorOutput - currMotorOutput);
-        DogLog.log("is going up", isGoingUp);
-        DogLog.log("is going down", isGoingDown);
-        DogLog.log("checking direction", directionFlag);
-        DogLog.log("Feedforward", calculation(currentPos, setpoint));
+        // Logger.recordOutput("desired motor output velocity", desiredMotorOutput);
+        // Logger.recordOutput("current motor output", currMotorOutput);
+        // Logger.recordOutput("is ramp done", isRampDone);
+        // Logger.recordOutput("current position", currentPos);
+        // Logger.recordOutput("position error", posError);
+        // Logger.recordOutput("motor output error", desiredMotorOutput - currMotorOutput);
+        // Logger.recordOutput("is going up", isGoingUp);
+        // Logger.recordOutput("is going down", isGoingDown);
+        // Logger.recordOutput("checking direction", directionFlag);
+        // Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
     }
  }

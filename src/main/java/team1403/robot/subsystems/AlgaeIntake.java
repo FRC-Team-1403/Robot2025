@@ -11,8 +11,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import dev.doglog.DogLog;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -28,7 +26,7 @@ public class AlgaeIntake extends SubsystemBase{
         m_algaeIntakeMotor = new SparkMax(Constants.CanBus.algaeIntakeMotorID, MotorType.kBrushless);
         m_elbowMotor = new SparkMax(Constants.CanBus.elbowMotorID, MotorType.kBrushless);
         configMotors();
-        m_photogate = new DigitalInput(Constants.RioPorts.photoswitchID);
+        m_photogate = new DigitalInput(Constants.RioPorts.algaeIntakePhotogateID);
     }
     private void configMotors() {
     SparkMaxConfig intakeconfig = new SparkMaxConfig();
@@ -60,7 +58,7 @@ public class AlgaeIntake extends SubsystemBase{
     m_elbowMotor.set(0);
   }
 
-  public boolean ready() {
+  public boolean isReady() {
     return (getAngle() == Constants.AlgaeIntake.upPos && !isAlgaeIntaked() && m_elbowMotor.get() == 0);
   }
 
