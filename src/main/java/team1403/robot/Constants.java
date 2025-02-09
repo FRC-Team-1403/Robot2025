@@ -1,8 +1,8 @@
 package team1403.robot;
 
-import com.pathplanner.lib.config.ModuleConfig;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -12,16 +12,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Meters;
 
 /**
  * This class holds attributes for the robot configuration.
@@ -40,10 +34,10 @@ public class Constants {
 
   // Variables to used by all subsystems.
   public static final double kLoopTime = 0.02;
-  public static final ShuffleboardTab kDriverTab = Shuffleboard.getTab("Driver");
-  public static final ShuffleboardTab kDebugTab = Shuffleboard.getTab("Debug");
   //controls if the debug tab is used on shuffleboard
-  public static final boolean DEBUG_MODE = true;
+  public static final boolean DEBUG_MODE = false;
+  public static final boolean ENABLE_SYSID = false;
+  //controls if the debug tab is used on shuffleboard
 
   /**
    * Swerve Constants.
@@ -93,7 +87,7 @@ public class Constants {
     public static final double kSteerPositionConversionFactor = 2.0 * Math.PI
         * Swerve.kSteerReduction;
 
-    public static final double kNEOMaxRpm = Units.radiansPerSecondToRotationsPerMinute(DCMotor.getNEO(1).freeSpeedRadPerSec);
+    public static final double kNEOMaxRpm = 5676;
 
     public static final double kMaxSpeed = kNEOMaxRpm * kDrivePositionConversionFactor / 60.0; 
 
@@ -103,7 +97,7 @@ public class Constants {
     public static final AngularVelocity kMaxTurningSpeed = RadiansPerSecond.of(kNEOMaxRpm * kSteerPositionConversionFactor / 60.0); // theoretical: kNEOMaxRpm * kSteerPositionConversionFactor / 60.0 (~50 rad/s)
 
     // IMU has an angular velocity, so to get the heading at the right point time add the velocity * a coeff to get the "real" heading
-    public static final double kAngVelCoeff = 0.1; //TODO: needs tuning! (generally ranges from -0.15 to 0.15)
+    public static final double kAngVelCoeff = 0.08; //TODO: needs tuning! (generally ranges from -0.15 to 0.15)
     public static final double kCouplingRatio = kFirstDriveStage * kDrivePositionConversionFactor / (2 * Math.PI); //TODO: check this!
 
     public static final double kVoltageSaturation = 12.0;
@@ -111,24 +105,27 @@ public class Constants {
     public static final int kSteerCurrentLimit = 25;
 
     //swerve drive motor
-    public static final double kPDrive = 0.04;
+    public static final double kPDrive = 0.1; //0.1
     public static final double kIDrive = 0.0;
     public static final double kDDrive = 0.0;
-    public static final double kSDrive = 0; //tune using sysid (volts)
-    public static final double kVDrive = 12/kMaxSpeed; //volts instead of % duty cycle (tune with sysid)
-    public static final double kADrive = 0; //tune with sysid (volts)
+    public static final double kSDrive = 0.11331; //tune using sysid (volts)
+    public static final double kVDrive = 2.5702; //volts instead of % duty cycle (tune with sysid)
+    public static final double kADrive = 0.35086; //tune with sysid (volts)
 
     //swerve module azimuth
-    public static final double kPTurning = 0.75;
+    public static final double kPTurning = 0.7; //0.7
     public static final double kITurning = 0.0;
-    public static final double kDTurning = 0.06;
+    public static final double kDTurning = 0.11;
+    public static final double kSTurning = 0.0;
 
     //front-to-back-disp = ~8.568 inches 
     //left-to-right-disp = 0 inches
     //top-to-bottom disp = 17.82426 inches
     public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426));
+    public static final Rotation3d kLimelightRotation = new Rotation3d(0, Units.degreesToRadians(-25), Math.PI);
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426-48));
     public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
+    public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
   }
 
   public static class PathPlanner {
@@ -137,6 +134,16 @@ public class Constants {
     public static final PIDConstants kRotationPID = new PIDConstants(2.8, 0, 0);
     public static final PathConstraints kPathConstraints = new PathConstraints(Swerve.kMaxSpeed, 3, Swerve.kMaxAngularSpeed, 5);
     public static final PathConstraints kAutoAlignConstraints = new PathConstraints(Swerve.kMaxSpeed, 6, Swerve.kMaxAngularSpeed, 5);
+  }
+
+  public static class RioPorts {
+    public static final int kArmAbsoluteEncoder = 0;
+    public static final int kwristAbsoluteEncoder = 1; // DIO
+
+    public static final int intakePhotogate1 = 3;
+    
+    public static final int shooterPhotogate = 2;
+
   }
 
   /**
@@ -165,53 +172,23 @@ public class Constants {
     public static final int backRightSteerID = 6;
     public static final int backRightEncoderID = 23;
 
-    // pivot motor ports (arm)
+    // other
+    public static final int powerDistributionID = 60;
+    
     public static final int rightPivotMotorID = 5;
     public static final int leftPivotMotorID = 14;
 
-    // hanger ID
-    public static final int rightHangerMotorID = 27;
-    public static final int leftHangerMotorID = 28;
-
-    // intake and shooter IDs
     public static final int shooterMotorTopID = 2;
     public static final int shooterMotorBottomID = 1;
     public static final int intakeMotorID = 4;
-
-    // wrist
+    
     public static final int wristMotorID = 15;
-
-    // other
-    public static final int powerDistributionID = 60;
-  }
-  
-  /**
-   * Ports on the RoboRIO.
-   */
-  public static class RioPorts {
-    // actual
-    public static final int LEDPort = 0;
-    public static final int intakePhotogate1 = 3;
-    public static final int shooterPhotogate = 2;
-    public static final int kArmAbsoluteEncoder = 0;
-    //Wrist 
-    public static final int kwristAbsoluteEncoder = 1; // DIO
-    //Hanger
-    public static final int kleftServoID = 8;
-    public static final int krightServoID = 9;
-    public static final int kHangerLimitRightBottomID = 0;
-    public static final int kHangerLimitLeftBottomID = 0;
   }
 
   /**
    * Config parameters for tuning the operator interface.
    */
   public static class Operator {
-
-    public static final int dPadUp = 0;
-    public static final int dPadRight = 1;
-    public static final int dPadDown = 2;
-    public static final int dPadLeft = 3;
 
     /**
      * The joystick port for the operator's controller.
@@ -241,7 +218,22 @@ public class Constants {
   }
 
   public static class Vision {
-    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    public static final boolean kExtraVisionDebugInfo = true;
+  }
+
+  public static class IntakeAndShooter {
+    public static final double kFrameAngle = 250.24629;
+    public static final double kFrameClearanceAngle = 234.5; // cone angle
+    public static final double kHorizonAngle = 210; 
+    public static final double kSpeedReduction = 2.0; // test value
+    public static double kStageLineRPM = 5000; //To test
+    public static double kCenterLineRPM = 6000;
+    public static double kLaunchpadRPM = 5000;
+    public static double kFeedShotRPM = 4000;
+    public static final double kCloseRPM = 4800;
+    public static final double kExpelDeadzone = 0.15;
+    public static final int kIntakeCurrentLimit = 40;
   }
 
   public static class Arm {
@@ -267,36 +259,9 @@ public class Constants {
     public static  double kDefaultClose = 114;
   }
 
-  public static class Hanger {
-    public static final double kTopRightLimit = 70;
-    public static final double kTopLeftLimit = 70;
-    public static final double kBottomLeftLimit = 1;
-    public static final double kBottomRightLimit = 2;
-    public static final double kLeftLockAngle = 70;
-    public static final double kLeftUnlockAngle = 100;
-    public static final double kRightLockAngle = 90;
-    public static final double kRightUnlockAngle = 85;
-
-  }
-
-  public static class IntakeAndShooter {
-    public static final double kFrameAngle = 250.24629;
-    public static final double kFrameClearanceAngle = 234.5; // cone angle
-    public static final double kHorizonAngle = 210; 
-    public static final double kSpeedReduction = 2.0; // test value
-    public static double kStageLineRPM = 5000; //To test
-    public static double kCenterLineRPM = 6000;
-    public static double kLaunchpadRPM = 5000;
-    public static double kFeedShotRPM = 4000;
-    public static final double kCloseRPM = 4800;
-    public static final double kExpelDeadzone = 0.15;
-    public static final int kIntakeCurrentLimit = 40;
-  }
-  
   public static class Wrist {
     public static final double kWristConversionFactor = 0;
     public static final double kAbsoluteWristOffset = 0;
-    public static final double kWristVoltageComp = 12;
 
     public static final double KPWrist = 0.0097; //original value 0.0092 changed - 0.0097
     public static final double KIWrist = 0.0000;
@@ -305,7 +270,7 @@ public class Constants {
     public static final double kTopLimit = 180;
     public static final double kBottomLimit = 0;
 
-    public static  double kIntakeSetpoint = 134;
+    public static  double kIntakeSetpoint = 142;
     public static  double kAmpSetpoint = 160.5;
     public static double kAmpShoootingSetpoint = 142;
     public static  double kLoadingSetpoint = 90;
@@ -323,26 +288,8 @@ public class Constants {
     public static final double kWristLowerLimit = 130;
     public static final double kWristConstraint = 140;
     public static final double kArmConstraint = 120;
-  }
-
-  public static class Setpoints { /*
-    public static final SonicBlasterSetpoint kDriveSetpoint = 
-        new SonicBlasterSetpoint(Constants.Arm.kDriveSetpoint, Constants.Wrist.kShootingAngle, 
-                                    0, Constants.IntakeAndShooter.kCloseRPM);
-    public static final SonicBlasterSetpoint kStageSetpoint = 
-        new SonicBlasterSetpoint(124, Constants.Wrist.kStageLineSetpoint, 
-                                               0, Constants.IntakeAndShooter.kStageLineRPM);
-    public static final SonicBlasterSetpoint kCenterlineSetpoint = 
-        new SonicBlasterSetpoint(130, Constants.Wrist.kCenterLineSetpoint, 0, 
-                                    Constants.IntakeAndShooter.kCenterLineRPM);
-    public static final SonicBlasterSetpoint kAmpSetpoint = 
-        new SonicBlasterSetpoint(Constants.Arm.kAmpSetpoint, Constants.Wrist.kAmpSetpoint, 0, 2400);
-    public static final SonicBlasterSetpoint kRightFeedSetpoint = 
-        new SonicBlasterSetpoint(Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint + 20, 0, 3800);
-    public static final SonicBlasterSetpoint kLeftFeedSetpoint = 
-        new SonicBlasterSetpoint(Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint + 20, 0, 3500);
-    // public static final SonicBlasterSetpoint kDownFeedSetpoint =
-    //     new SonicBlasterSetpoint(Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint + 20, 0, 3500);
-    */
+   //Algae intake speed for Arjuna practicing
+    public static final double motorSpeed = 0.2;
+    
   }
 }

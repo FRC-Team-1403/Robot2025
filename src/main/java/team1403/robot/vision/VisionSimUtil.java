@@ -1,12 +1,9 @@
-package team1403.robot.swerve;
-
-import java.util.function.Supplier;
+package team1403.robot.vision;
 
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
@@ -33,7 +30,7 @@ public class VisionSimUtil {
         }
     }
 
-    public static void update(Pose3d pose) {
+    public static void update(Pose2d pose) {
         if(Robot.isSimulation() && visionSim != null) {
             visionSim.update(pose);
         }

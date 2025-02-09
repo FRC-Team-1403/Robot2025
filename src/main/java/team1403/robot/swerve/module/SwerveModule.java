@@ -1,4 +1,4 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.module;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -6,18 +6,14 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkRelativeEncoder;
-
-import dev.doglog.DogLog;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -34,10 +30,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.Constants.Swerve;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Volts;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Represents a swerve module. Consists of a drive motor, steer motor, 
@@ -65,7 +59,8 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
                               = new SimpleMotorFeedforward(
                                 Constants.Swerve.kSDrive, 
                                 Constants.Swerve.kVDrive,
-                                Constants.Swerve.kADrive); 
+                                Constants.Swerve.kADrive,
+                                Constants.kLoopTime); 
 
 
     /**
@@ -186,8 +181,8 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .outputRange(-1, 1);
       config.encoder
-        .uvwAverageDepth(2)
-        .uvwMeasurementPeriod(10)
+        //.uvwAverageDepth(2)
+        //.uvwMeasurementPeriod(10)
         .positionConversionFactor(Constants.Swerve.kDrivePositionConversionFactor)
         .velocityConversionFactor(Constants.Swerve.kDrivePositionConversionFactor / 60.);
       config.signals
@@ -207,10 +202,10 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
      * Method for setting the drive voltage and steering angle.
      *
      * @param driveMetersPerSecond driving meters per second.
-     * @param steerAngle           steering angle.
+     * @param steerValue           steering angle.
      *
      */
-    public void set(ModControlType type, double value, double steerAngle) {
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue, DriveFeedforwards ff, int index) {
       // Set driveMotor according to velocity input
       // System.out.println("drive input speed: " + driveMetersPerSecond);
 
@@ -221,29 +216,32 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
       double steerVel = m_steerRelativeEncoder.getVelocity();
       
       //if we dynamically correct while rotating the PID will get angry, error is also higher when in motion, since values aren't time synced
-      if(relativeErr > Units.degreesToRadians(10) && Math.abs(steerVel) < 0.1) {
+      if(relativeErr > Units.degreesToRadians(15) && Math.abs(steerVel) < 0.1) {
         System.out.println(getName() + " Encoder Reset!");
         m_steerRelativeEncoder.setPosition(absAngle);
       }
 
       // Set steerMotor according to position of encoder
-      m_steerPIDController.setReference(steerAngle, ControlType.kPosition);
+      if(s_type == SteerControlType.Angle)
+        m_steerPIDController.setReference(steerValue, ControlType.kPosition);
+      else if(s_type == SteerControlType.Voltage)
+        m_steerPIDController.setReference(steerValue, ControlType.kVoltage);
 
-      if(type == ModControlType.Velocity) {
-        value *= MathUtil.clamp(Math.cos(steerAngle - absAngle), 0, 1);
-        value += steerVel * Constants.Swerve.kCouplingRatio;
-        value = MathUtil.clamp(value, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
+      if(type == DriveControlType.Velocity) {
+        driveValue *= MathUtil.clamp(Math.cos(steerValue - absAngle), 0, 1);
+        driveValue += steerVel * Constants.Swerve.kCouplingRatio;
+        driveValue = MathUtil.clamp(driveValue, -Constants.Swerve.kMaxSpeed, Constants.Swerve.kMaxSpeed);
 
-        m_drivePIDController.setReference(value, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
-                      m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, value));
-        m_lastVelocitySetpoint = value;
-      } else if (type == ModControlType.Voltage) {
-        m_drivePIDController.setReference(value, ControlType.kVoltage);
+        m_drivePIDController.setReference(driveValue, ControlType.kVelocity, ClosedLoopSlot.kSlot0,
+                      MathUtil.clamp(m_driveFeedforward.calculateWithVelocities(m_lastVelocitySetpoint, driveValue), -12, 12));
+        m_lastVelocitySetpoint = driveValue;
+      } else if (type == DriveControlType.Voltage) {
+        m_drivePIDController.setReference(driveValue, ControlType.kVoltage);
         //better than it being completely wrong
         m_lastVelocitySetpoint = getDriveVelocity();
       }
 
-      DogLog.log(getName() + "/EncError", relativeErr);
+      Logger.recordOutput(getName() + "/EncError", relativeErr);
     }
 
     /**
@@ -316,7 +314,7 @@ public class SwerveModule extends SubsystemBase implements ISwerveModule {
 
     @Override
     public void periodic() {
-      DogLog.log(m_name + "/Drive Current", m_driveMotor.getOutputCurrent());
-      DogLog.log(m_name + "/Steer Current", m_steerMotor.getOutputCurrent());
+      //Logger.recordOutput(m_name + "/Drive Current", m_driveMotor.getOutputCurrent());
+      //Logger.recordOutput(m_name + "/Steer Current", m_steerMotor.getOutputCurrent());
     }
   }

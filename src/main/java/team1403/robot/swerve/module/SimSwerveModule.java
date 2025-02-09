@@ -1,28 +1,16 @@
-package team1403.robot.swerve;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Volts;
+package team1403.robot.swerve.module;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -91,11 +79,13 @@ public class SimSwerveModule extends SubsystemBase implements ISwerveModule {
     }
 
     @Override
-    public void set(ModControlType type, double driveMetersPerSecond, double steerAngle) {
+    public void set(DriveControlType type, double driveValue, SteerControlType s_type, double steerValue, DriveFeedforwards ff, int index) {
         m_lock.lock();
-        if (type == ModControlType.Velocity) {
-            m_driveController.setSetpoint(driveMetersPerSecond);
-            m_steerController.setSetpoint(MathUtil.angleModulus(steerAngle));
+        if (s_type == SteerControlType.Angle) {
+            m_steerController.setSetpoint(MathUtil.angleModulus(steerValue));
+        }
+        if (type == DriveControlType.Velocity) {
+            m_driveController.setSetpoint(driveValue);
         }
         m_lock.unlock();
     }

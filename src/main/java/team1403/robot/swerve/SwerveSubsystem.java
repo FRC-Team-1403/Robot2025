@@ -2,69 +2,77 @@ package team1403.robot.swerve;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.studica.frc.AHRS.NavXUpdateRate;
 
-import dev.doglog.DogLog;
+
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import team1403.lib.elastic.Elastic;
+import team1403.lib.elastic.Elastic.Notification.NotificationLevel;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
 import team1403.robot.Constants.CanBus;
 import team1403.robot.Constants.Swerve;
-import team1403.robot.swerve.ISwerveModule.ModControlType;
+import team1403.robot.swerve.imu.IGyroDevice;
+import team1403.robot.swerve.imu.NavXWrapper;
+import team1403.robot.swerve.module.ISwerveModule;
+import team1403.robot.swerve.module.SimSwerveModule;
+import team1403.robot.swerve.module.SwerveModule;
+import team1403.robot.swerve.module.ISwerveModule.DriveControlType;
+import team1403.robot.swerve.module.ISwerveModule.SteerControlType;
+import team1403.robot.swerve.util.SwerveHeadingCorrector;
+import team1403.robot.swerve.util.SyncSwerveDrivePoseEstimator;
+import team1403.robot.vision.AprilTagCamera;
+import team1403.robot.vision.ITagCamera;
+import team1403.robot.vision.LimelightWrapper;
+import team1403.robot.vision.VisionSimUtil;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.Meters;
 
 /**
  * The drivetrain of the robot. Consists of for swerve modules and the
  * gyroscope.
  */
 public class SwerveSubsystem extends SubsystemBase {
-  private final AHRS m_navx2;
+  private final IGyroDevice m_gyro;
   private final ISwerveModule[] m_modules;
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds();
   private final SwerveModuleState[] m_currentStates = new SwerveModuleState[4];
@@ -72,13 +80,14 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SyncSwerveDrivePoseEstimator m_odometer;
   private final Field2d m_field = new Field2d();
 
-  private final ArrayList<AprilTagCamera> m_cameras = new ArrayList<>();
+  private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
   private boolean m_disableVision = false;
   private boolean m_rotDriftCorrect = true;
   private final SwerveHeadingCorrector m_headingCorrector = new SwerveHeadingCorrector();
   private SimDouble m_gryoHeadingSim;
   private SimDouble m_gyroRateSim;
   private SysIdRoutine m_sysIdRoutine;
+  private SysIdRoutine m_sysIDAngle;
 
   private static final SwerveModuleState[] m_xModeState = {
     // Front Left
@@ -93,6 +102,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final Notifier m_odometeryNotifier;
 
+  private final Alert m_gryoConnectedAlert = 
+    new Alert("Gyroscope disconnected!", AlertType.kError);
+
   //patched warmup command so it's not slow af
   public static Command swerveWarmupCommand() {
     return new PathfindingCommand(
@@ -105,6 +117,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
             CougarUtil.loadRobotConfig())
         .andThen(Commands.print("[PathPlanner] PathfindingCommand finished warmup"))
+        .andThen(() -> Elastic.sendNotification(
+          new Elastic.Notification(
+            NotificationLevel.INFO, 
+            "PathfindingCommand finished warmup",
+           "Path finding now up and running!")))
         .ignoringDisable(true);
   }
 
@@ -120,7 +137,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public SwerveSubsystem() {
     // increase update rate because of async odometery
-    m_navx2 = new AHRS(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
+    m_gyro = new NavXWrapper(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
     if(Robot.isReal()) {
       m_modules = new ISwerveModule[] {
           new SwerveModule("Front Left Module",
@@ -150,10 +167,10 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     AutoBuilder.configure(
-        this::getPose2D, // Robot pose supplier
+        this::getPose, // Robot pose supplier
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getCurrentChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (ChassisSpeeds s) -> drive(s, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        (ChassisSpeeds s, DriveFeedforwards ff) -> drive(s, ff, true), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new PPHolonomicDriveController(
           Constants.PathPlanner.kTranslationPID, 
           Constants.PathPlanner.kRotationPID, 
@@ -166,38 +183,47 @@ public class SwerveSubsystem extends SubsystemBase {
     //replace when pathplanner warmup command gets fixed (update: it never did lmao)
     swerveWarmupCommand().schedule();
     PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-      DogLog.log("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+      Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
       m_field.getObject("traj").setPoses(activePath);
     });
     PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
-      DogLog.log("Odometry/TrajectorySetpoint", targetPose);
+      Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
     });
 
     // addDevice(m_navx2.getName(), m_navx2);
-    if (m_navx2.isConnected())
-      while (m_navx2.isCalibrating());
 
     zeroGyroscope();
+
+    //initialize the arrays
+    getModuleStates();
+    getModulePositions();
 
     m_odometer = new SyncSwerveDrivePoseEstimator(CougarUtil.getInitialRobotPose(), () -> getGyroscopeRotation(), () -> getModulePositions());
 
     VisionSimUtil.initVisionSim();
 
     m_cameras.add(new AprilTagCamera("Unknown_Camera", () -> Swerve.kCameraTransfrom, this::getPose));
+    m_cameras.add(new LimelightWrapper("limelight", () -> Swerve.kLimelightTransform, () -> new Rotation3d(getRotation())));
 
     m_odometeryNotifier = new Notifier(m_odometer::update);
     m_odometeryNotifier.setName("SwerveOdoNotifer");
     m_odometeryNotifier.startPeriodic(Units.millisecondsToSeconds(Constants.Swerve.kModuleUpdateRateMs));
 
-    m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(),
+    m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
+      (state) -> Logger.recordOutput("SysIDSwerveLinear", state.toString())),
     new SysIdRoutine.Mechanism((voltage) -> {
       for(ISwerveModule m : m_modules) {
-        m.set(ModControlType.Voltage, voltage.in(Volts), 0);
+        m.set(DriveControlType.Voltage, voltage.in(Volts), SteerControlType.Angle, 0);
       }
     }, null, this));
-
-    Constants.kDriverTab.add("Gyro", m_navx2);
-    Constants.kDriverTab.add("Field", m_field);
+    m_sysIDAngle = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
+      (state) -> Logger.recordOutput("SysIDSwerveSteer", state.toString())), 
+      new SysIdRoutine.Mechanism((voltage) -> {
+        for(ISwerveModule m : m_modules) {
+          m.set(DriveControlType.Voltage, 0, SteerControlType.Voltage, voltage.in(Volts));
+        }
+      }, null, this));
+    SmartDashboard.putData("Field", m_field);
   }
 
   public void setDisableVision(boolean disable) {
@@ -223,15 +249,15 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   private void zeroGyroscope() {
     // tracef("zeroGyroscope %f", getGyroscopeRotation());
-    m_navx2.reset();
+    m_gyro.reset();
   }
 
   public void zeroHeading() {
     zeroGyroscope();
     if(CougarUtil.getAlliance() == Alliance.Blue)
-      resetOdometry(CougarUtil.createPose3d(getPose(), new Rotation3d()));
+      resetOdometry(CougarUtil.createPose2d(getPose(), Rotation2d.kZero));
     else
-      resetOdometry(CougarUtil.createPose3d(getPose(), new Rotation3d(0, 0, Math.PI)));
+      resetOdometry(CougarUtil.createPose2d(getPose(), Rotation2d.k180deg));
     m_headingCorrector.resetHeadingSetpoint();
   }
 
@@ -240,19 +266,9 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return the position of the drivetrain in Pose3d
    */
-  public Pose3d getPose() {
+  public Pose2d getPose() {
     return m_odometer.getPose();
   }
-
-  /**
-   * Return the position of the drivetrain.
-   *
-   * @return the position of the drivetrain in Pose2d
-   */
-  public Pose2d getPose2D() {
-    return getPose().toPose2d();
-  }
-
   /**
    * Reset the position of the drivetrain odometry.
    */
@@ -264,13 +280,6 @@ public class SwerveSubsystem extends SubsystemBase {
    * Reset the position of the drivetrain odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    resetOdometry(new Pose3d(pose));
-  }
-
-    /**
-   * Reset the position of the drivetrain odometry.
-   */
-  public void resetOdometry(Pose3d pose) {
     m_odometer.resetPosition(pose);
   }
 
@@ -279,11 +288,32 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return a Rotation3d object that contains the gyroscope's heading
    */
-  private Rotation3d getGyroscopeRotation() {
-    //work around navx sim bug
-    if(Robot.isSimulation()) return new Rotation3d(m_navx2.getRotation2d());
+  private Rotation2d getGyroscopeRotation() {
+    return m_gyro.getRotation2d();
+  }
 
-    return m_navx2.getRotation3d();
+  
+  /**
+   * Accounts for the drift caused by the first order kinematics
+   * while doing both translational and rotational movement.
+   * 
+   * <p>
+   * Looks forward one control loop to figure out where the robot
+   * should be given the chassisspeed and backs out a twist command from that.
+   * 
+   * @param chassisSpeeds the given chassisspeeds
+   * @return the corrected chassisspeeds
+   */
+  private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+    double dtheta = Units.degreesToRadians(m_gyro.getAngularVelocity()) * Constants.Swerve.kAngVelCoeff;
+    // Logger.recordOutput("test", dtheta);
+    if(Math.abs(dtheta) > 0.001 && Math.abs(dtheta) < 5 && Robot.isReal()) {
+      Rotation2d rot = getRotation();
+      chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, rot);
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, rot.plus(new Rotation2d(dtheta)));
+    }
+
+    return chassisSpeeds;
   }
 
   /**
@@ -291,12 +321,18 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @return a Rotation2d object that contains the robot's heading
    */
-  public Rotation3d getRotation() {
+  public Rotation2d getRotation() {
     return getPose().getRotation();
   }
 
-  public double getRate() {
-    return m_navx2.getRate();
+  /**
+   * Sets the target chassis speeds
+   * @param chassisSpeeds
+   */
+  public void drive(ChassisSpeeds chassisSpeeds, DriveFeedforwards ff, boolean discretize) {
+    m_chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+    //update here to reduce latency
+    updateTargetModuleStates(ff, discretize);
   }
 
   /**
@@ -304,9 +340,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param chassisSpeeds
    */
   public void drive(ChassisSpeeds chassisSpeeds, boolean discretize) {
-    m_chassisSpeeds = chassisSpeeds;
-    //update here to reduce latency
-    updateTargetModuleStates(discretize);
+    drive(chassisSpeeds, null, discretize);
   }
 
   /**
@@ -323,7 +357,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param states an array of states for each module.
    */
   
-  public void setModuleStates(SwerveModuleState[] states, boolean discretize) {
+  public void setModuleStates(SwerveModuleState[] states, DriveFeedforwards ff, boolean discretize) {
     SwerveModuleState[] currentStates = getModuleStates();
 
     //desaturate sandwich :)
@@ -337,11 +371,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     for (int i = 0; i < m_modules.length; i++) {
       states[i].optimize(currentStates[i].angle);
-      m_modules[i].set(ModControlType.Velocity, states[i].speedMetersPerSecond,
-          MathUtil.angleModulus(states[i].angle.getRadians()));
+      m_modules[i].set(DriveControlType.Velocity, states[i].speedMetersPerSecond,
+          SteerControlType.Angle, MathUtil.angleModulus(states[i].angle.getRadians()),
+          ff, ff == null ? -1 : i);
     }
 
-    DogLog.log("SwerveStates/Target", states);
+    Logger.recordOutput("SwerveStates/Target", states);
+  }
+
+  public void setModuleStates(SwerveModuleState[] states, boolean discretize) {
+    setModuleStates(states, null, discretize);
   }
 
 
@@ -349,7 +388,6 @@ public class SwerveSubsystem extends SubsystemBase {
     for(int i = 0; i < m_modules.length; i++) {
       m_currentStates[i] = m_modules[i].getState();
     }
-    DogLog.log("SwerveStates/Measured", m_currentStates);
     return m_currentStates;
   }
 
@@ -359,7 +397,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getCurrentChassisSpeed() {
     ChassisSpeeds ret =  Swerve.kDriveKinematics.toChassisSpeeds(getModuleStates());
-    DogLog.log("SwerveStates/Current Chassis Speeds", ret);
+    Logger.recordOutput("SwerveStates/Current Chassis Speeds", ret);
     return ret;
   }
 
@@ -374,7 +412,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getRotation().toRotation2d(), m_navx2.getRate());
+    ChassisSpeeds corrected = m_headingCorrector.update(speeds, getCurrentChassisSpeed(), getGyroscopeRotation(), m_gyro.getAngularVelocity());
     if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
     {
       return corrected;
@@ -407,7 +445,7 @@ public class SwerveSubsystem extends SubsystemBase {
     builder.addDoubleProperty("Back Right Angle", () -> m_currentStates[3].angle.getRadians(), null);
     builder.addDoubleProperty("Back Right Velocity", () -> m_currentStates[3].speedMetersPerSecond, null);
 
-    builder.addDoubleProperty("Robot Angle", () -> getRotation().getZ(), null);
+    builder.addDoubleProperty("Robot Angle", () -> getRotation().getRadians(), null);
   }
 
   public Command getSysIDQ(SysIdRoutine.Direction dir) {
@@ -418,9 +456,17 @@ public class SwerveSubsystem extends SubsystemBase {
     return m_sysIdRoutine.dynamic(dir);
   }
 
+  public Command getSysIDSteerQ(SysIdRoutine.Direction dir) {
+    return m_sysIDAngle.quasistatic(dir);
+  }
+
+  public Command getSysIDSteerD(SysIdRoutine.Direction dir) {
+    return m_sysIDAngle.dynamic(dir);
+  }
+
   private Pose2d[] getModulePoses() {
     Pose2d[] ret = new Pose2d[m_modules.length];
-    Pose2d cur = getPose2D();
+    Pose2d cur = getPose();
     
     for(int i = 0; i < ret.length; i++) {
       ret[i] = cur.transformBy(
@@ -431,41 +477,49 @@ public class SwerveSubsystem extends SubsystemBase {
     return ret;
   }
 
-  private void updateTargetModuleStates(boolean discretize) {
+  private void updateTargetModuleStates(DriveFeedforwards ff, boolean discretize) {
     ChassisSpeeds corrected = rotationalDriftCorrection(m_chassisSpeeds);
 
-    DogLog.log("SwerveStates/Corrected Target Chassis Speeds", corrected);
+    Logger.recordOutput("SwerveStates/Corrected Target Chassis Speeds", corrected);
 
-    setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), discretize);
+    setModuleStates(Swerve.kDriveKinematics.toSwerveModuleStates(corrected), ff, discretize);
+  }
+
+  private void updateTargetModuleStates(boolean discretize)
+  {
+    updateTargetModuleStates(null, discretize);
   }
 
   @Override
   public void periodic() {
 
-    DogLog.log("Odometry/Cycles", m_odometer.resetUpdateCount());
+    Logger.recordOutput("Odometry/Cycles", m_odometer.resetUpdateCount());
 
     if(!m_disableVision)
     {
-      for(AprilTagCamera cam : m_cameras)
+      for(ITagCamera cam : m_cameras)
       {
-        if (cam.hasPose()) {
+        if (cam.checkVisionResult()) {
           Pose3d pose = cam.getPose();
-          if (pose != null && cam.checkVisionResult()) {
-            m_odometer.addVisionMeasurement(pose, cam.getTimestamp(), cam.getEstStdv());
+          if (pose != null) {
+            m_odometer.addVisionMeasurement(pose.toPose2d(), cam.getTimestamp(), cam.getEstStdv());
           }
         }
       }
     }
     // SmartDashboard.putNumber("Speed", m_speedLimiter);
 
-    m_field.setRobotPose(getPose2D());
+    m_field.setRobotPose(getPose());
     if (Constants.DEBUG_MODE) m_field.getObject("xModules").setPoses(getModulePoses());
+    m_gryoConnectedAlert.set(!m_gyro.isConnected());
     // Logging Output
 
-    DogLog.log("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
+    Logger.recordOutput("SwerveStates/Target Chassis Speeds", m_chassisSpeeds);
 
     //wip: slip detection based on orbit's swerve presentation
     ChassisSpeeds temp = getCurrentChassisSpeed();
+    SmartDashboard.putNumber("Robot Velocity", Math.hypot(temp.vxMetersPerSecond, temp.vyMetersPerSecond));
+    /*
     temp.vxMetersPerSecond = 0;
     temp.vyMetersPerSecond = 0;
     SwerveModuleState[] rotStates = Swerve.kDriveKinematics.toSwerveModuleStates(temp);
@@ -488,9 +542,12 @@ public class SwerveSubsystem extends SubsystemBase {
       min = Math.min(min, speed);
       max = Math.max(max, speed);
     }
+    
 
-    DogLog.log("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
-    DogLog.log("SwerveStates/PureTranslation", tState);
-    DogLog.log("Odometry/Robot", getPose());
+    Logger.recordOutput("SwerveStates/Ratio", Math.abs(min) < 0.01 ? 1 : max/min);
+    Logger.recordOutput("SwerveStates/PureTranslation", tState); */
+    Logger.recordOutput("SwerveStates/Measured", m_currentStates);
+    Logger.recordOutput("Odometry/Robot", getPose());
+    Logger.recordOutput("Odometry/Rotation3d", m_gyro.getRotation3d());
   }
 }

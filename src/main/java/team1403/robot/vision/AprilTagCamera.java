@@ -1,10 +1,11 @@
 
-package team1403.robot.swerve;
+package team1403.robot.vision;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -15,30 +16,33 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N4;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
 
-public class AprilTagCamera extends SubsystemBase {
+public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final PhotonCamera m_camera;
   private PhotonCameraSim m_cameraSim;
   private PhotonPoseEstimator m_poseEstimator;
-  private Supplier<Transform3d> m_cameraTransform;
+  private final Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
-  private Supplier<Pose3d> m_referencePose;
-  private static final Matrix<N4, N1> kDefaultStdv = VecBuilder.fill(2, 2, 4, 999999);
-  private static final boolean kExtraVisionDebugInfo = true;
+  private final Supplier<Pose2d> m_referencePose;
+  private final Alert m_cameraAlert;
+  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 10);
 
-  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose3d> referenceSupplier) {
+  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
     // PortForwarder.add(5800, 
     // "photonvision.local", 5800);
@@ -74,9 +78,8 @@ public class AprilTagCamera extends SubsystemBase {
     m_estPos = null;
     m_referencePose = referenceSupplier;
     m_cameraTransform = cameraTransform;
-    
-    //keep this enabled even without debug mode for logging purposes
-    Constants.kDebugTab.addBoolean(m_camera.getName() + " connected", () -> m_camera.isConnected());
+
+    m_cameraAlert = new Alert("Photon Camera " + cameraName + " Disconnected!", AlertType.kError);
   }
 
   @Override
@@ -105,7 +108,7 @@ public class AprilTagCamera extends SubsystemBase {
     return -1;
   }
 
-  public List<PhotonTrackedTarget> getTargets() {
+  private List<PhotonTrackedTarget> getTargets() {
     if(hasPose())
     {
       return m_estPos.targetsUsed;
@@ -122,18 +125,16 @@ public class AprilTagCamera extends SubsystemBase {
     return ret;
   }
 
-  public Matrix<N4, N1> getEstStdv() {
+  public Matrix<N3, N1> getEstStdv() {
     return kDefaultStdv.div(getTagAreas());
   }
 
-  //TODO: return false for bad estimates
   public boolean checkVisionResult() {
+    if(!hasPose()) return false;
 
     if(getTagAreas() < 0.3) return false;
 
-    if(getPose().getZ() > 1){
-      return false;
-    }
+    if(getPose().getZ() > 1) return false;
 
     if(getTargets().size() == 1) {
       if(getTargets().get(0).getPoseAmbiguity() > 0.6)
@@ -157,21 +158,25 @@ public class AprilTagCamera extends SubsystemBase {
       VisionSimUtil.adjustCamera(m_cameraSim, m_cameraTransform.get());
     }
 
+    //replaced this with an alert
+    // SmartDashboard.putBoolean(m_camera.getName() + " connected", m_camera.isConnected());
+
+    m_cameraAlert.set(!m_camera.isConnected());
 
     for(PhotonPipelineResult result : m_camera.getAllUnreadResults())
     {
       //fixme: indentation
         m_estPos = m_poseEstimator.update(result).orElse(null);
 
-        DogLog.log(m_camera.getName() + "/Target Visible", result.hasTargets());
+        Logger.recordOutput(m_camera.getName() + "/Target Visible", result.hasTargets());
 
-        if(kExtraVisionDebugInfo)
+        if(Constants.Vision.kExtraVisionDebugInfo)
         {
-          Pose3d robot_pose3d = m_referencePose.get();
+          Pose3d robot_pose3d = new Pose3d(m_referencePose.get());
           Pose3d robot_pose_transformed = robot_pose3d.transformBy(m_cameraTransform.get());
           double[] ambiguities = new double[getTargets().size()];
 
-          DogLog.log(m_camera.getName() + "/Camera Transform", robot_pose_transformed);
+          Logger.recordOutput(m_camera.getName() + "/Camera Transform", robot_pose_transformed);
 
           m_visionTargets.clear();
           m_corners.clear();
@@ -187,17 +192,17 @@ public class AprilTagCamera extends SubsystemBase {
               m_corners.add(new Translation2d(c.x, c.y));
           }
 
-          DogLog.log(m_camera.getName() + "/Vision Targets", m_visionTargets.toArray(new Pose3d[m_visionTargets.size()]));
-          DogLog.log(m_camera.getName() + "/Corners", m_corners.toArray(new Translation2d[m_corners.size()]));
-          DogLog.log(m_camera.getName() + "/PoseAmbiguity", ambiguities.clone());
+          Logger.recordOutput(m_camera.getName() + "/Vision Targets", m_visionTargets.toArray(new Pose3d[m_visionTargets.size()]));
+          Logger.recordOutput(m_camera.getName() + "/Corners", m_corners.toArray(new Translation2d[m_corners.size()]));
+          Logger.recordOutput(m_camera.getName() + "/PoseAmbiguity", ambiguities.clone());
         }
 
-        DogLog.log(m_camera.getName() + "/hasPose", hasPose());
+        Logger.recordOutput(m_camera.getName() + "/hasPose", hasPose());
         
         if(hasPose())
         {
-          DogLog.log(m_camera.getName() + "/Combined Area", getTagAreas());
-          DogLog.log(m_camera.getName() + "/Pose3d", getPose());
+          Logger.recordOutput(m_camera.getName() + "/Combined Area", getTagAreas());
+          Logger.recordOutput(m_camera.getName() + "/Pose3d", getPose());
         }
       }
     }

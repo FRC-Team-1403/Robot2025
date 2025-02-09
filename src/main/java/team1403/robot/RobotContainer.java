@@ -6,41 +6,35 @@ package team1403.robot;
 
 import java.util.Set;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.util.FlippingUtil;
-import com.pathplanner.lib.util.GeometryUtil;
+import org.ejml.dense.row.MatrixFeatures_CDRM;
 
-import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
-import edu.wpi.first.math.MathUtil;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import team1403.lib.auto.TreeAuto;
-import team1403.lib.auto.TreeCommandNode;
-import team1403.lib.auto.TreeCommandProxy;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
-import team1403.robot.Constants.Driver;
-import team1403.robot.Constants.Setpoints;
-import team1403.robot.autos.AutoHelper;
+import team1403.robot.commands.AlignCommand;
+import team1403.robot.commands.ControllerVibrationCommand;
+import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.subsystems.Blackbox;
-import team1403.robot.swerve.DefaultSwerveCommand;
+import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.vision.AprilTagCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,6 +45,7 @@ import team1403.robot.swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
@@ -58,25 +53,17 @@ public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
 
   private SendableChooser<Command> autoChooser;
-  private Command m_pathFinder = Commands.none();
-  private Command m_teleopCommand = Commands.none();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-
+    Blackbox.init();
     m_swerve = new SwerveSubsystem();
-    // initialize the blackbox subsystem so that data can be reference later
-    Blackbox.getInstance();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
-    if(Constants.DEBUG_MODE) Constants.kDebugTab.add("Power Distribution", m_powerDistribution);
-
-    Constants.kDriverTab.addDouble("Battery Voltage", () -> m_powerDistribution.getVoltage());
-    Constants.kDriverTab.addDouble("Match Time", () -> DriverStation.getMatchTime());
-    DogLog.setPdh(m_powerDistribution);
+    // DogLog.setPdh(m_powerDistribution);
 
     // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
     // NamedCommands.registerCommand("First Piece", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
@@ -92,18 +79,27 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
-    autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
-    autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
-    autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+    
+    //avoid cluttering up auto chooser at competitions
+    if (Constants.ENABLE_SYSID) {
+      autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
+      autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
+      autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
+      autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
+      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+    }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    Constants.kDriverTab.add("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     if(Constants.DEBUG_MODE) {
-      Constants.kDebugTab.add("Command Scheduler", CommandScheduler.getInstance());
-      Constants.kDebugTab.add("Swerve Drive", m_swerve);
+      SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+      SmartDashboard.putData("Swerve Drive", m_swerve);
+      SmartDashboard.putData("Power Distribution", m_powerDistribution);
     }
 
     configureBindings();
@@ -124,9 +120,6 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     // Setting default command of swerve subPsystem
     // red
-
-    Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
-    Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
     
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(
         m_swerve,
@@ -134,23 +127,48 @@ public class RobotContainer {
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
         () -> m_driverController.getHID().getYButtonPressed(),
+        () -> m_driverController.getHID().getBButtonPressed(),
         () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getAButton(),
-        () -> m_driverController.getHID().getLeftBumperButton(),
-        () -> m_driverController.getHID().getRightBumperButton(),
-        () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 
-    //disable NT publish if FMS is attached at any point
-    new Trigger(() -> DriverStation.isFMSAttached())
-    .onTrue(new InstantCommand(
-      () -> DogLog.setOptions(
-        DogLog.getOptions().withNtPublish(false))));
+    //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
+    //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+
+    m_driverController.rightBumper().whileTrue(new DeferredCommand(() -> {
+      Blackbox.reefSelect(ReefSelect.RIGHT);
+      Pose2d currentPose = m_swerve.getPose();
+      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+      if (target == null) return Commands.none();  
+      return Commands.sequence(
+        AutoUtil.pathFindToPose(target),
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
+      );
+     }, Set.of(m_swerve)));
+
+     m_driverController.leftBumper().whileTrue(new DeferredCommand(() -> {
+      Blackbox.reefSelect(ReefSelect.LEFT);
+      Pose2d currentPose = m_swerve.getPose();
+      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+      if (target == null) return Commands.none();
+      return Commands.sequence(
+        AutoUtil.pathFindToPose(target),
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
+      );
+     }, Set.of(m_swerve)));
+
+    //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
+    //SmartDashboard.putNumber("vibration", 0);
+
+    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
   }
-  
+   
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

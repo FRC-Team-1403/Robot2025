@@ -1,15 +1,16 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.util;
 
 import java.util.Optional;
 
-import dev.doglog.DogLog;
+import org.littletonrobotics.junction.Logger;
+
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team1403.lib.util.TimeDelayedBoolean;
 import team1403.robot.Constants;
 
@@ -17,7 +18,7 @@ import team1403.robot.Constants;
 public class SwerveHeadingCorrector {
     //initial rotation is unknown
     private Optional<Double> yaw_setpoint = Optional.empty();
-    private PIDController m_controller = new PIDController(5, 0, 0);
+    private PIDController m_controller = new PIDController(5, 0, 0, Constants.kLoopTime);
     private TimeDelayedBoolean m_yawZeroDetector = new TimeDelayedBoolean();
     private LinearFilter m_gyroVelFilter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 5, Constants.kLoopTime);
     private ChassisSpeeds m_retSpeeds = new ChassisSpeeds();
@@ -28,7 +29,7 @@ public class SwerveHeadingCorrector {
         m_controller.enableContinuousInput(-Math.PI, Math.PI);
 
         if (Constants.DEBUG_MODE) {
-            Constants.kDebugTab.add("SwerveHC PID", m_controller);
+            SmartDashboard.putData("SwerveHC PID", m_controller);
         }
     }
 
@@ -42,7 +43,7 @@ public class SwerveHeadingCorrector {
         boolean is_near_zero = m_yawZeroDetector.update(Math.abs(target.omegaRadiansPerSecond) < OMEGA_THRESH, 0.2);
         double filtered_ang_vel = m_gyroVelFilter.calculate(gyro_vel);
         // degrees per second
-        boolean is_rotating = Math.abs(filtered_ang_vel) > 8;
+        boolean is_rotating = Math.abs(filtered_ang_vel) > 10;
         /* gyro angular vel used when you get hit by another robot and rotate inadvertantly, don't want to snap heading back when that happens
           usually such a hit would create a high angular velocity temporarily, so check for that (units of degrees/s) */
         boolean auto_reset = Math.abs(target.omegaRadiansPerSecond) > OMEGA_THRESH ||
@@ -53,9 +54,9 @@ public class SwerveHeadingCorrector {
             resetHeadingSetpoint();
         }
 
-        DogLog.log("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
-        DogLog.log("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
-        DogLog.log("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
+        Logger.recordOutput("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
+        Logger.recordOutput("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
+        Logger.recordOutput("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
 
         if(is_near_zero && yaw_setpoint.isEmpty())
         {
