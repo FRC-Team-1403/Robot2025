@@ -20,8 +20,8 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   private final DigitalInput m_algaeIntakePhotogate;
 
   public AlgaeIntakeSubsystem() {
-    m_algaeIntakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
-    m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.intakePhotogate1);
+    m_algaeIntakeMotor = new SparkMax(Constants.CanBus.algaeIntakeMotorID, MotorType.kBrushless);
+    m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.kAlgaeIntakePhotogateID);
     configMotors();
   }
 
