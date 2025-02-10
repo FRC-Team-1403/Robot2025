@@ -20,8 +20,8 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   private final DigitalInput m_algaeIntakePhotogate;
 
   public AlgaeIntakeSubsystem() {
-    m_algaeIntakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
-    m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.intakePhotogate1);
+    m_algaeIntakeMotor = new SparkMax(Constants.CanBus.algaeIntakeMotorID, MotorType.kBrushless);
+    m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.kAlgaeIntakePhotogateID);
     configMotors();
   }
 
@@ -30,10 +30,6 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     intakeconfig
         .idleMode(IdleMode.kBrake);
     m_algaeIntakeMotor.configure(intakeconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
-
-  public boolean isAlgaeIntakePhotogateTriggered() {
-    return !m_algaeIntakePhotogate.get();
   }
 
   public void intakeStop() {
@@ -45,11 +41,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   }
 
   public boolean hasAlgae() {
-    return isAlgaeIntakePhotogateTriggered();
-  }
-
-  public double algaeIntakeSpeed() {
-    return m_algaeIntakeMotor.get();
+    return !m_algaeIntakePhotogate.get();
   }
 
   // Logger.recordOutput("Intake/Motor Temp",

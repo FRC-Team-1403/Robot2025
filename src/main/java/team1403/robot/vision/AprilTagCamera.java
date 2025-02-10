@@ -41,7 +41,6 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final Supplier<Pose2d> m_referencePose;
   private final Alert m_cameraAlert;
   private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 10);
-  private static final boolean kExtraVisionDebugInfo = true;
 
   public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
@@ -171,11 +170,11 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
 
         Logger.recordOutput(m_camera.getName() + "/Target Visible", result.hasTargets());
 
-        if(kExtraVisionDebugInfo)
+        if(Constants.Vision.kExtraVisionDebugInfo)
         {
           Pose3d robot_pose3d = new Pose3d(m_referencePose.get());
           Pose3d robot_pose_transformed = robot_pose3d.transformBy(m_cameraTransform.get());
-          double[] ambiguities = new double[getTargets().size()];
+          double ambiguity = 0;
 
           Logger.recordOutput(m_camera.getName() + "/Camera Transform", robot_pose_transformed);
 
@@ -188,14 +187,15 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
             if(trf.equals(kZeroTransform)) continue;
 
             m_visionTargets.add(robot_pose_transformed.transformBy(trf));
-            ambiguities[i] = t.getPoseAmbiguity();
             for(TargetCorner c : t.getDetectedCorners())
               m_corners.add(new Translation2d(c.x, c.y));
           }
 
+          if(getTargets().size() == 1) ambiguity = getTargets().get(0).poseAmbiguity;
+
           Logger.recordOutput(m_camera.getName() + "/Vision Targets", m_visionTargets.toArray(new Pose3d[m_visionTargets.size()]));
           Logger.recordOutput(m_camera.getName() + "/Corners", m_corners.toArray(new Translation2d[m_corners.size()]));
-          Logger.recordOutput(m_camera.getName() + "/PoseAmbiguity", ambiguities.clone());
+          Logger.recordOutput(m_camera.getName() + "/PoseAmbiguity", ambiguity);
         }
 
         Logger.recordOutput(m_camera.getName() + "/hasPose", hasPose());

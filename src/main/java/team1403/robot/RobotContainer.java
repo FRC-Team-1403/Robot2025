@@ -31,11 +31,8 @@ import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
-import team1403.robot.commands.IntakeShooterLoop;
-import team1403.robot.subsystems.ArmWrist;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
-import team1403.robot.subsystems.IntakeAndShooter;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
 
@@ -48,8 +45,6 @@ import team1403.robot.vision.AprilTagCamera;
 public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
-  private ArmWrist m_armwrist = new ArmWrist();
-  private IntakeAndShooter m_intakeShooter = new IntakeAndShooter();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -58,7 +53,6 @@ public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
 
   private SendableChooser<Command> autoChooser;
-  private Command m_teleopCommand;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -96,11 +90,6 @@ public class RobotContainer {
       autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
       autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
       autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
-
-      autoChooser.addOption("Shooter SysID Dynamic Forward", m_intakeShooter.getSysIDD(Direction.kForward));
-      autoChooser.addOption("Shooter SysID Dynamic Reverse", m_intakeShooter.getSysIDD(Direction.kReverse));
-      autoChooser.addOption("Shooter SysID Quasistatic Forward", m_intakeShooter.getSysIDQ(Direction.kForward));
-      autoChooser.addOption("Shooter SysID Quasistatic Reverse", m_intakeShooter.getSysIDQ(Direction.kReverse));
     }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
@@ -142,10 +131,6 @@ public class RobotContainer {
         () -> m_driverController.getHID().getXButton(),
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
-
-    m_teleopCommand = new IntakeShooterLoop(m_intakeShooter, m_armwrist, () -> m_operatorController.getHID().getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getAButton());
-
-    m_armwrist.setDefaultCommand(m_teleopCommand);
 
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 

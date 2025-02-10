@@ -40,6 +40,7 @@ public class Robot extends LoggedRobot {
     // autonomous chooser on the dashboard.
     String description = 
       "Debug Mode: " + Constants.DEBUG_MODE +
+      "\nVision Debug Mode: " + Constants.Vision.kExtraVisionDebugInfo +
       "\nSysID Enabled: " + Constants.ENABLE_SYSID +
       "\nLoop Time: " + (int)(Constants.kLoopTime*1000) + " ms" +
       "\nGit Commit: " + BuildConstants.GIT_SHA +

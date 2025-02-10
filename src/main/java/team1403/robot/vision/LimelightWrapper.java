@@ -1,16 +1,10 @@
 package team1403.robot.vision;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -36,14 +30,11 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         m_imuRotation = imuRotation;
         m_camTransform = cameraTransform;
         m_poseEstimate = null;
-
     }
-    //TODO: implement these functions
     
-
     @Override
     public boolean hasPose() {
-        return m_poseEstimate != null && LimelightHelpers.validPoseEstimate(m_poseEstimate);
+        return LimelightHelpers.validPoseEstimate(m_poseEstimate);
     }
 
     @Override
@@ -69,12 +60,8 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
 
     
     private double getTagAreas() {
-        double ret = 0;
         if(!hasPose()) return 0;
-        for(LimelightHelpers.RawFiducial t : getTargets()) {
-          ret += t.ta;
-        }
-        return ret;
+        return m_poseEstimate.avgTagArea * m_poseEstimate.tagCount;
     }
 
     private LimelightHelpers.RawFiducial[] getTargets() {
@@ -89,7 +76,8 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     public boolean checkVisionResult() {
         if(!hasPose()) return false;
 
-        //if(getTagAreas() < 0.3) return false;
+        // area units are a bit different, so disable this check
+        // if(getTagAreas() < 0.3) return false;
 
         if(getPose().getZ() > 1) return false;
 
@@ -98,9 +86,11 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
                 return false;
             }
         }
-
+        
         return true;
     }
+
+    private final ArrayList<Pose3d> targets = new ArrayList<>();
     
     @Override
     public void periodic() {    
@@ -108,11 +98,28 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
         
+        Logger.recordOutput(m_name + "/hasPose", hasPose());
+
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
-            if(getTargets().length > 0);
-                Logger.recordOutput(m_name + "/ambiguity", getTargets()[0].ambiguity);
+            Logger.recordOutput(m_name + "/cameraTransform", m_camTransform.get());
+
+            /* if the pose estimate is valid then getTargets() != null */
+            LimelightHelpers.RawFiducial[] fiducials = getTargets();
+            Logger.recordOutput(m_name + "/ambiguity", fiducials.length == 1 ? fiducials[0].ambiguity : 0);
+          
+            if(Constants.Vision.kExtraVisionDebugInfo)
+            {
+                targets.clear();
+                for(int i = 0; i < fiducials.length; i++)
+                {
+                    LimelightHelpers.RawFiducial f = fiducials[i];
+                    Optional<Pose3d> pose = Constants.Vision.kFieldLayout.getTagPose(f.id);
+                    if(pose.isPresent()) targets.add(pose.get());
+                }
+                Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
+            }
         }
         
         
