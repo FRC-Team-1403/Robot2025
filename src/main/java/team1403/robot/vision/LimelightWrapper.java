@@ -98,9 +98,12 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
         
+        Logger.recordOutput(m_name + "/hasPose", hasPose());
+
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
+            Logger.recordOutput(m_name + "/cameraTransform", m_camTransform.get());
 
             /* if the pose estimate is valid then getTargets() != null */
             LimelightHelpers.RawFiducial[] fiducials = getTargets();
