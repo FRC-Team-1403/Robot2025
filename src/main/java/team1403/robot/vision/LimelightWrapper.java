@@ -1,5 +1,7 @@
 package team1403.robot.vision;
 
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -87,6 +89,8 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         
         return true;
     }
+
+    private final ArrayList<Pose3d> targets = new ArrayList<>();
     
     @Override
     public void periodic() {    
@@ -104,13 +108,14 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
           
             if(Constants.Vision.kExtraVisionDebugInfo)
             {
-                Pose3d[] targets = new Pose3d[fiducials.length];
+                targets.clear();
                 for(int i = 0; i < fiducials.length; i++)
                 {
                     LimelightHelpers.RawFiducial f = fiducials[i];
-                    targets[i] = Constants.Vision.kFieldLayout.getTagPose(f.id).orElse(Pose3d.kZero);
+                    Optional<Pose3d> pose = Constants.Vision.kFieldLayout.getTagPose(f.id);
+                    if(pose.isPresent()) targets.add(pose.get());
                 }
-                Logger.recordOutput(m_name + "/visionTargets", targets);
+                Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
             }
         }
         
