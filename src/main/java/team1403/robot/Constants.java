@@ -220,14 +220,17 @@ public class Constants {
     public static final double kPSparkMax = 0.0135;
     public static final double kISparkMax = 0.0;
     public static final double kDSparkMax = 0;
-
-    public static final double first = 5;
-    public static final double second = 10;
-    public static final double third = 20;
-    public static final double down = 0;
-    public static final double source = 0;
     public static final double kFeedforwardG = 0.01;
     public static final double kFeedforwardV = 0.001;
+
+    public static class Setpoints {
+      public static final double L1 = 5;
+      public static final double L2 = 10;
+      public static final double L3 = 20;
+      public static final double L4 = 0;
+      public static final double down = 0;
+      public static final double source = 0;
+    }
 
     public static class Command {
       public static final double movementUpGain = 3.5;

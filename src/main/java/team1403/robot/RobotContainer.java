@@ -144,36 +144,14 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
-    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 
     //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
     //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
 
-    m_driverController.rightBumper().whileTrue(new DeferredCommand(() -> {
-      Blackbox.reefSelect(ReefSelect.RIGHT);
-      Pose2d currentPose = m_swerve.getPose();
-      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-      if (target == null) return Commands.none();  
-      return Commands.sequence(
-        AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-          if(!interrupted) vibrationCmd.schedule();
-        })
-      );
-     }, Set.of(m_swerve)));
+    m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT));
 
-     m_driverController.leftBumper().whileTrue(new DeferredCommand(() -> {
-      Blackbox.reefSelect(ReefSelect.LEFT);
-      Pose2d currentPose = m_swerve.getPose();
-      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-      if (target == null) return Commands.none();
-      return Commands.sequence(
-        AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-          if(!interrupted) vibrationCmd.schedule();
-        })
-      );
-     }, Set.of(m_swerve)));
+    m_driverController.leftBumper().whileTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT));
 
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);

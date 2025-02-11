@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
+import team1403.robot.commands.CoralDepositCommand;
 
 //WIP (work in progress)
 //Stores data that is shared between subsystems
@@ -37,10 +39,20 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightBLUE;
     private static Pose2d[] reefPosesLeftRED;
     private static Pose2d[] reefPosesRightRED;
+    /*
+     * only 1 array is needed for source -> will go to middle by default then left right
+     * button press to move to center, then L/R bumpers to switch positions
+     */
+    private static Pose2d[] sourcePosesBLUE;
+    private static Pose2d[] sourcePosesRED;
+    private static Pose2d processorPoseBLUE;
+    private static Pose2d processorPoseRED;
     private static ReefSelect reefSide = ReefSelect.LEFT;
     private static ReefScoreLevel reefLevel = ReefScoreLevel.L2; //todo: figure out what we want to default to
     private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
+    private static boolean trigger = false;
+    private static boolean aligning = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);
 
@@ -97,12 +109,29 @@ public class Blackbox {
         reefLevel = level;
     }
 
+    public static ReefSelect getReefSelect(){
+        return reefSide;
+    }
+
+    public static ReefScoreLevel getReefScoreLevel() {
+        return reefLevel;
+    }
+
     public static Command reefSelectCmd(ReefSelect select) {
         return new InstantCommand(() -> reefSelect(select));
     }
 
     public static Command reefScoreLevelCmd(ReefScoreLevel level) {
         return new InstantCommand(() -> reefScoreLevel(level));
+    }
+
+    public static Command Score(ReefScoreLevel level, ReefSelect select){
+        return new CoralDepositCommand(level, select);
+    }
+
+    public static Command setAligningCmd(boolean align, ReefSelect select){
+        return new SequentialCommandGroup(new InstantCommand(() -> reefSelect(select)), 
+        new InstantCommand(() -> setAligning(align)));        
     }
 
     private static Pose2d[] getReefPoses() {
@@ -126,6 +155,22 @@ public class Blackbox {
 
     public static boolean isAlgaeLoaded() {
         return algaeLoaded;
+    }
+
+    public static void setTrigger(boolean t) {
+        trigger = t;
+    }
+
+    public static boolean getTrigger() {
+        return trigger;
+    }
+
+    public static void setAligning(boolean align) {
+        aligning = align;
+    }
+
+    public static boolean isAligning() {
+        return aligning;
     }
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {
