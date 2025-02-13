@@ -67,6 +67,9 @@ public class Robot extends LoggedRobot {
         NotificationLevel.INFO, 
         "Robot Startup Complete!", 
         description, 4000, 350, 500));
+    
+    //set hint for garbage collector
+    System.gc();
   }
 
   /**

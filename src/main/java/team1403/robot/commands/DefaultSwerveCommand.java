@@ -31,7 +31,6 @@ public class DefaultSwerveCommand extends Command {
   private final BooleanSupplier m_xModeSupplier;
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
-  private final BooleanSupplier m_zeroGyroSupplier;
   private boolean m_isFieldRelative;
   
   private SlewRateLimiter m_rotationRateLimiter;
@@ -64,7 +63,6 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
       BooleanSupplier fieldRelativeSupplier,
-      BooleanSupplier zeroGyroSupplier,
       BooleanSupplier xModeSupplier,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
@@ -75,7 +73,6 @@ public class DefaultSwerveCommand extends Command {
     this.m_fieldRelativeSupplier = fieldRelativeSupplier;
     this.m_speedSupplier = speedSupplier;
     this.m_xModeSupplier = xModeSupplier;
-    this.m_zeroGyroSupplier = zeroGyroSupplier;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
@@ -102,10 +99,6 @@ public class DefaultSwerveCommand extends Command {
 
     if (m_fieldRelativeSupplier.getAsBoolean()) {
       m_isFieldRelative = !m_isFieldRelative;
-    }
-
-    if(m_zeroGyroSupplier.getAsBoolean()) {
-      m_drivetrainSubsystem.zeroHeading();
     }
 
     if (m_xModeSupplier.getAsBoolean()) {
