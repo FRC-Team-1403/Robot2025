@@ -144,9 +144,10 @@ public class RobotContainer {
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);
 
-    m_driverController.b().debounce(1.0).onTrue(
+    m_driverController.b().debounce(1.5).onTrue(
       Commands.sequence(
           m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
+          m_swerve.runOnce(() -> m_swerve.zeroHeading()),
           vibrationCmd
         ));
     m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.resetShallowHeading()));
