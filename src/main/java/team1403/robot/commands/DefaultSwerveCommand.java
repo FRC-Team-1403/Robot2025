@@ -128,9 +128,6 @@ public class DefaultSwerveCommand extends Command {
     }
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
     double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * Swerve.kMaxAngularSpeed;
-
-    Pose2d curPose = m_drivetrainSubsystem.getPose();
-    Rotation2d curRotation = curPose.getRotation();
     // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
     
     //limit change in translation of the overall robot, based on orbit's slideshow
@@ -153,7 +150,7 @@ public class DefaultSwerveCommand extends Command {
 
     {
       if (m_isFieldRelative) {
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, curRotation);
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, m_drivetrainSubsystem.getShallowRotation());
       } else {
         chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }

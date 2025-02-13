@@ -2,6 +2,7 @@ package team1403.robot.swerve;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -88,6 +89,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private SimDouble m_gyroRateSim;
   private SysIdRoutine m_sysIdRoutine;
   private SysIdRoutine m_sysIDAngle;
+  //we also will store an offset that leads to the "shallow" heading
+  private Rotation2d m_shallowOffset = Rotation2d.kZero;
 
   private static final SwerveModuleState[] m_xModeState = {
     // Front Left
@@ -264,7 +267,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /**
    * Return the position of the drivetrain.
    *
-   * @return the position of the drivetrain in Pose3d
+   * @return the position of the drivetrain in Pose2d
    */
   public Pose2d getPose() {
     return m_odometer.getPose();
@@ -323,6 +326,20 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public Rotation2d getRotation() {
     return getPose().getRotation();
+  }
+
+  @AutoLogOutput
+  public Rotation2d getShallowRotation() {
+    //have no choice but to allocate here
+    return getRotation().minus(m_shallowOffset);
+  }
+
+  public void resetShallowHeading(Rotation2d r) {
+    m_shallowOffset = r;
+  }
+
+  public void resetShallowHeading() {
+    resetShallowHeading(getRotation());
   }
 
   /**
