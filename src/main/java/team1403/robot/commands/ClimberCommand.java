@@ -1,33 +1,34 @@
-package team1403.robot.commands;
+// package team1403.robot.commands;
 
-import java.util.function.BooleanSupplier;
+// import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import team1403.robot.subsystems.ClimberSubsystem;
-import team1403.robot.Constants;
+// import edu.wpi.first.wpilibj2.command.Command;
 
-public class ClimberCommand {
-    private Climber m_climber;
-    double m_speed;
+// import team1403.robot.Constants;
+// import team1403.robot.subsystems.ClimberSubsystem;
 
-    public ClimberCommand(Climber climber, double speed) {   
-        m_climber = climber;
-        m_speed = speed;
+// public class ClimberCommand {
+//     private ClimberSubsystem m_climber;
+//     double m_speed;
 
-        addRequirements(m_climber);
-    }
+//     public ClimberCommand(ClimberSubsystem climber, double speed) {   
+//         m_climber = climber;
+//         m_speed = speed;
 
-    @Override
-    public void initialize() {
-    }
+//         addRequirements(m_climber);
+//     }
 
-    @Override
-    public void execute() {
-        m_climber.setSpeed(m_speed);      
-    }
+//     @Override
+//     public void initialize() {
+//     }
 
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-}
+//     @Override
+//     public void execute() {
+//         m_climber.setSpeed(m_speed);      
+//     }
+
+//     @Override
+//     public boolean isFinished() {
+//         return false;
+//     }
+// }

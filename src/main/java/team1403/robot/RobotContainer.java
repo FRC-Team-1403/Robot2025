@@ -30,6 +30,7 @@ import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
+import team1403.robot.commands.CoralDepositCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
@@ -40,8 +41,10 @@ import team1403.robot.Constants.Driver;
 import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.subsystems.Elevator;
-import team1403.robot.commands.ClimberCommand;
-import team1403.robot.subsystems.ClimberSubsystems;
+import team1403.robot.subsystems.IntakeSubsystem;
+import team1403.robot.commands.IntakeCommand;
+//import team1403.robot.commands.ClimberCommand;
+//import team1403.robot.subsystems.ClimberSubsystems;
 
 
 /**
@@ -54,6 +57,8 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private Elevator m_elevator;
+  private IntakeSubsystem m_intakeSubsystem;
+  
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -65,17 +70,22 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
+  private IntakeCommand m_intakeCommand; 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     Blackbox.init();
     m_swerve = new SwerveSubsystem();
     m_elevator = new Elevator();
+    m_intakeSubsystem = new IntakeSubsystem();
+
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
-
+    //m_operatorController.b().whileTrue(() -> m_intakeSubsystem.setIntakeMotorSpeed(0));
+   // m_operatorController.a().whileTrue().new InstantCommand(() -> m_elevator.)
+    
     // DogLog.setPdh(m_powerDistribution);
 
     // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
@@ -135,30 +145,33 @@ public class RobotContainer {
     // Setting default command of swerve subPsystem
     // red
     
-    m_swerve.setDefaultCommand(new DefaultSwerveCommand(
-        m_swerve,
-        () -> -m_driverController.getLeftX(),
-        () -> -m_driverController.getLeftY(),
-        () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getYButtonPressed(),
-        () -> m_driverController.getHID().getBButtonPressed(),
-        () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getRightTriggerAxis(),
-        () -> m_driverController.getLeftTriggerAxis()));
+    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
+    //     m_swerve,
+    //     () -> -m_driverController.getLeftX(),
+    //     () -> -m_driverController.getLeftY(),
+    //     () -> -m_driverController.getRightX(),
+    //     () -> m_driverController.getHID().getYButtonPressed(),
+    //     () -> m_driverController.getHID().getBButtonPressed(),
+    //     () -> m_driverController.getHID().getXButton(),
+    //     () -> m_driverController.getRightTriggerAxis(),
+    //     () -> m_driverController.getLeftTriggerAxis()));
 
-    Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    // Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 
-    //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
-    //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+    // //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
+    // //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
 
-    m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT));
+    // m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT));
 
-    m_driverController.leftBumper().whileTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT));
+    // m_driverController.leftBumper().whileTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT));
 
-    //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
-    //SmartDashboard.putNumber("vibration", 0);
+    // //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
+    // //SmartDashboard.putNumber("vibration", 0);
 
-    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+
+    m_intakeSubsystem.setDefaultCommand(new IntakeCommand(m_intakeSubsystem, 
+      () -> m_operatorController.getHID().getXButtonPressed(), () -> m_operatorController.getHID().getYButtonPressed()));
   }
 
   /**
