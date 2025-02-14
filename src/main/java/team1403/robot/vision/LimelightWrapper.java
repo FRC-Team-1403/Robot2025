@@ -22,7 +22,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private Supplier<Rotation3d> m_imuRotation;
     private Supplier<Transform3d> m_camTransform;
     private LimelightHelpers.PoseEstimate m_poseEstimate;
-    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
+    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
     
 
     public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {

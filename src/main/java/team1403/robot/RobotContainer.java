@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
+import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
@@ -144,9 +146,11 @@ public class RobotContainer {
 
     m_driverController.b().debounce(1.5).onTrue(
       Commands.sequence(
+          m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
           m_swerve.runOnce(() -> m_swerve.zeroHeading()),
           vibrationCmd
         ));
+    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.resetShallowHeading()));
   }
    
   /**
