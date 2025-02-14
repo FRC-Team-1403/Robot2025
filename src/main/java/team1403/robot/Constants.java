@@ -103,10 +103,10 @@ public class Constants {
         public static final double minSpeed = 1;
         public static final double setPointMargin = 0.1;
         public static final double simPositionFactor = 1; 
-        public static final double elevatorUpRampUpTime = //0.2;
-        public static final double elevatorUpRampDownTime = //0.01;
-        public static final double elevatorDownRampUpTime = //0.25;
-        public static final double elevatorDownRampDownTime = //0.01;
+        public static final double elevatorUpRampUpTime = 1; //0.2;
+        public static final double elevatorUpRampDownTime = 0.5; //0.01;
+        public static final double elevatorDownRampUpTime = 1; //0.25;
+        public static final double elevatorDownRampDownTime = 0.5; //0.01;
       }
   }
 }

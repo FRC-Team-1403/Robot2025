@@ -98,15 +98,6 @@ public class Elevator extends SubsystemBase {
     DogLog.log("Right Motor Speed", m_rightMotor.get());
   }
 
-  /*
-    public void MotionProfiler() {
-        currentPos = 0;
-        currMotorOutput = 0;
-        isRampDone = false;
-        directionFlag = true;
-    }
-    */
-
     public void moveToSetPoint(double setPoint) {
         // update current position with encoder
         currentPos = getPosition();
@@ -227,21 +218,6 @@ public class Elevator extends SubsystemBase {
             isRampDone = false;
         }
     }
-
-    //no need to simulate position when we can get position from encoder
-    /*
-    private void simulatePos() {
-        // simulate position of elevator 
-        currentPos += ((currMotorOutput / 100) * Constants.Elevator.Command.simPositionFactor);
-        currentPos -= 0.001;
-        if(currentPos > 150) {
-            currentPos = 150;
-        }
-        else if (currentPos < 0) {
-            currentPos = 0;
-        }
-    }
-    */
 
     private void logValues() {
         DogLog.log("desired motor output velocity", desiredMotorOutput);
