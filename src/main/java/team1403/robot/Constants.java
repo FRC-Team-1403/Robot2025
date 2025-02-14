@@ -100,7 +100,7 @@ public class Constants {
         public static final double movementUpGain = 5; //9.0;
         public static final double movementDownGain = 3; //6.0;
         public static final double maxSpeed = 1; //100;
-        public static final double minSpeed = 1;
+        public static final double minSpeed = 0.1; //1;
         public static final double setPointMargin = 0.1;
         public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1; //0.2;
