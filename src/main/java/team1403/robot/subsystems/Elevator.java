@@ -60,11 +60,11 @@ public class Elevator extends SubsystemBase {
     SparkMaxConfig leftconfig = new SparkMaxConfig();
     leftconfig
         .idleMode(IdleMode.kBrake)
+        .inverted(true)
         .follow(m_rightMotor, true);
     SparkMaxConfig rightconfig = new SparkMaxConfig();
     rightconfig
-        .idleMode(IdleMode.kBrake)
-        .inverted(true);
+        .idleMode(IdleMode.kBrake);
 
     m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
