@@ -40,6 +40,8 @@ import team1403.robot.Constants.Driver;
 import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.subsystems.Elevator;
+import team1403.robot.commands.ClimberCommand;
+import team1403.robot.subsystems.ClimberSubsystems;
 
 
 /**
