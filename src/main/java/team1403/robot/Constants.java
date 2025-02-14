@@ -209,6 +209,7 @@ public class Constants {
   public static class Vision {
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public static final boolean kExtraVisionDebugInfo = true;
+    public static double algaeEstimateKonstant;
   }
 
   public static class AlgaeIntake {
