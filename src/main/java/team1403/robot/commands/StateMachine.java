@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team1403.lib.util.AutoUtil;
+import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.subsystems.*;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
@@ -81,6 +82,7 @@ public class StateMachine extends Command {
                         new DeferredCommand(() -> {Blackbox.reefSelect(ReefSelect.RIGHT);
                             Pose2d currentPose = m_swerve.getPose();
                             Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+                            target = CougarUtil.addDistanceToPoseLeft(target, (m_intakeSubsystem.getDistance() - 7.9375));//this value needs to be changed also need to subtract radius of coral
                             if (target == null) return Commands.none();
                             return Commands.sequence(
                                 AutoUtil.pathFindToPose(target),
