@@ -58,7 +58,11 @@ public class RobotContainer {
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
 
     if (AutoBuilder.isConfigured()) autoChooser = AutoBuilder.buildAutoChooser();
-    else autoChooser = new SendableChooser<>();
+    else
+    {
+      autoChooser = new SendableChooser<>();
+      System.err.println("Auto builder wasn't configured!");
+    }
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {
