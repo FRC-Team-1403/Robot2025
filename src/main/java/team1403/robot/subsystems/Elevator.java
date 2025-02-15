@@ -90,16 +90,17 @@ public class Elevator extends SubsystemBase {
   }
 
   public void periodic() {
-    DogLog.log("Right Motor RPM", getSpeed());
-    DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    DogLog.log("Left Motor Speed", m_leftMotor.get());
-    DogLog.log("Right Motor Speed", m_rightMotor.get());
+    Logger.recordOutput("Right Motor RPM", getSpeed());
+    Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+    Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
+    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
   }
 
     public void moveToSetPoint(double setPoint) {
         // update current position with encoder
         currentPos = getPosition();
+    }
 
     public void moveToSetpoint(double setPoint) {
         setpoint = setPoint;

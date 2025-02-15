@@ -28,26 +28,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
-import team1403.robot.commands.AlignCommand;
-import team1403.robot.commands.ClimberCommand;
-import team1403.robot.commands.ControllerVibrationCommand;
-import team1403.robot.commands.CoralDepositCommand;
-import team1403.robot.commands.DefaultSwerveCommand;
-import team1403.robot.subsystems.Blackbox;
-import team1403.robot.subsystems.ClimberSubsystem;
-import team1403.robot.subsystems.Blackbox.ReefSelect;
+import team1403.robot.commands.*;
+import team1403.robot.subsystems.*;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
-import team1403.robot.subsystems.AlgaeEstimateSubystem;
-import team1403.robot.subsystems.AlgaeIntake;
-import team1403.robot.Constants.Driver;
-import team1403.robot.commands.AlgaeIntakeCommand;
-import team1403.robot.commands.ElevatorCommand;
-import team1403.robot.subsystems.Elevator;
-import team1403.robot.subsystems.IntakeSubsystem;
-import team1403.robot.commands.IntakeCommand;
-//import team1403.robot.commands.ClimberCommand;
-//import team1403.robot.subsystems.ClimberSubsystems;
+import team1403.robot.Constants;
+
 
 
 /**
@@ -60,55 +46,49 @@ public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
   private Elevator m_elevator;
-  private IntakeSubsystem m_intakeSubsystem;
+  private IntakeSubsystem m_intake;
+  private WristSubsystem m_wrist;
+  private final AlgaeIntake m_AlgaeIntake;
+  private ClimberSubsystem m_climberSubsystem;
+  private StateMachine m_stateMachine;
+  private Command m_vibrationCmd;
   
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
 
-  private final AlgaeIntake m_AlgaeIntake = new AlgaeIntake();
   private final AlgaeEstimateSubystem test = new AlgaeEstimateSubystem();
 
   private final PowerDistribution m_powerDistribution;
 
   private SendableChooser<Command> autoChooser;
 
-  private IntakeCommand m_intakeCommand; 
   private Command m_teleopCommand;
 
-  private ClimberSubsystem m_climberSubsystem;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
+    m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     Blackbox.init();
     m_swerve = new SwerveSubsystem();
     m_elevator = new Elevator();
-    m_intakeSubsystem = new IntakeSubsystem();
+    m_intake = new IntakeSubsystem();
     m_climberSubsystem = new ClimberSubsystem();
+    m_AlgaeIntake = new AlgaeIntake();
+    m_wrist = new WristSubsystem();
+    m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
     
 
-    m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
-    m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
+
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
     //m_operatorController.b().whileTrue(() -> m_intakeSubsystem.setIntakeMotorSpeed(0));
    // m_operatorController.a().whileTrue().new InstantCommand(() -> m_elevator.)
     
-    // DogLog.setPdh(m_powerDistribution);
 
-    // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
-    // NamedCommands.registerCommand("First Piece", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
-    // NamedCommands.registerCommand("Shoot Side", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, true, () -> false, false));
-    // NamedCommands.registerCommand("Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, false));
-    // NamedCommands.registerCommand("Reset Shooter", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
-    // NamedCommands.registerCommand("First Piece Side",  new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, true, () -> true, false));
-    // NamedCommands.registerCommand("Second Source Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, true));
-    // NamedCommands.registerCommand("IntakeClose", new IntakeCommand(m_endeff, m_arm, m_wrist,  Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint, Constants.IntakeAndShooter.kCloseRPM));    
-    // NamedCommands.registerCommand("ShootLoaded", new ShootCommand(m_endeff, m_arm, m_wrist));
-    // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand(m_endeff, m_wrist));
-
-    // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     
@@ -178,10 +158,6 @@ public class RobotContainer {
     // //SmartDashboard.putNumber("vibration", 0);
 
     // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
-
-    m_intakeSubsystem.setDefaultCommand(new IntakeCommand(m_intakeSubsystem, 
-      () -> m_operatorController.getHID().getXButtonPressed(), 
-      () -> m_operatorController.getHID().getYButtonPressed()));
 
     m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
       () -> m_operatorController.getHID().getAButtonPressed(), 
