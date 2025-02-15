@@ -28,8 +28,7 @@ public class ElevatorCommand extends Command {
 
   @Override
   public void initialize() {
-    m_elevator.MotionProfiler();
-    m_down = () -> true;
+
   }
 
   @Override
@@ -40,16 +39,13 @@ public class ElevatorCommand extends Command {
     else if (m_first.getAsBoolean() && setpoint != Constants.Elevator.Setpoints.L1) {
       setpoint = Constants.Elevator.Setpoints.L1; // 5
     }
-    else if (m_second.getAsBoolean() && setpoint != Constants.Elevator.Setpoints.L2) {
-      setpoint = Constants.Elevator.Setpoints.L2; // 10
+    else if (m_second.getAsBoolean() && setpoint != Constants.Elevator.second) {
+      setpoint = Constants.Elevator.second; // 15
     }
-    else if (m_third.getAsBoolean() && setpoint != Constants.Elevator.Setpoints.L3) {
-      setpoint = Constants.Elevator.Setpoints.L3; // 20
-    } else if (m_fourth.getAsBoolean() && setpoint != Constants.Elevator.Setpoints.L4) {
-      setpoint = Constants.Elevator.Setpoints.L4;
+    else if (m_third.getAsBoolean() && setpoint != Constants.Elevator.third) {
+      setpoint = Constants.Elevator.third; // 30
     }
-    setpoint = 70;
-    m_elevator.moveToSetpoint(setpoint);
+    m_elevator.moveToSetPoint(setpoint);
   }
 
   @Override
