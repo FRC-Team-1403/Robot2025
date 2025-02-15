@@ -44,13 +44,14 @@ import team1403.robot.Constants;
  */
 public class RobotContainer {
 
+  /*
   private SwerveSubsystem m_swerve;
   private Elevator m_elevator;
   private IntakeSubsystem m_intake;
   private WristSubsystem m_wrist;
   private final AlgaeIntake m_AlgaeIntake;
   private ClimberSubsystem m_climberSubsystem;
-  private StateMachine m_stateMachine;
+  private StateMachine m_stateMachine;*/
   private Command m_vibrationCmd;
   
 
@@ -72,6 +73,7 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     Blackbox.init();
+    /*
     m_swerve = new SwerveSubsystem();
     m_elevator = new Elevator();
     m_intake = new IntakeSubsystem();
@@ -79,7 +81,7 @@ public class RobotContainer {
     m_AlgaeIntake = new AlgaeIntake();
     m_wrist = new WristSubsystem();
     m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
-    m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
+    m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);*/
     
 
 
@@ -89,11 +91,12 @@ public class RobotContainer {
    // m_operatorController.a().whileTrue().new InstantCommand(() -> m_elevator.)
     
 
-
-    autoChooser = AutoBuilder.buildAutoChooser();
+    if(AutoBuilder.isConfigured()) autoChooser = AutoBuilder.buildAutoChooser();
+    else autoChooser = new SendableChooser<Command>();
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {
+      /*
       autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
       autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
       autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
@@ -101,7 +104,7 @@ public class RobotContainer {
       autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
       autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
       autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));*/
     }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
@@ -110,7 +113,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     if(Constants.DEBUG_MODE) {
       SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
-      SmartDashboard.putData("Swerve Drive", m_swerve);
+      //SmartDashboard.putData("Swerve Drive", m_swerve);
       SmartDashboard.putData("Power Distribution", m_powerDistribution);
     }
 
@@ -159,9 +162,9 @@ public class RobotContainer {
 
     // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
 
-    m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
+    /*m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
       () -> m_operatorController.getHID().getAButtonPressed(), 
-      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
+      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));*/
     
   }
 
