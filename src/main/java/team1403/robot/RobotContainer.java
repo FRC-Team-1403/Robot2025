@@ -35,6 +35,7 @@ import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
+import team1403.robot.subsystems.AlgaeEstimateSubystem;
 import team1403.robot.subsystems.AlgaeIntake;
 import team1403.robot.Constants.Driver;
 import team1403.robot.commands.AlgaeIntakeCommand;
@@ -58,6 +59,7 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController;
 
   private final AlgaeIntake m_AlgaeIntake = new AlgaeIntake();
+  private final AlgaeEstimateSubystem test = new AlgaeEstimateSubystem();
 
   private final PowerDistribution m_powerDistribution;
 
