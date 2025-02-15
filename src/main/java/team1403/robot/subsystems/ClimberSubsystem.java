@@ -18,8 +18,8 @@ public class ClimberSubsystem extends SubsystemBase{
     private double speed;
 
     public ClimberSubsystem(){
-        m_leftMotor = new SparkMax(Constants.Climber.motor1ID, MotorType.kBrushless);
-        m_rightMotor = new SparkMax(Constants.Climber.motor2ID, MotorType.kBrushless);
+        m_leftMotor = new SparkMax(Constants.Climber.leftMotor, MotorType.kBrushless);
+        m_rightMotor = new SparkMax(Constants.Climber.rightMotor, MotorType.kBrushless);
 
         
     }
