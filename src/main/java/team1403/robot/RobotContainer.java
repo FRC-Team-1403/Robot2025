@@ -75,6 +75,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   private IntakeCommand m_intakeCommand; 
+  private Command m_teleopCommand;
 
   private ClimberSubsystem m_climberSubsystem;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -196,5 +197,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return autoChooser.getSelected();
+  }
+
+  public Command getTeleopCommand() {
+    return m_teleopCommand;
   }
 }
