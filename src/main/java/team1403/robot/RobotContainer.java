@@ -6,27 +6,49 @@ package team1403.robot;
 
 import java.util.Set;
 
-import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import org.ejml.dense.row.MatrixFeatures_CDRM;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.FlippingUtil;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import team1403.lib.util.AutoUtil;
+import team1403.lib.util.CougarUtil;
+import team1403.robot.commands.AlignCommand;
+import team1403.robot.commands.ClimberCommand;
+import team1403.robot.commands.ControllerVibrationCommand;
+import team1403.robot.commands.CoralDepositCommand;
+import team1403.robot.commands.DefaultSwerveCommand;
+import team1403.robot.subsystems.Blackbox;
+import team1403.robot.subsystems.ClimberSubsystem;
+import team1403.robot.subsystems.Blackbox.ReefSelect;
+import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.vision.AprilTagCamera;
+import team1403.robot.subsystems.AlgaeEstimateSubystem;
+import team1403.robot.subsystems.AlgaeIntake;
 import team1403.robot.Constants.Driver;
+import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.subsystems.Elevator;
+import team1403.robot.subsystems.IntakeSubsystem;
+import team1403.robot.commands.IntakeCommand;
+//import team1403.robot.commands.ClimberCommand;
+//import team1403.robot.subsystems.ClimberSubsystems;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,31 +58,84 @@ import team1403.robot.subsystems.Elevator;
  */
 public class RobotContainer {
 
-  private Elevator m_elevator = new Elevator();
+  private SwerveSubsystem m_swerve;
+  private Elevator m_elevator;
+  private IntakeSubsystem m_intakeSubsystem;
+  
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
 
+  private final AlgaeIntake m_AlgaeIntake = new AlgaeIntake();
+  private final AlgaeEstimateSubystem test = new AlgaeEstimateSubystem();
+
   private final PowerDistribution m_powerDistribution;
 
   private SendableChooser<Command> autoChooser;
-  private Command m_pathFinder = Commands.none();
-  private Command m_teleopCommand = Commands.none();
 
+  private IntakeCommand m_intakeCommand; 
+
+  private ClimberSubsystem m_climberSubsystem;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    Blackbox.init();
+    m_swerve = new SwerveSubsystem();
+    m_elevator = new Elevator();
+    m_intakeSubsystem = new IntakeSubsystem();
+    m_climberSubsystem = new ClimberSubsystem();
+    
+
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
+    //m_operatorController.b().whileTrue(() -> m_intakeSubsystem.setIntakeMotorSpeed(0));
+   // m_operatorController.a().whileTrue().new InstantCommand(() -> m_elevator.)
+    
+    // DogLog.setPdh(m_powerDistribution);
 
-    Constants.kDriverTab.addDouble("Battery Voltage", () -> m_powerDistribution.getVoltage());
-    Constants.kDriverTab.addDouble("Match Time", () -> DriverStation.getMatchTime());
-    Constants.kDebugTab.add("Command Scheduler", CommandScheduler.getInstance());
+    // NamedCommands.registerCommand("stop", new InstantCommand(() -> m_swerve.stop()));
+    // NamedCommands.registerCommand("First Piece", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
+    // NamedCommands.registerCommand("Shoot Side", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, true, () -> false, false));
+    // NamedCommands.registerCommand("Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, false));
+    // NamedCommands.registerCommand("Reset Shooter", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, false, () -> false, false));
+    // NamedCommands.registerCommand("First Piece Side",  new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> false, () -> false, true, () -> true, false));
+    // NamedCommands.registerCommand("Second Source Shoot", new AutoIntakeShooterLoop(m_endeff, m_arm, m_wrist, m_led, () -> true, () -> false, false, () -> false, true));
+    // NamedCommands.registerCommand("IntakeClose", new IntakeCommand(m_endeff, m_arm, m_wrist,  Constants.Arm.kDriveSetpoint, Constants.Wrist.kDriveSetpoint, Constants.IntakeAndShooter.kCloseRPM));    
+    // NamedCommands.registerCommand("ShootLoaded", new ShootCommand(m_endeff, m_arm, m_wrist));
+    // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand(m_endeff, m_wrist));
 
-       configureBindings();
-     }
+    // NamedCommands.registerCommand("Trigger Shot", new TriggerShotCommand());
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    
+    //avoid cluttering up auto chooser at competitions
+    if (Constants.ENABLE_SYSID) {
+      autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
+      autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
+      autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
+      autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
+      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+    }
+
+    // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
+    // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    if(Constants.DEBUG_MODE) {
+      SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+      SmartDashboard.putData("Swerve Drive", m_swerve);
+      SmartDashboard.putData("Power Distribution", m_powerDistribution);
+    }
+
+    configureBindings();
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -71,15 +146,46 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    // The controls are for field-oriented driving:
+    // Left stick Y axis -> forward and backwards movement
+    // Left stick X axis -> left and right movement
+    // Right stick X axis -> rotation
+    // Setting default command of swerve subPsystem
+    // red
+    
+    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
+    //     m_swerve,
+    //     () -> -m_driverController.getLeftX(),
+    //     () -> -m_driverController.getLeftY(),
+    //     () -> -m_driverController.getRightX(),
+    //     () -> m_driverController.getHID().getYButtonPressed(),
+    //     () -> m_driverController.getHID().getBButtonPressed(),
+    //     () -> m_driverController.getHID().getXButton(),
+    //     () -> m_driverController.getRightTriggerAxis(),
+    //     () -> m_driverController.getLeftTriggerAxis()));
 
-    new Trigger(() -> DriverStation.isFMSAttached())
-    .onTrue(new InstantCommand(
-      () -> DogLog.setOptions(
-        DogLog.getOptions().withNtPublish(false))));
+    // Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
-    () -> m_operatorController.getHID().getAButton(), () -> m_operatorController.getHID().getBButton(), 
-    () -> m_operatorController.getHID().getYButton(), () -> m_operatorController.getHID().getXButton()));
+    // //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
+    // //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+
+    // m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT));
+
+    // m_driverController.leftBumper().whileTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT));
+
+    // //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
+    // //SmartDashboard.putNumber("vibration", 0);
+
+    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+
+    m_intakeSubsystem.setDefaultCommand(new IntakeCommand(m_intakeSubsystem, 
+      () -> m_operatorController.getHID().getXButtonPressed(), 
+      () -> m_operatorController.getHID().getYButtonPressed()));
+
+    m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
+      () -> m_operatorController.getHID().getAButtonPressed(), 
+      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
+    
   }
 
   /**
