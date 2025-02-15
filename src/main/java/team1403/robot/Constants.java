@@ -91,9 +91,9 @@ public class Constants {
 
       public static final double kConversionFactorInchestoRotations = 1.0 / (Math.PI * 1.751) * 0.5 * 9.0;
 
-      public static final double first = 5 * kConversionFactorInchestoRotations;
-      public static final double second = 15 * kConversionFactorInchestoRotations;
-      public static final double third = 30 * kConversionFactorInchestoRotations; //100;
+      public static final double first = 5; // * kConversionFactorInchestoRotations;
+      public static final double second = 15; // * kConversionFactorInchestoRotations;
+      public static final double third = 30; // * kConversionFactorInchestoRotations; //100;
       public static final double down = 0;
       public static final double kFeedforwardG = 0.0075;
       public static final double kFeedforwardV = 0.001;
@@ -102,9 +102,9 @@ public class Constants {
         public static final double movementUpGain = 5; //9.0;
         public static final double movementDownGain = 3; //6.0;
         public static final double maxSpeed = 100;
-        public static final double minSpeed = 1;
+        public static final double minSpeed = 10; //1
         public static final double setPointMargin = 0.1;
-        public static final double simPositionFactor = 1; 
+        //public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1; //0.2;
         public static final double elevatorUpRampDownTime = 0.5; //0.01;
         public static final double elevatorDownRampUpTime = 0.25; //0.25;
