@@ -192,3 +192,4 @@ simgui-ds.json
 # Generated at compile time, so remove from git
 BuildConstants.java
 src/main/java/team1403/robot/BuildConstants.java
+src/main/java/team1403/robot/BuildConstants.java
