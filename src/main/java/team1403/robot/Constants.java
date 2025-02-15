@@ -264,4 +264,8 @@ public class Constants {
     public static final double WristKD = 0;
 
   }
+
+  public static class Climber {
+    public static final int motorID = 0; //check 
+  }
 }

@@ -29,10 +29,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
+import team1403.robot.commands.ClimberCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralDepositCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.subsystems.Blackbox;
+import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
@@ -71,6 +73,8 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   private IntakeCommand m_intakeCommand; 
+
+  private ClimberSubsystem m_climberSubsystem;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -78,6 +82,8 @@ public class RobotContainer {
     m_swerve = new SwerveSubsystem();
     m_elevator = new Elevator();
     m_intakeSubsystem = new IntakeSubsystem();
+    m_climberSubsystem = new ClimberSubsystem();
+    
 
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
@@ -171,7 +177,13 @@ public class RobotContainer {
     // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
 
     m_intakeSubsystem.setDefaultCommand(new IntakeCommand(m_intakeSubsystem, 
-      () -> m_operatorController.getHID().getXButtonPressed(), () -> m_operatorController.getHID().getYButtonPressed()));
+      () -> m_operatorController.getHID().getXButtonPressed(), 
+      () -> m_operatorController.getHID().getYButtonPressed()));
+
+    m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
+      () -> m_operatorController.getHID().getAButtonPressed(), 
+      () -> m_operatorController.getHID().getBButtonPressed()), 0.1);
+    
   }
 
   /**
