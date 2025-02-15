@@ -60,18 +60,18 @@ public class Elevator extends SubsystemBase {
     SparkMaxConfig leftconfig = new SparkMaxConfig();
     leftconfig
         .idleMode(IdleMode.kBrake)
-        .inverted(true)
         .follow(m_rightMotor, true);
     SparkMaxConfig rightconfig = new SparkMaxConfig();
     rightconfig
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kBrake)
+        .inverted(true);
 
     m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
   
   public void setMotorSpeed(double speed) {
-    m_rightMotor.set(MathUtil.clamp(speed, -0.1, 0.1)); //-1.0, 1.0));
+    m_rightMotor.set(MathUtil.clamp(speed, -0.4, 0.4)); //-1.0, 1.0));
   }
 
   public void stopMotors() {
@@ -117,7 +117,7 @@ public class Elevator extends SubsystemBase {
         checkDirection(setPoint);
         adjustCurrentOutput();
         checkIfReachedSetPoint(setPoint);
-        currMotorOutput += calculation(currentPos, setpoint);
+        currMotorOutput += 100.0 * calculation(currentPos, setpoint);
         // set the speed to the motors
         setMotorSpeed(currMotorOutput / 100.0); 
         //simulatePos();
@@ -231,4 +231,4 @@ public class Elevator extends SubsystemBase {
         DogLog.log("checking direction", directionFlag);
         DogLog.log("Feedforward", calculation(currentPos, setpoint));
     }
- }
+}

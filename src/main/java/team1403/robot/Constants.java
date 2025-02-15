@@ -55,7 +55,7 @@ public class Constants {
 
   public static class CanBus {
     
-    public static final int powerDistributionID = 60;
+    public static final int powerDistributionID = 42;
 
     public static final int leftElevatorMotorID = 10; //3;
     public static final int rightElevatorMotorID = 11; //2;
@@ -89,24 +89,26 @@ public class Constants {
       public static final double kISparkMax = 0.0;
       public static final double kDSparkMax = 0;
 
-      public static final double first = 5;
-      public static final double second = 10;
-      public static final double third = 100;
+      public static final double kConversionFactorInchestoRotations = 1.0 / (Math.PI * 1.751) * 0.5 * 9.0;
+
+      public static final double first = 5 * kConversionFactorInchestoRotations;
+      public static final double second = 15 * kConversionFactorInchestoRotations;
+      public static final double third = 30 * kConversionFactorInchestoRotations; //100;
       public static final double down = 0;
-      public static final double kFeedforwardG = 0.01;
+      public static final double kFeedforwardG = 0.0075;
       public static final double kFeedforwardV = 0.001;
 
       public static class Command {
         public static final double movementUpGain = 5; //9.0;
         public static final double movementDownGain = 3; //6.0;
-        public static final double maxSpeed = 1; //100;
-        public static final double minSpeed = 0.1; //1;
+        public static final double maxSpeed = 100;
+        public static final double minSpeed = 1;
         public static final double setPointMargin = 0.1;
         public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1; //0.2;
         public static final double elevatorUpRampDownTime = 0.5; //0.01;
-        public static final double elevatorDownRampUpTime = 1; //0.25;
-        public static final double elevatorDownRampDownTime = 0.5; //0.01;
+        public static final double elevatorDownRampUpTime = 0.25; //0.25;
+        public static final double elevatorDownRampDownTime = 1; //0.01;
       }
   }
 }
