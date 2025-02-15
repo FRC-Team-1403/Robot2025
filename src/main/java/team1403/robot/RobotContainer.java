@@ -57,7 +57,8 @@ public class RobotContainer {
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    if (AutoBuilder.isConfigured()) autoChooser = AutoBuilder.buildAutoChooser();
+    else autoChooser = new SendableChooser<>();
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {
