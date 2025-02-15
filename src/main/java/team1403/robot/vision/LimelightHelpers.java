@@ -353,6 +353,9 @@ public class LimelightHelpers {
         @JsonProperty("ty_nocross")
         public double ty_nocrosshair;
 
+        @JsonProperty("pts")
+        public double[] pts;
+
         public LimelightTarget_Detector() {
         }
     }

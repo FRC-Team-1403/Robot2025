@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.vision.LimelightHelpers;
+import team1403.robot.vision.LimelightHelpers.LimelightResults;
 
 
 public class AlgaeEstimateSubystem extends SubsystemBase {
@@ -43,17 +44,22 @@ public class AlgaeEstimateSubystem extends SubsystemBase {
     }
 
     public Pose3d getPose() {
-        Pose3d output = new Pose3d(
-            new Translation3d(
-            getX(),
-            getY(),
-            getZ()),
-            Rotation3d.kZero
-        );
+        if(LimelightHelpers.getTV("limelight")) {
+            LimelightResults res = LimelightHelpers.getLatestResults("limelight");
+            Logger.recordOutput("test", res.targets_Detector[0].pts);
+            Pose3d output = new Pose3d(
+                new Translation3d(
+                getX(),
+                getY(),
+                getZ()),
+                Rotation3d.kZero
+            );
 
-        output.transformBy(Constants.Swerve.kCameraTransfrom.inverse());
-        output.transformBy(new Transform3d(new Transform2d(16,16, Rotation2d.kZero)));
-        return output;
+            output.transformBy(Constants.Swerve.kCameraTransfrom.inverse());
+            output.transformBy(new Transform3d(new Transform2d(16,16, Rotation2d.kZero)));
+            return output;
+        }
+        return null;
     }
 
     public void periodic() {
