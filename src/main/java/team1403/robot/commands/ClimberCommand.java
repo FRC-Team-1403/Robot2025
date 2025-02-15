@@ -24,6 +24,7 @@ public class ClimberCommand extends Command{
 
     @Override
     public void initialize() {
+        m_climber.configMotors();
     }
 
     @Override
