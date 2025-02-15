@@ -149,15 +149,15 @@ public class Constants {
    */  
   public static class CanBus {
 
-    
-    public static final int powerDistributionID = 60;
+    public static final int powerDistributionID = 42;
+
+    public static final int leftElevatorMotorID = 10; //3;
+    public static final int rightElevatorMotorID = 11; //2;
+
     public static final int intakeMotorID = 0;
     public static final int CANRangeID = 0;
     public static final int wristMotorID = 0;
 
-
-    public static final int leftElevatorMotorID = 3;
-    public static final int rightElevatorMotorID = 2;
     public static final int elbowMotorID = 1;
     public static final int algaeIntakeMotorID = 4;
 
@@ -224,27 +224,25 @@ public class Constants {
     public static final double kFeedforwardG = 0.01;
     public static final double kFeedforwardV = 0.001;
 
-    public static class Setpoints {
-      public static final double L1 = 5;
-      public static final double L2 = 10;
-      public static final double L3 = 20;
-      public static final double L4 = 0;
-      public static final double down = 0;
-      public static final double source = 0;
-    }
+      public static final double kConversionFactorInchestoRotations = 1.0 / (Math.PI * 1.751) * 0.5 * 9.0;
 
-    public static class Command {
-      public static final double movementUpGain = 3.5;
-      public static final double movementDownGain = 3.0;
-      public static final double maxSpeed = 90;
-      public static final double minSpeed = 5;
-      public static final double setPointMargin = 0.5;
-      public static final double simPositionFactor = 1; 
-      public static final double elevatorUpRampUpTime = 1;
-      public static final double elevatorUpRampDownTime = 0.01;
-      public static final double elevatorDownRampUpTime = 1;
-      public static final double elevatorDownRampDownTime = 0.01;
-    }
+      public static final double first = 5; // * kConversionFactorInchestoRotations;
+      public static final double second = 15; // * kConversionFactorInchestoRotations;
+      public static final double third = 30; // * kConversionFactorInchestoRotations; //100;
+      public static final double down = 0;
+
+      public static class Command {
+        public static final double movementUpGain = 5; //9.0;
+        public static final double movementDownGain = 3; //6.0;
+        public static final double maxSpeed = 100;
+        public static final double minSpeed = 10; //1
+        public static final double setPointMargin = 0.1;
+        //public static final double simPositionFactor = 1; 
+        public static final double elevatorUpRampUpTime = 1; //0.2;
+        public static final double elevatorUpRampDownTime = 0.5; //0.01;
+        public static final double elevatorDownRampUpTime = 0.25; //0.25;
+        public static final double elevatorDownRampDownTime = 1; //0.01;
+      }
 }
 
   public static class Wrist {
