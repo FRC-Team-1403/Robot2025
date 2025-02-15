@@ -1,4 +1,4 @@
-package main.java.team1403.robot.subsystems;
+package team1403.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.util.datalog.DataLog;
