@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Forward"
+            "pathName": "Want 3 Part 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Need 3 Step 1"
+            "pathName": "Want 3 Part 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Want 3 Part 3"
           }
         }
       ]

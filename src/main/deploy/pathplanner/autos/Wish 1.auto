@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wish 1 part 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wish 1 part 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": " Wish 1 part 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wish 1 part 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Wish 1 part 5"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

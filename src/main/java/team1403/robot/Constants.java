@@ -266,6 +266,7 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final int motorID = 0; //check 
+    public static final int leftMotor = 0; //check 
+    public static final int rightMotor = 0;
   }
 }

@@ -15,6 +15,8 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -34,7 +36,7 @@ import team1403.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
-  private final ElevatorFeedforward m_ElevatorFeedforward;
+  private ElevatorFeedforward m_ElevatorFeedforward;
   private double currentPos;
   private double currMotorOutput;
   private double desiredMotorOutput;
@@ -46,29 +48,29 @@ public class Elevator extends SubsystemBase {
   private double setpoint;
 
   public Elevator() {
-    //m_leftMotor = new SparkMax(Constants.Canbus.leftElevatorMotorID, MotorType.kBrushless);
-    // m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
-    // configMotors();
+    m_leftMotor = new SparkMax(Constants.CanBus.leftElevatorMotorID, MotorType.kBrushless);
+    m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
+    configMotors();
 
     m_ElevatorFeedforward = new ElevatorFeedforward(0, Constants.Elevator.kFeedforwardG, Constants.Elevator.kFeedforwardV, 0, Constants.kLoopTime);
   }
 
-//   private void configMotors() {
-//     SparkMaxConfig leftconfig = new SparkMaxConfig();
-//     leftconfig
-//         .idleMode(IdleMode.kBrake)
-//         .follow(m_rightMotor, true);
-//     SparkMaxConfig rightconfig = new SparkMaxConfig();
-//     rightconfig
-//         .idleMode(IdleMode.kBrake)
-//         .inverted(true);
+   private void configMotors() {
+    SparkMaxConfig leftconfig = new SparkMaxConfig();
+    leftconfig
+        .idleMode(IdleMode.kBrake)
+        .follow(m_rightMotor, true);
+    SparkMaxConfig rightconfig = new SparkMaxConfig();
+    rightconfig
+        .idleMode(IdleMode.kBrake)
+        .inverted(true);
 
-//     m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-//     m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-//    }
+    m_leftMotor.configure(leftconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+   }
   
   public void setMotorSpeed(double speed) {
-    // m_rightMotor.set(MathUtil.clamp(speed, -0.1, 0.1));
+    m_rightMotor.set(MathUtil.clamp(speed, -0.4, 0.4)); //-1.0, 1.0));
   }
 
   public void stopMotors() {
@@ -88,18 +90,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public void periodic() {
-    // DogLog.log("Right Motor RPM", getSpeed());
-    // DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    // DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    // DogLog.log("Left Motor Speed", m_leftMotor.get());
-    // DogLog.log("Right Motor Speed", m_rightMotor.get());
+    Logger.recordOutput("Right Motor RPM", getSpeed());
+    Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+    Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
+    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
   }
 
-    public void MotionProfiler() {
-        currentPos = 0;
-        currMotorOutput = 0;
-        isRampDone = false;
-        directionFlag = true;
+    public void moveToSetPoint(double setPoint) {
+        // update current position with encoder
+        currentPos = getPosition();
     }
 
     public void moveToSetpoint(double setPoint) {
@@ -116,21 +116,23 @@ public class Elevator extends SubsystemBase {
         else if(isGoingDown) {
             currMotorOutput = ramp(Constants.Elevator.Command.elevatorDownRampUpTime, Constants.Elevator.Command.elevatorDownRampDownTime, Math.abs(currMotorOutput), desiredMotorOutput);
         }
-
+        checkDirection(setPoint);
         adjustCurrentOutput();
         checkIfReachedSetPoint(setPoint);
-        currMotorOutput += calculation(currentPos, setpoint); 
-        simulatePos();
+        currMotorOutput += 100.0 * calculation(currentPos, setpoint);
+        // set the speed to the motors
+        setMotorSpeed(currMotorOutput / 100.0); 
+        //simulatePos();
         logValues();
     }
 
     //check whether component is moving up or down
     private void checkDirection(double setPoint) {
-        if(setPoint > currentPos - Constants.Elevator.Command.setPointMargin) {
+        if(setPoint > currentPos + Constants.Elevator.Command.setPointMargin) {
             isGoingUp = true;
             isGoingDown = false;
         } 
-        else if(setPoint < currentPos + Constants.Elevator.Command.setPointMargin) {
+        else if(setPoint < currentPos - Constants.Elevator.Command.setPointMargin) {
             isGoingUp = false;
             isGoingDown = true;
         } 
@@ -138,8 +140,7 @@ public class Elevator extends SubsystemBase {
             isGoingUp = false;
             isGoingDown = false;
         } 
-
-        directionFlag = false;
+        //directionFlag = false;
     }
     
     private double getDesiredOutput(double setPoint) {
@@ -151,21 +152,16 @@ public class Elevator extends SubsystemBase {
         else if(isGoingDown){
             posError *= Constants.Elevator.Command.movementDownGain;
         }
-
         double desiredOutput = posError;
-
         // checks conditions that don't require any output by the motor 
         if(!isGoingUp && !isGoingDown || (isGoingUp && desiredOutput < 0) || (isGoingDown && desiredOutput > 0)) {
             desiredOutput = 0;
         }
-
         // clamp desired motor output to a maximum value
         desiredOutput = Math.abs(desiredOutput);
         if(desiredOutput > Constants.Elevator.Command.maxSpeed) {
             desiredOutput = Constants.Elevator.Command.maxSpeed;
-        }
-
-        
+        }      
         return desiredOutput;
     }
 
@@ -184,19 +180,17 @@ public class Elevator extends SubsystemBase {
         }
         // if desired output is less than current output, run downwards ramp function 
         else if(desiredOutput < currentOutput) {
-        if((currentOutput - (100/(rampDownTime/0.02)) > desiredOutput)) 
-        {
-            // decrement current output by 100/rampDownTime/cycle rate and if that output is less than desired 
-            currentOutput -= (100/(rampDownTime/0.02));
-
-        }
-        else {
-            currentOutput = desiredOutput;
-        }
+            if((currentOutput - (100/(rampDownTime/0.02)) > desiredOutput)) {
+                // decrement current output by 100/rampDownTime/cycle rate and if that output is less than desired 
+                currentOutput -= (100/(rampDownTime/0.02));
+            }
+            else {
+                currentOutput = desiredOutput;
+            }
         }
         // if current motor output reaches the desired output set isRampDone to true
         if(desiredOutput == currentOutput) {
-        isRampDone = true;
+            isRampDone = true;
         }
         // returns our current output
         return currentOutput;
@@ -207,7 +201,6 @@ public class Elevator extends SubsystemBase {
         if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < Constants.Elevator.Command.minSpeed) {
             currMotorOutput = Constants.Elevator.Command.minSpeed + calculation(currentPos, setpoint);
         }
-
         // invert output if elevator is moving down
         if(isGoingDown) {
             currMotorOutput *= -1;
@@ -221,7 +214,6 @@ public class Elevator extends SubsystemBase {
             isGoingUp = false;
             isGoingDown = false;
             directionFlag = true;
-
         }
         // else set isRampDone to false and continue the following steps above 
         else {
@@ -229,30 +221,16 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    private void simulatePos() {
-        // simulate position of elevator 
-        currentPos += ((currMotorOutput / 100) * Constants.Elevator.Command.simPositionFactor);
-        currentPos -= 0.001;
-        if(currentPos > 150) {
-            currentPos = 150;
-        }
-        else if (currentPos < 0) {
-            currentPos = 0;
-        }
-    }
-
-
-
     private void logValues() {
-        // Logger.recordOutput("desired motor output velocity", desiredMotorOutput);
-        // Logger.recordOutput("current motor output", currMotorOutput);
-        // Logger.recordOutput("is ramp done", isRampDone);
-        // Logger.recordOutput("current position", currentPos);
-        // Logger.recordOutput("position error", posError);
-        // Logger.recordOutput("motor output error", desiredMotorOutput - currMotorOutput);
-        // Logger.recordOutput("is going up", isGoingUp);
-        // Logger.recordOutput("is going down", isGoingDown);
-        // Logger.recordOutput("checking direction", directionFlag);
-        // Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
+         Logger.recordOutput("desired motor output velocity", desiredMotorOutput);
+         Logger.recordOutput("current motor output", currMotorOutput);
+         Logger.recordOutput("is ramp done", isRampDone);
+         Logger.recordOutput("current position", currentPos);
+         Logger.recordOutput("position error", posError);
+         Logger.recordOutput("motor output error", desiredMotorOutput - currMotorOutput);
+         Logger.recordOutput("is going up", isGoingUp);
+         Logger.recordOutput("is going down", isGoingDown);
+         Logger.recordOutput("checking direction", directionFlag);
+         Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
     }
- }
+}
