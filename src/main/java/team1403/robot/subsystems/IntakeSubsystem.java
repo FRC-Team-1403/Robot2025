@@ -25,19 +25,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //TODO add in the distance threholds
     public double getDistance() {
-        double c = m_CANRange.getDistance(true).getValue().in(Meters);
-        if(c > 0 && c < 0)
-            return 1;
-        else if(c > 0 && c < 0)
-            return 2;
-        else if(c > 0 && c < 0)
-            return 3;
-        else if(c > 0 && c < 0)
-            return 4;
-        else if(c > 0 && c < 0)
-            return 5;
-        else
-            return 0;
+        return m_CANRange.getDistance(true).getValue().in(Meters);
     }
+
+
     
 }

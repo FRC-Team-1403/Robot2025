@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.hardware.CANrange;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
