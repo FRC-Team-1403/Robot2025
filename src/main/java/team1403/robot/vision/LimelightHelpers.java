@@ -855,7 +855,7 @@ public class LimelightHelpers {
     }
     
     public static double getLimelightNTDouble(String tableName, String entryName) {
-        return getLimelightNTTableEntry(tableName, entryName).getDouble(0.0);
+        return getLimelightNTTableEntry(tableName, entryName).getDouble(0);
     }
 
     public static void setLimelightNTDouble(String tableName, String entryName, double val) {
@@ -917,8 +917,8 @@ public class LimelightHelpers {
      * @param limelightName Name of the Limelight camera ("" for defualt)
      * @return Array of the 4 corners
      */
-    public static double getCorners(String limelightName) {
-        return getLimelightNTDouble(limelightName, "pts");
+    public static double[] getCorners(String limelightName) {
+        return getLimelightNTDoubleArray(limelightName, "tcornxy");
     }
 
     /**
