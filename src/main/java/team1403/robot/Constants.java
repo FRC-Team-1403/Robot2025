@@ -150,10 +150,10 @@ public class Constants {
   public static class CanBus {
 
     
-    public static final int powerDistributionID = 60;
-    public static final int intakeMotorID = 0;
-    public static final int CANRangeID = 0;
-    public static final int wristMotorID = 1;
+    public static final int powerDistributionID = 42;
+    public static final int intakeMotorID = 1;
+    public static final int CANRangeID = 27;
+    public static final int wristMotorID = 3;
 
 
     public static final int leftElevatorMotorID = 10;
@@ -259,9 +259,11 @@ public class Constants {
     public static final double WristKG = 0;
     public static final double WristKV = 0;
 
-    public static final double WristKP = 0;
+    public static final double WristKP = 1.5; //keep testing
     public static final double WristKI = 0;
     public static final double WristKD = 0;
+
+    public static final double WristEncoderOffset = -0.75;
 
   }
 
