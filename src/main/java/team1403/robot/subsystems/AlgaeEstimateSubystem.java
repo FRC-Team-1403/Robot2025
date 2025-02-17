@@ -24,6 +24,7 @@ public class AlgaeEstimateSubystem extends SubsystemBase {
     private double limelightOldY = getY(LimelightHelpers.getTA("limelight"));
     private double limelightOldDistance = getDistance(LimelightHelpers.getTA("limelight"));
     private double OldArea = LimelightHelpers.getTA("limelight");
+    private Pose3d value;
 
 
     public double getDistance(double Area) {
@@ -64,35 +65,82 @@ public class AlgaeEstimateSubystem extends SubsystemBase {
         return null;
     }
 
-    public Pose3d fixPose() {
+    public boolean atEdge() {
+
+        boolean value = false;
+        double[] corners = LimelightHelpers.getCorners("limelight");
+
+        for (int index = 0; index < corners.length; index++) {   
+            if (index % 2 == 0) {
+                if (corners[index] > 1230 || corners[index] < 50) {
+                    value = true;
+                }
+            } else {
+                if (corners[index] > 910 || corners[index] < 50) {
+                    value = true;
+                }
+            }
+        }
+
+        return value;
+
+    }
+
+    public Pose3d properPose() {
 
         double limelightCurrentY = getY(LimelightHelpers.getTA("limelight"));
         double limelightCurrentDistance = getDistance(LimelightHelpers.getTA("limelight"));
         double currentArea = LimelightHelpers.getTA("limelight");
-    
-        if (limelightOldY != limelightCurrentY) {
-            limelightOldY = limelightCurrentY;
-            return getPose(currentArea);
-        } else if (limelightCurrentY == limelightOldY && limelightOldDistance - limelightCurrentDistance >= 0.5 && OldArea != currentArea) {
-            if (OldArea > currentArea) {
-                return getPose(OldArea);
-            } else {
+
+        if (limelightCurrentDistance != limelightOldDistance && limelightCurrentY - limelightOldY <= 0.9) {
+            if (atEdge()) {
+                value = getPose(OldArea);
+            }
+            if (!atEdge()) {
                 OldArea = currentArea;
-                return getPose(currentArea);
+                limelightOldDistance = limelightCurrentDistance;
             }
         } else {
-            return getPose(currentArea);
+            value = getPose(currentArea);
         }
+
+        return value;
+
     }
 
     public void periodic() {
         
+        
+        System.out.println(OldArea);
+        System.out.println(atEdge());
+        System.out.println(atEdge());
+
+        
+
+        // if (atEdge() && OldArea > currentArea) {
+        //     getPose(OldArea);
+        // } else if (atEdge() && currentArea > OldArea) {
+        //     getPose(currentArea);
+        // } else if (OldArea > currentArea) {
+        //     getPose(OldArea);
+        // } else if (currentArea > OldArea) {
+        //     getPose(currentArea);
+        // }
+
         if(LimelightHelpers.getTV("limelight"))
         {
             Logger.recordOutput("dist (m)", getDistance(LimelightHelpers.getTA("limelight")));
             Logger.recordOutput("X distance", getX(LimelightHelpers.getTA("limelight")));
             Logger.recordOutput("Y distance", getZ(LimelightHelpers.getTA("limelight")));
-            Logger.recordOutput("pose", getPose(LimelightHelpers.getTA("limelight")));
+            Logger.recordOutput("pose", properPose());
+
+            Logger.recordOutput("OldArea", OldArea);
+            Logger.recordOutput("limelightOldY", limelightOldY);
+            Logger.recordOutput("limelightOldDistance", limelightOldDistance);
+            // Logger.recordOutput("currentArea", currentArea);
+            // Logger.recordOutput("limelightCurrentY", limelightCurrentY);
+            // Logger.recordOutput("limelightCurrentDistance", limelightCurrentDistance);
+
         }
     }
 }
