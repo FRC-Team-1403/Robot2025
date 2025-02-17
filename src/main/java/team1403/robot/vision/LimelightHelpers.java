@@ -913,6 +913,15 @@ public class LimelightHelpers {
     }
 
     /**
+     * Gets the 4 corners of the neural network detection in an array.
+     * @param limelightName Name of the Limelight camera ("" for defualt)
+     * @return Array of the 4 corners
+     */
+    public static double getCorners(String limelightName) {
+        return getLimelightNTDouble(limelightName, "pts");
+    }
+
+    /**
      * Gets the vertical offset from the crosshair to the target in degrees.
      * @param limelightName Name of the Limelight camera ("" for default)
      * @return Vertical offset angle in degrees
