@@ -124,8 +124,9 @@ public class Constants {
     public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
     public static final Rotation3d kLimelightRotation = new Rotation3d(0, Units.degreesToRadians(-25), Math.PI);
     public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426-48));
+    public static final Translation3d kLimelightOffset =  new Translation3d(Units.inchesToMeters(0),0,Units.inchesToMeters(36));
     public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
-    public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
+    public static final Transform3d kLimelightTransform = new Transform3d(kLimelightOffset, kLimelightRotation);
   }
 
   public static class PathPlanner {
