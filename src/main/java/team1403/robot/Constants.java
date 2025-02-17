@@ -153,30 +153,30 @@ public class Constants {
     public static final int powerDistributionID = 60;
     public static final int intakeMotorID = 0;
     public static final int CANRangeID = 0;
-    public static final int wristMotorID = 0;
+    public static final int wristMotorID = 1;
 
 
-    public static final int leftElevatorMotorID = 3;
-    public static final int rightElevatorMotorID = 2;
+    public static final int leftElevatorMotorID = 10;
+    public static final int rightElevatorMotorID = 11;
     public static final int elbowMotorID = 1;
     public static final int algaeIntakeMotorID = 4;
 
     // Swerve CanBus ids
-    public static final int frontLeftDriveID = 13;
-    public static final int frontLeftSteerID = 12;
-    public static final int frontLeftEncoderID = 22;
+    public static final int frontLeftDriveID = 12;
+    public static final int frontLeftSteerID = 15;
+    public static final int frontLeftEncoderID = 23;
 
-    public static final int frontRightDriveID = 9;
-    public static final int frontRightSteerID = 8;
-    public static final int frontRightEncoderID = 20;
+    public static final int frontRightDriveID = 8;
+    public static final int frontRightSteerID = 2;
+    public static final int frontRightEncoderID = 22;
 
-    public static final int backLeftDriveID = 11;
-    public static final int backLeftSteerID = 10;
-    public static final int backLeftEncoderID = 21;
+    public static final int backLeftDriveID = 16;
+    public static final int backLeftSteerID = 13;
+    public static final int backLeftEncoderID = 24;
 
-    public static final int backRightDriveID = 7;
-    public static final int backRightSteerID = 6;
-    public static final int backRightEncoderID = 23;
+    public static final int backRightDriveID = 5;
+    public static final int backRightSteerID = 2;
+    public static final int backRightEncoderID = 21;
   }
 
   /**
