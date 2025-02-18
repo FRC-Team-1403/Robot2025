@@ -101,18 +101,18 @@ public class Constants {
       public static final double kFeedforwardV = 0.001;
 
       public static class Command {
-        public static final double movementUpGain = 5; //9.0;
-        public static final double movementDownGain = 3; //6.0;
-        public static final double upMinSpeed = 10;
-        public static final double downMinSpeed = 2.5;
-        public static final double upMaxSpeed = 100;
-        public static final double downMaxSpeed = 80;
+        public static final double movementUpGain = 1; //9.0;
+        public static final double movementDownGain = 1; //6.0;
+        public static final double upMinSpeed = 8;
+        public static final double downMinSpeed = 1;
+        public static final double upMaxSpeed = 40;
+        public static final double downMaxSpeed = 40;
         public static final double setPointMargin = 0.1;
-        public static final double simPositionFactor = 1; 
+        // public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1; //0.2;
-        public static final double elevatorUpRampDownTime = 0.5; //0.01;
-        public static final double elevatorDownRampUpTime = 0.25; //0.25;
-        public static final double elevatorDownRampDownTime = 1; //0.01;
+        public static final double elevatorUpRampDownTime = 0.001; //0.01;
+        public static final double elevatorDownRampUpTime = 1; //0.25;
+        public static final double elevatorDownRampDownTime = 0.001; //0.01;
       }
   }
 }
