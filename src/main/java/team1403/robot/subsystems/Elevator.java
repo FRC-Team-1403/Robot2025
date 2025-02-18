@@ -99,7 +99,7 @@ public class Elevator extends SubsystemBase {
 
     public void moveToSetPoint(double setPoint) {
         // update current position with encoder
-        currentPos = getPosition();
+        currentPos = (getPosition() / Constants.Elevator.kRatio) * Constants.Elevator.kConversionFactorRotationstoInches;
 
     public void moveToSetpoint(double setPoint) {
         setpoint = setPoint;
@@ -146,9 +146,13 @@ public class Elevator extends SubsystemBase {
         // set desired motor output equal to the difference between current position and setpoint * a gain constant
         posError = setPoint - currentPos;
         if(isGoingUp) {
+            Constants.Elevator.Command.minSpeed = Constants.Elevator.Command.upMinSpeed;
+            Constants.Elevator.Command.maxSpeed = Constants.Elevator.Command.upMaxSpeed;
             posError *= Constants.Elevator.Command.movementUpGain;
         } 
         else if(isGoingDown){
+            Constants.Elevator.Command.minSpeed = Constants.Elevator.Command.downMinSpeed;
+            Constants.Elevator.Command.maxSpeed = Constants.Elevator.Command.downMaxSpeed;
             posError *= Constants.Elevator.Command.movementDownGain;
         }
         double desiredOutput = posError;
