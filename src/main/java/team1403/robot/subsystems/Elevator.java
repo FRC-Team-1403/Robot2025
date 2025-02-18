@@ -47,6 +47,8 @@ public class Elevator extends SubsystemBase {
   private boolean directionFlag;
   private double posError;
   private double setpoint;
+  private double minSpeed;
+  private double maxSpeed;
 
   public Elevator() {
     m_leftMotor = new SparkMax(Constants.CanBus.leftElevatorMotorID, MotorType.kBrushless);
@@ -100,7 +102,7 @@ public class Elevator extends SubsystemBase {
 
     public void moveToSetPoint(double setPoint) {
         // update current position with encoder
-        currentPos = getPosition();
+        currentPos = (Constants.Elevator.kMultiplier * (getPosition() / Constants.Elevator.kGearRatio) * Constants.Elevator.kConversionFactorRotationstoInches);
         setpoint = setPoint;
         if(directionFlag && Math.abs(setPoint - currentPos) > Constants.Elevator.Command.setPointMargin) {
             checkDirection(setPoint);
@@ -145,9 +147,13 @@ public class Elevator extends SubsystemBase {
         // set desired motor output equal to the difference between current position and setpoint * a gain constant
         posError = setPoint - currentPos;
         if(isGoingUp) {
+            minSpeed = Constants.Elevator.Command.upMinSpeed;
+            maxSpeed = Constants.Elevator.Command.upMaxSpeed;
             posError *= Constants.Elevator.Command.movementUpGain;
         } 
         else if(isGoingDown){
+            minSpeed = Constants.Elevator.Command.downMinSpeed;
+            maxSpeed = Constants.Elevator.Command.downMaxSpeed;
             posError *= Constants.Elevator.Command.movementDownGain;
         }
         double desiredOutput = posError;
@@ -157,8 +163,8 @@ public class Elevator extends SubsystemBase {
         }
         // clamp desired motor output to a maximum value
         desiredOutput = Math.abs(desiredOutput);
-        if(desiredOutput > Constants.Elevator.Command.maxSpeed) {
-            desiredOutput = Constants.Elevator.Command.maxSpeed;
+        if(desiredOutput > maxSpeed) {
+            desiredOutput = maxSpeed;
         }      
         return desiredOutput;
     }
@@ -196,8 +202,8 @@ public class Elevator extends SubsystemBase {
 
     private void adjustCurrentOutput() {
         // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
-        if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < Constants.Elevator.Command.minSpeed) {
-            currMotorOutput = Constants.Elevator.Command.minSpeed + calculation(currentPos, setpoint);
+        if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minSpeed) {
+            currMotorOutput = minSpeed + calculation(currentPos, setpoint);
         }
         // invert output if elevator is moving down
         if(isGoingDown) {

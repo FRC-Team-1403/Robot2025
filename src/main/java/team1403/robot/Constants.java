@@ -89,11 +89,13 @@ public class Constants {
       public static final double kISparkMax = 0.0;
       public static final double kDSparkMax = 0;
 
-      public static final double kConversionFactorInchestoRotations = 1.0 / (Math.PI * 1.751) * 0.5 * 9.0;
+      public static final double kGearRatio = 9.0;
+      public static final double kMultiplier = 2.0;
+      public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
 
-      public static final double first = 5 * kConversionFactorInchestoRotations;
-      public static final double second = 15 * kConversionFactorInchestoRotations;
-      public static final double third = 30 * kConversionFactorInchestoRotations; //100;
+      public static final double first = 5;
+      public static final double second = 15;
+      public static final double third = 30;
       public static final double down = 0;
       public static final double kFeedforwardG = 0.0075;
       public static final double kFeedforwardV = 0.001;
@@ -101,8 +103,10 @@ public class Constants {
       public static class Command {
         public static final double movementUpGain = 5; //9.0;
         public static final double movementDownGain = 3; //6.0;
-        public static final double maxSpeed = 100;
-        public static final double minSpeed = 1;
+        public static final double upMinSpeed = 10;
+        public static final double downMinSpeed = 2.5;
+        public static final double upMaxSpeed = 100;
+        public static final double downMaxSpeed = 80;
         public static final double setPointMargin = 0.1;
         public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 1; //0.2;
