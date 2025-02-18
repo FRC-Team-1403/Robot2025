@@ -93,25 +93,25 @@ public class Constants {
       public static final double kMultiplier = 2.0;
       public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
 
-      public static final double first = 5;
-      public static final double second = 15;
-      public static final double third = 30;
-      public static final double down = 0;
-      public static final double kFeedforwardG = 0.0075;
+      public static final double first = 10;
+      public static final double second = 30;
+      public static final double third = 50;
+      public static final double down = 1;
+      public static final double kFeedforwardG = 0.02;
       public static final double kFeedforwardV = 0.001;
 
       public static class Command {
-        public static final double movementUpGain = 1; //9.0;
-        public static final double movementDownGain = 1; //6.0;
-        public static final double upMinSpeed = 8;
-        public static final double downMinSpeed = 1;
-        public static final double upMaxSpeed = 40;
-        public static final double downMaxSpeed = 40;
-        public static final double setPointMargin = 0.1;
+        public static final double movementUpGain = 6; //9.0;
+        public static final double movementDownGain = 5; //6.0;
+        public static final double upMinSpeed = 5.75;
+        public static final double downMinSpeed = 5;
+        public static final double upMaxSpeed = 100;
+        public static final double downMaxSpeed = 100;
+        public static final double setPointMargin = 1.5;
         // public static final double simPositionFactor = 1; 
-        public static final double elevatorUpRampUpTime = 1; //0.2;
+        public static final double elevatorUpRampUpTime = 0.5; //0.2;
         public static final double elevatorUpRampDownTime = 0.001; //0.01;
-        public static final double elevatorDownRampUpTime = 1; //0.25;
+        public static final double elevatorDownRampUpTime = 0.25; //0.25;
         public static final double elevatorDownRampDownTime = 0.001; //0.01;
       }
   }

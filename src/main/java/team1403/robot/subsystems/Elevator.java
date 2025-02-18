@@ -73,7 +73,7 @@ public class Elevator extends SubsystemBase {
    }
   
   public void setMotorSpeed(double speed) {
-    m_rightMotor.set(MathUtil.clamp(speed, -0.4, 0.4)); //-1.0, 1.0));
+    m_rightMotor.set(MathUtil.clamp(speed, -1.0, 1.0));
   }
 
   public void stopMotors() {
@@ -91,6 +91,8 @@ public class Elevator extends SubsystemBase {
   public double calculation(double pos, double setpoint) {
     return m_ElevatorFeedforward.calculate(pos, setpoint);
   }
+
+  public 
 
   public void periodic() {
     DogLog.log("Right Motor RPM", getSpeed());
