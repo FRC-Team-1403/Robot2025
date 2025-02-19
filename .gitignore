@@ -185,3 +185,10 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+# simgui-ds
+simgui-ds.json
+
+# Generated at compile time, so remove from git
+BuildConstants.java
+src/main/java/team1403/robot/BuildConstants.java

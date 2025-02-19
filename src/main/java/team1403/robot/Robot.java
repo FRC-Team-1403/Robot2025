@@ -4,25 +4,22 @@
 
 package team1403.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
 
-import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import team1403.robot.subsystems.Elevator;
+import team1403.lib.elastic.Elastic;
+import team1403.lib.elastic.Elastic.Notification.NotificationLevel;
+import team1403.robot.subsystems.Blackbox;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -31,24 +28,44 @@ import team1403.robot.subsystems.Elevator;
  */
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-
   private final RobotContainer m_robotContainer;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
+    super(Constants.kLoopTime);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    /* Enable logging for motors, so we don't need logging in SysID routines */
-    Logger.addDataReceiver(new NT4Publisher());
-    Logger.addDataReceiver(new WPILOGWriter());
+    String description = 
+      "Debug Mode: " + Constants.DEBUG_MODE +
+      "\nVision Debug Mode: " + Constants.Vision.kExtraVisionDebugInfo +
+      "\nSysID Enabled: " + Constants.ENABLE_SYSID +
+      "\nLoop Time: " + (int)(Constants.kLoopTime*1000) + " ms" +
+      "\nGit Commit: " + BuildConstants.GIT_SHA +
+      "\nGit Commit Date: " + BuildConstants.GIT_DATE +
+      "\nGit Branch: " + BuildConstants.GIT_BRANCH +
+      "\nGit Revision: " + BuildConstants.GIT_REVISION +
+      "\nGit Dirty: " + BuildConstants.DIRTY +
+      "\nBuild Date: " + BuildConstants.BUILD_DATE +
+      "\n";
+    Logger.recordMetadata(BuildConstants.MAVEN_NAME, description);
+    if (isReal()) {
+      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    }
+    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
     Logger.start();
-    URCL.start();
+    /* Enable logging for motors, so we don't need logging in SysID routines */
     Logger.registerURCL(URCL.startExternal());
     SignalLogger.start();
     m_robotContainer = new RobotContainer();
 
+    //notify driver that robot code has started
+    Elastic.sendNotification(
+      new Elastic.Notification(
+        NotificationLevel.INFO, 
+        "Robot Startup Complete!", 
+        description, 4000, 350, 500));
   }
 
   /**
@@ -65,6 +82,8 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    //update blackbox
+    Blackbox.periodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
