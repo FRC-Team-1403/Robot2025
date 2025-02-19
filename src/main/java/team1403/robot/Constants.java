@@ -44,7 +44,6 @@ public class Constants {
   public static final ShuffleboardTab kDebugTab = Shuffleboard.getTab("Debug");
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = true;
-  
  
   /**
    * Ports on the RoboRIO.
