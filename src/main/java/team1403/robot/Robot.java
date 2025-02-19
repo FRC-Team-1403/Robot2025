@@ -4,6 +4,10 @@
 
 package team1403.robot;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -25,7 +29,7 @@ import team1403.robot.subsystems.Elevator;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
@@ -36,14 +40,14 @@ public class Robot extends TimedRobot {
   public Robot() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    DogLog.setOptions(new DogLogOptions()
-      .withCaptureConsole(true)
-      .withCaptureDs(true));
     /* Enable logging for motors, so we don't need logging in SysID routines */
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.addDataReceiver(new WPILOGWriter());
+    Logger.start();
     URCL.start();
+    Logger.registerURCL(URCL.startExternal());
     SignalLogger.start();
     m_robotContainer = new RobotContainer();
-    DriverStation.startDataLog(DataLogManager.getLog());
 
   }
 

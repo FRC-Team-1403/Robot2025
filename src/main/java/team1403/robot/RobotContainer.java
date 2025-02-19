@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -43,7 +44,7 @@ public class RobotContainer {
 
   private final PowerDistribution m_powerDistribution;
 
-  private SendableChooser<Command> autoChooser;
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
   private Command m_pathFinder = Commands.none();
   private Command m_teleopCommand = Commands.none();
 
@@ -59,8 +60,16 @@ public class RobotContainer {
     Constants.kDriverTab.addDouble("Match Time", () -> DriverStation.getMatchTime());
     Constants.kDebugTab.add("Command Scheduler", CommandScheduler.getInstance());
 
-       configureBindings();
-     }
+    SmartDashboard.putData(autoChooser);
+
+    autoChooser.addOption("Elevator SysID QF", m_elevator.getSysIDQ(Direction.kForward));
+    autoChooser.addOption("Elevator SysID QR", m_elevator.getSysIDQ(Direction.kReverse));
+    autoChooser.addOption("Elevator SysID DF", m_elevator.getSysIDD(Direction.kForward));
+    autoChooser.addOption("Elevator SysID DR", m_elevator.getSysIDD(Direction.kReverse));
+
+   configureBindings();
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary

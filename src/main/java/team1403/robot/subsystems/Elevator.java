@@ -1,37 +1,21 @@
 package team1403.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
-import dev.doglog.DogLog;
-import edu.wpi.first.util.datalog.DataLog;
 
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.sim.SparkFlexSim;
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
 
 public class Elevator extends SubsystemBase {
@@ -50,13 +34,22 @@ public class Elevator extends SubsystemBase {
   private double minSpeed;
   private double maxSpeed;
 
+  private SysIdRoutine m_sysIdRoutine;
+
   public Elevator() {
     m_leftMotor = new SparkMax(Constants.CanBus.leftElevatorMotorID, MotorType.kBrushless);
     m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
     configMotors();
 
     m_ElevatorFeedforward = new ElevatorFeedforward(0, Constants.Elevator.kFeedforwardG, Constants.Elevator.kFeedforwardV, 0, Constants.kLoopTime);
-  }
+ 
+    m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
+      (state) -> Logger.recordOutput("SysIDElevatorFeedforward", state.toString())),
+    new SysIdRoutine.Mechanism((voltage) -> {
+      m_rightMotor.setVoltage(voltage.in(Volts));
+    }, null, this));  
+
+}
 
    private void configMotors() {
     SparkMaxConfig leftconfig = new SparkMaxConfig();
@@ -92,14 +85,20 @@ public class Elevator extends SubsystemBase {
     return m_ElevatorFeedforward.calculate(pos, setpoint);
   }
 
-  public 
+  public Command getSysIDQ(SysIdRoutine.Direction dir) {
+    return m_sysIdRoutine.quasistatic(dir);
+  }
+
+  public Command getSysIDD(SysIdRoutine.Direction dir) {
+    return m_sysIdRoutine.dynamic(dir);
+  }
 
   public void periodic() {
-    DogLog.log("Right Motor RPM", getSpeed());
-    DogLog.log("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    DogLog.log("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    DogLog.log("Left Motor Speed", m_leftMotor.get());
-    DogLog.log("Right Motor Speed", m_rightMotor.get());
+    Logger.recordOutput("Right Motor RPM", getSpeed());
+    Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+    Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+    Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
+    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
   }
 
     public void moveToSetPoint(double setPoint) {
@@ -228,15 +227,15 @@ public class Elevator extends SubsystemBase {
     }
 
     private void logValues() {
-        DogLog.log("desired motor output velocity", desiredMotorOutput);
-        DogLog.log("current motor output", currMotorOutput);
-        DogLog.log("is ramp done", isRampDone);
-        DogLog.log("current position", currentPos);
-        DogLog.log("position error", posError);
-        DogLog.log("motor output error", desiredMotorOutput - currMotorOutput);
-        DogLog.log("is going up", isGoingUp);
-        DogLog.log("is going down", isGoingDown);
-        DogLog.log("checking direction", directionFlag);
-        DogLog.log("Feedforward", calculation(currentPos, setpoint));
+        Logger.recordOutput("desired motor output velocity", desiredMotorOutput);
+        Logger.recordOutput("current motor output", currMotorOutput);
+        Logger.recordOutput("is ramp done", isRampDone);
+        Logger.recordOutput("current position", currentPos);
+        Logger.recordOutput("position error", posError);
+        Logger.recordOutput("motor output error", desiredMotorOutput - currMotorOutput);
+        Logger.recordOutput("is going up", isGoingUp);
+        Logger.recordOutput("is going down", isGoingDown);
+        Logger.recordOutput("checking direction", directionFlag);
+        Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
     }
 }
