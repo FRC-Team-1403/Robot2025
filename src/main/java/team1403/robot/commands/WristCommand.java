@@ -32,10 +32,10 @@ public class WristCommand extends Command {
     @Override
     public void execute() {
         if(m_zero.getAsBoolean()) {
-            m_wrist.setWristAngle(.2);
+            m_wrist.setWristAngle(15 / 360);
         }
         else if(m_low.getAsBoolean()) {
-            m_wrist.setWristAngle(0);
+            m_wrist.setWristAngle(17 / 360);
         }
         else if(m_mid.getAsBoolean()) {
             m_wrist.setWristAngle(-.15);
