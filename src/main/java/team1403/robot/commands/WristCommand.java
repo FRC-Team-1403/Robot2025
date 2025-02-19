@@ -14,13 +14,15 @@ public class WristCommand extends Command {
     private BooleanSupplier m_zero;
     private BooleanSupplier m_low;
     private BooleanSupplier m_mid;
+    private BooleanSupplier m_high;
     private WristSubsystem m_wrist;
     
-    public WristCommand(WristSubsystem wrist, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid) {
+    public WristCommand(WristSubsystem wrist, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid, BooleanSupplier high) {
         m_wrist = wrist;
         m_zero = zero;
         m_low = low;
         m_mid = mid;
+        m_high = high;
 
         addRequirements(m_wrist);
     }
@@ -32,9 +34,17 @@ public class WristCommand extends Command {
         if(m_zero.getAsBoolean()) {
             m_wrist.setWristAngle(.2);
         }
-        else if(m_low.getAsBoolean())
+        else if(m_low.getAsBoolean()) {
             m_wrist.setWristAngle(0);
-        else if(m_mid.getAsBoolean())
+        }
+        else if(m_mid.getAsBoolean()) {
             m_wrist.setWristAngle(-.15);
+        }
+        else if (m_high.getAsBoolean()) {
+            m_wrist.setWristAngle(.1);
+        }  
+        else {
+            m_wrist.setWristAngle(.23);
+        }
     }
 }

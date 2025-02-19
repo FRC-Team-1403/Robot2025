@@ -93,14 +93,6 @@ public class Elevator extends SubsystemBase {
     return m_sysIdRoutine.dynamic(dir);
   }
 
-  public void periodic() {
-    Logger.recordOutput("Right Motor RPM", getSpeed());
-    Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-    Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-    Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
-    Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
-  }
-
     public void moveToSetPoint(double setPoint) {
         // update current position with encoder
         currentPos = (Constants.Elevator.kMultiplier * (getPosition() / Constants.Elevator.kGearRatio) * Constants.Elevator.kConversionFactorRotationstoInches);
@@ -124,7 +116,6 @@ public class Elevator extends SubsystemBase {
         // set the speed to the motors
         setMotorSpeed(currMotorOutput / 100.0); 
         //simulatePos();
-        logValues();
     }
 
     //check whether component is moving up or down
@@ -226,7 +217,12 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    private void logValues() {
+    public void periodic() {
+        Logger.recordOutput("Right Motor RPM", getSpeed());
+        Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+        Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+        Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
+        Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
         Logger.recordOutput("desired motor output velocity", desiredMotorOutput);
         Logger.recordOutput("current motor output", currMotorOutput);
         Logger.recordOutput("is ramp done", isRampDone);
@@ -237,5 +233,5 @@ public class Elevator extends SubsystemBase {
         Logger.recordOutput("is going down", isGoingDown);
         Logger.recordOutput("checking direction", directionFlag);
         Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
-    }
+      }
 }
