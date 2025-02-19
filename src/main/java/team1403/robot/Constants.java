@@ -188,12 +188,12 @@ public class Constants {
   }
 
   /**
-   * Config parameters for tuning the operator interface.
+   * Config parameters for tuning the driver interface.
    */
   public static class Driver {
 
     /**
-     * The joystick port for the operator's controller.
+     * The joystick port for the driver's controller.
      */
     public static final int pilotPort = 1;
   }
