@@ -153,7 +153,7 @@ public class RobotContainer {
       Commands.sequence(
           m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
           m_swerve.runOnce(() -> m_swerve.zeroHeading()),
-          vibrationCmd
+          new DeferredCommand(() -> vibrationCmd, Set.of())
         ));
     m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.resetShallowHeading()));
   }
