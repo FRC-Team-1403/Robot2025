@@ -225,10 +225,6 @@ public class Constants {
       public static final double kMultiplier = 2.0;
       public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
 
-      public static final double first = 10;
-      public static final double second = 30;
-      public static final double third = 50;
-      public static final double down = 1;
       public static final double kFeedforwardG = 0.02;
       public static final double kFeedforwardV = 0.001;
 
@@ -247,21 +243,20 @@ public class Constants {
         public static final double elevatorDownRampDownTime = 0.001; //0.01;
       }
     public static class Setpoints {
-      public static final double L1 = 5;
-      public static final double L2 = 10;
-      public static final double L3 = 20;
-      public static final double L4 = 0;
-      public static final double down = 0;
-      public static final double source = 0;
+      public static final double L1 = 1;
+      public static final double L2 = 1;
+      public static final double L3 = 14.5;
+      public static final double L4 = 40;
+      public static final double source = 1;
     }
 }
 
   public static class Wrist {
     public static class Setpoints{
       public static final double L1Setpoint = 0;
-      public static final double L2Setpoint = 0;
-      public static final double L3Setpoint = 0;
-      public static final double L4Setpoint = 0;
+      public static final double L2Setpoint = 15;
+      public static final double L3Setpoint = 20;
+      public static final double L4Setpoint = 39;
     }
 
     public static final double WristKS = 0;

@@ -221,7 +221,8 @@ public class Elevator extends SubsystemBase {
         Logger.recordOutput("Right Motor RPM", getSpeed());
         Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
         Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-        Logger.recordOutput("right motor degrees", (m_rightMotor.getEncoder().getPosition() * 360) / 360);
+        Logger.recordOutput("right motor degrees mod", (m_rightMotor.getEncoder().getPosition() * 360) % 360);
+        Logger.recordOutput("right motor degrees", (m_rightMotor.getEncoder().getPosition() * 360) );
         Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
         Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
         Logger.recordOutput("desired motor output velocity", desiredMotorOutput);

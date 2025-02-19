@@ -33,16 +33,16 @@ public class ElevatorCommand extends Command {
     @Override
     public void execute() {
         if (m_zero.getAsBoolean()) {
-          setpoint = Constants.Elevator.down;
+          setpoint = Constants.Elevator.Setpoints.L1;
         }
         else if (m_low.getAsBoolean()) {
-          setpoint = Constants.Elevator.first;
+          setpoint = Constants.Elevator.Setpoints.L2;
         }
         else if (m_mid.getAsBoolean()) {
-          setpoint = Constants.Elevator.second;
+          setpoint = Constants.Elevator.Setpoints.L3;
         }
         else if (m_high.getAsBoolean()) {
-          setpoint = Constants.Elevator.third;
+          setpoint = Constants.Elevator.Setpoints.L4;
         }
         m_elevator.moveToSetPoint(setpoint);
     }
