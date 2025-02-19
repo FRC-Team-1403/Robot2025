@@ -36,7 +36,7 @@ public class Constants {
   public static final double kLoopTime = 0.02;
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = false;
-  public static final boolean ENABLE_SYSID = false;
+  public static final boolean ENABLE_SYSID = true;
   //controls if the debug tab is used on shuffleboard
 
   /**
@@ -256,12 +256,15 @@ public class Constants {
     }
 
     public static final double WristKS = 0;
-    public static final double WristKG = 0;
+    public static final double WristKG = 0.51 / 12;
     public static final double WristKV = 0;
 
-    public static final double WristKP = 1.5; //keep testing
+    public static final double WristKP = 3.2;//2.7079; //keep testing
     public static final double WristKI = 0;
-    public static final double WristKD = 0;
+    public static final double WristKD = 0;//0.69018;
+
+    public static final double maxVelo = 3;
+    public static final double maxAccel = 15;
 
     public static final double WristEncoderOffset = -0.75;
 
