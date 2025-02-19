@@ -50,7 +50,7 @@ public class Robot extends LoggedRobot {
       "\nGit Dirty: " + BuildConstants.DIRTY +
       "\nBuild Date: " + BuildConstants.BUILD_DATE +
       "\n";
-    Logger.recordMetadata(BuildConstants.MAVEN_NAME, description);
+    Logger.recordMetadata("Domino", description);
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     }
