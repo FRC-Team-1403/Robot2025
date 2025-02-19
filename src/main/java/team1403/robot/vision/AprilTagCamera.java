@@ -65,11 +65,6 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
 
       VisionSimUtil.addCamera(m_cameraSim, cameraTransform.get());
     }
-
-    // 0: April Tags
-
-
-    // 1: Reflective Tape
     m_camera.setPipelineIndex(0);
 
     m_poseEstimator = new PhotonPoseEstimator(Constants.Vision.kFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraTransform.get());

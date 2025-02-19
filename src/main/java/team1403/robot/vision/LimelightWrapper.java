@@ -102,8 +102,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
 
-        //TODO: Detect limelight disconnect
-        m_camDisconnected.set(false);
+        m_camDisconnected.set(!LimelightHelpers.isConnected(m_name));
         
         Logger.recordOutput(m_name + "/hasPose", hasPose());
 
