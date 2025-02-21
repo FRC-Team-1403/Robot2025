@@ -2,6 +2,8 @@ package team1403.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Meters;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.hardware.CANrange;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -26,8 +28,10 @@ public class IntakeSubsystem extends SubsystemBase {
     //TODO add in the distance threholds
     public double getDistance() {
         return m_CANRange.getDistance(true).getValue().in(Meters);
+
     }
 
-
-    
+    public void periodic() {
+        Logger.recordOutput("Distance", getDistance());
+    }
 }
