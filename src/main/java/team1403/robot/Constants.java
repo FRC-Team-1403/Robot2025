@@ -36,7 +36,7 @@ public class Constants {
   public static final double kLoopTime = 0.02;
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = false;
-  public static final boolean ENABLE_SYSID = false;
+  public static final boolean ENABLE_SYSID = true;
   //controls if the debug tab is used on shuffleboard
 
   /**
@@ -150,33 +150,33 @@ public class Constants {
   public static class CanBus {
 
     
-    public static final int powerDistributionID = 60;
-    public static final int intakeMotorID = 0;
-    public static final int CANRangeID = 0;
-    public static final int wristMotorID = 0;
+    public static final int powerDistributionID = 42;
+    public static final int intakeMotorID = 1;
+    public static final int CANRangeID = 27;
+    public static final int wristMotorID = 3;
 
 
-    public static final int leftElevatorMotorID = 3;
-    public static final int rightElevatorMotorID = 2;
+    public static final int leftElevatorMotorID = 10;
+    public static final int rightElevatorMotorID = 11;
     public static final int elbowMotorID = 1;
     public static final int algaeIntakeMotorID = 4;
 
     // Swerve CanBus ids
-    public static final int frontLeftDriveID = 13;
-    public static final int frontLeftSteerID = 12;
-    public static final int frontLeftEncoderID = 22;
+    public static final int frontLeftDriveID = 12;
+    public static final int frontLeftSteerID = 15;
+    public static final int frontLeftEncoderID = 23;
 
-    public static final int frontRightDriveID = 9;
-    public static final int frontRightSteerID = 8;
-    public static final int frontRightEncoderID = 20;
+    public static final int frontRightDriveID = 8;
+    public static final int frontRightSteerID = 2;
+    public static final int frontRightEncoderID = 22;
 
-    public static final int backLeftDriveID = 11;
-    public static final int backLeftSteerID = 10;
-    public static final int backLeftEncoderID = 21;
+    public static final int backLeftDriveID = 16;
+    public static final int backLeftSteerID = 13;
+    public static final int backLeftEncoderID = 24;
 
-    public static final int backRightDriveID = 7;
-    public static final int backRightSteerID = 6;
-    public static final int backRightEncoderID = 23;
+    public static final int backRightDriveID = 5;
+    public static final int backRightSteerID = 2;
+    public static final int backRightEncoderID = 21;
   }
 
   /**
@@ -256,12 +256,17 @@ public class Constants {
     }
 
     public static final double WristKS = 0;
-    public static final double WristKG = 0;
+    public static final double WristKG = 0.51 / 12;
     public static final double WristKV = 0;
 
-    public static final double WristKP = 0;
+    public static final double WristKP = 3.2;//2.7079; //keep testing
     public static final double WristKI = 0;
-    public static final double WristKD = 0;
+    public static final double WristKD = 0;//0.69018;
+
+    public static final double maxVelo = 3;
+    public static final double maxAccel = 15;
+
+    public static final double WristEncoderOffset = -0.75;
 
   }
 
