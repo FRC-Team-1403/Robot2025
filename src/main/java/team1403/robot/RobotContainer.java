@@ -44,75 +44,75 @@ import team1403.robot.Constants;
  */
 public class RobotContainer {
 
-  private SwerveSubsystem m_swerve;
-  private Elevator m_elevator;
-  private IntakeSubsystem m_intake;
-  private WristSubsystem m_wrist;
-  private final AlgaeIntake m_AlgaeIntake;
-  private ClimberSubsystem m_climberSubsystem;
-  private StateMachine m_stateMachine;
-  private Command m_vibrationCmd;
+  // private SwerveSubsystem m_swerve;
+  // private Elevator m_elevator;
+  // private IntakeSubsystem m_intake;
+  // // private WristSubsystem m_wrist;
+  // private final AlgaeIntake m_AlgaeIntake;
+  // private ClimberSubsystem m_climberSubsystem;
+  // // private StateMachine m_stateMachine;
+  // private Command m_vibrationCmd;
   
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController;
-  private final CommandXboxController m_operatorController;
+  // // Replace with CommandPS4Controller or CommandJoystick if needed
+  // private final CommandXboxController m_driverController;
+  // private final CommandXboxController m_operatorController;
 
-  private final AlgaeEstimateSubystem test = new AlgaeEstimateSubystem();
+  // private final AlgaeEstimateSubystem test = new AlgaeEstimateSubystem();
 
-  private final PowerDistribution m_powerDistribution;
+  // private final PowerDistribution m_powerDistribution;
 
-  private SendableChooser<Command> autoChooser;
+  // private SendableChooser<Command> autoChooser;
 
-  private Command m_teleopCommand;
+  // private Command m_teleopCommand;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
-    m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
-    Blackbox.init();
-    m_swerve = new SwerveSubsystem();
-    m_elevator = new Elevator();
-    m_intake = new IntakeSubsystem();
-    m_climberSubsystem = new ClimberSubsystem();
-    m_AlgaeIntake = new AlgaeIntake();
-    m_wrist = new WristSubsystem();
-    m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
-    m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
+    // m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
+    // m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
+    // Blackbox.init();
+    // m_swerve = new SwerveSubsystem();
+    // m_elevator = new Elevator();
+    // m_intake = new IntakeSubsystem();
+    // m_climberSubsystem = new ClimberSubsystem();
+    // m_AlgaeIntake = new AlgaeIntake();
+    // m_wrist = new WristSubsystem();
+    // m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    // m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
     
 
 
     // Enables power distribution logging
-    m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
+    // m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
     //m_operatorController.b().whileTrue(() -> m_intakeSubsystem.setIntakeMotorSpeed(0));
    // m_operatorController.a().whileTrue().new InstantCommand(() -> m_elevator.)
     
 
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    // autoChooser = AutoBuilder.buildAutoChooser();
     
     //avoid cluttering up auto chooser at competitions
-    if (Constants.ENABLE_SYSID) {
-      autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
-      autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
-    }
+    // if (Constants.ENABLE_SYSID) {
+    //   autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
+    //   autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
+    //   autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
+    //   autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
+    //   autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+    // }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    if(Constants.DEBUG_MODE) {
-      SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
-      SmartDashboard.putData("Swerve Drive", m_swerve);
-      SmartDashboard.putData("Power Distribution", m_powerDistribution);
-    }
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    // if(Constants.DEBUG_MODE) {
+    //   SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+    //   SmartDashboard.putData("Swerve Drive", m_swerve);
+    //   SmartDashboard.putData("Power Distribution", m_powerDistribution);
+    // }
 
     configureBindings();
   }
@@ -159,13 +159,13 @@ public class RobotContainer {
 
     // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
 
-    m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
-      () -> m_operatorController.getHID().getAButtonPressed(), 
-      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
-    m_wristCommand = new WristCommand(m_wrist, m_operatorController.a(),
-      m_operatorController.b(), m_operatorController.x());
+    // m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
+    //   () -> m_operatorController.getHID().getAButtonPressed(), 
+    //   () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
+    // m_wristCommand = new WristCommand(m_wrist, m_operatorController.a(),
+    //   m_operatorController.b(), m_operatorController.x());
 
-    m_wrist.setDefaultCommand(m_wristCommand);
+    // m_wrist.setDefaultCommand(m_wristCommand);
 
 
 
@@ -179,10 +179,12 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return autoChooser.getSelected();
+   // return autoChooser.getSelected();
+   return Commands.none();
   }
 
   public Command getTeleopCommand() {
-    return m_teleopCommand;
+    // return m_teleopCommand;
+    return Commands.none();
   }
 }

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team1403.lib.elastic.Elastic;
 import team1403.lib.elastic.Elastic.Notification.NotificationLevel;
-import team1403.robot.subsystems.Blackbox;
+// import team1403.robot.subsystems.Blackbox;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -83,7 +83,7 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     //update blackbox
-    Blackbox.periodic();
+    // Blackbox.periodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
