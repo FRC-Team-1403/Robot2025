@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
+    private boolean hasPiece = false;
 
     public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
@@ -35,17 +36,11 @@ public class CoralIntakeSubsystem extends SubsystemBase {
    }
 
     public void setIntakeMotorSpeed(double speed) {
-        if (!hasPiece() || (hasPiece() && speed < 0)) {
-            m_intakeMotor.set(speed);
-        }
+        m_intakeMotor.set(speed);
     }
     
     public double getIntakeSpeed() {
         return m_intakeMotor.get();
-    }
-
-    public boolean hasPiece() {
-        return getDistance() < 0.4;
     }
 
     //TODO add in the distance threholds
@@ -54,11 +49,17 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        if (!hasPiece() && getIntakeSpeed() > 0.0) {
+        if (!Constants.CoralIntake.hasPiece && getIntakeSpeed() > 0.0) {
             setIntakeMotorSpeed(0);
+        }
+        if (getIntakeSpeed() > 0.02) {
+            if (m_intakeMotor.getOutputCurrent() > 20) {
+                Constants.CoralIntake.hasPiece = true;
+            }
         }
 
         Logger.recordOutput("Distance", getDistance());
-        Logger.recordOutput("Has Piece", hasPiece());
+        Logger.recordOutput("Has Piece", Constants.CoralIntake.hasPiece);
+        Logger.recordOutput("Current current", m_intakeMotor.getOutputCurrent());
     }
 }

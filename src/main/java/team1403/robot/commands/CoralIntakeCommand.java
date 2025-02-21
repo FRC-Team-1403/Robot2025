@@ -26,21 +26,23 @@ public class CoralIntakeCommand extends Command {
     @Override
     public void execute() {
         if (m_release.getAsBoolean() || counter > 0) {
-            if (counter < 5) {
-                m_intakeSubsystem.setIntakeMotorSpeed(-0.3);
+            Constants.CoralIntake.hasPiece = true;
+            if (counter <= 50) {
+                m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.release);
                 counter++;
             }
             else {
                 counter = 0;
+                Constants.CoralIntake.hasPiece = false;
             }
         }
-        else if (!m_intakeSubsystem.hasPiece() 
+        else if (!Constants.CoralIntake.hasPiece
                 && Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
                 && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source) {
-            m_intakeSubsystem.setIntakeMotorSpeed(0.2);
+            m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.intake);
         }
         else { 
-            m_intakeSubsystem.setIntakeMotorSpeed(0.02);
+            m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.neutral);
         }
     }
 }

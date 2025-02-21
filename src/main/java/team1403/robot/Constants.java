@@ -217,6 +217,13 @@ public class Constants {
     public static double downPos = 0;
   }
 
+  public static class CoralIntake {
+    public static final double release = -0.3;
+    public static final double intake = 0.2;
+    public static final double neutral = 0.02;
+    public static boolean hasPiece = false;
+  }
+
   public static class Elevator {
     public static final double kPSparkMax = 0.0135;
     public static final double kISparkMax = 0.0;
