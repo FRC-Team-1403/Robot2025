@@ -42,6 +42,7 @@ public class RobotContainer {
 
   private Elevator m_elevator;
   private WristSubsystem m_wrist;
+  private IntakeSubsystem m_coralIntakeSubsystem;
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -62,6 +63,7 @@ public class RobotContainer {
 
     m_elevator = new Elevator();
     m_wrist = new WristSubsystem();
+    m_coralIntakeSubsystem = new IntakeSubsystem();
 
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
@@ -129,6 +131,8 @@ public class RobotContainer {
     m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
     () -> m_driverController.getHID().getXButton(), () -> m_driverController.getHID().getAButton(),  
     () -> m_driverController.getHID().getBButton(), () -> m_driverController.getHID().getYButton()));
+
+    m_coralIntakeSubsystem.setDefaultCommand(new CoralIntakeCommand(m_coralIntakeSubsystem, () -> m_operatorController.getRightTriggerAxis() > 0.5));
     
   }
 

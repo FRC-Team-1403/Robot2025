@@ -34,7 +34,7 @@ public class WristSubsystem extends SubsystemBase {
     private SparkMax m_wristMotor;
     private SparkAbsoluteEncoder m_encoder;                    
     private ArmFeedforward m_feedForward;
-    private PIDController m_wristPID;
+    //private PIDController m_wristPID;
     private ProfiledPIDController m_profiled;
     private SysIdRoutine m_SysIDRoutine;
 
@@ -50,11 +50,12 @@ public class WristSubsystem extends SubsystemBase {
 
         m_encoder = m_wristMotor.getAbsoluteEncoder();
         // m_feedForward = new ArmFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKG, Constants.Wrist.WristKV);
-        m_wristPID = new PIDController(Constants.Wrist.WristKP, Constants.Wrist.WristKI, Constants.Wrist.WristKD);
+        //m_wristPID = new PIDController(Constants.Wrist.WristKP, Constants.Wrist.WristKI, Constants.Wrist.WristKD);
         m_profiled = new ProfiledPIDController(Wrist.WristKP, Constants.Wrist.WristKI, Constants.Wrist.WristKD, new TrapezoidProfile.Constraints(Constants.Wrist.maxVelo, Constants.Wrist.maxAccel));
+        m_profiled.reset(0.23);
         m_feedForward = new ArmFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKG, 0);
 
-        SmartDashboard.putData("wrist 0idp", m_wristPID);
+        //SmartDashboard.putData("wrist 0idp", m_wristPID);
         SmartDashboard.putData("trapezdoi ipd", m_profiled);
 
         m_SysIDRoutine = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
@@ -95,10 +96,13 @@ public class WristSubsystem extends SubsystemBase {
         return m_SysIDRoutine.dynamic(d);
     }
 
+    @Override
     public void periodic() {
         getWristAngle();
         getWristVelocity();
         getWristAngleDeg();
+
+        Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
         m_wristMotor.set(m_profiled.calculate(getWristAngle()) + 
             -m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 

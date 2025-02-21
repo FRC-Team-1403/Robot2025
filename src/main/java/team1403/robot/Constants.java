@@ -225,7 +225,7 @@ public class Constants {
       public static final double kMultiplier = 2.0;
       public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
 
-      public static final double kFeedforwardG = 0.02;
+      public static final double kFeedforwardG = 0.03;
       public static final double kFeedforwardV = 0.001;
 
       public static class Command {
@@ -239,15 +239,16 @@ public class Constants {
         // public static final double simPositionFactor = 1; 
         public static final double elevatorUpRampUpTime = 0.5; //0.2;
         public static final double elevatorUpRampDownTime = 0.001; //0.01;
-        public static final double elevatorDownRampUpTime = 0.25; //0.25;
+        public static final double elevatorDownRampUpTime = 0.1; //0.25;
         public static final double elevatorDownRampDownTime = 0.001; //0.01;
       }
     public static class Setpoints {
       public static final double L1 = 1;
-      public static final double L2 = 1;
-      public static final double L3 = 14.5;
-      public static final double L4 = 40;
+      public static final double L2 = 2;
+      public static final double L3 = 18.5;
+      public static final double L4 = 50;
       public static final double source = 1;
+      public static double current = 1;
     }
 }
 
@@ -257,6 +258,8 @@ public class Constants {
       public static final double L2Setpoint = 15;
       public static final double L3Setpoint = 20;
       public static final double L4Setpoint = 39;
+      public static final double source = 0; //placehold
+      public static double current = 0.23;
     }
 
     public static final double WristKS = 0;
@@ -265,7 +268,7 @@ public class Constants {
 
     public static final double WristKP = 3.2;//2.7079; //keep testing
     public static final double WristKI = 0;
-    public static final double WristKD = 0;//0.69018;
+    public static final double WristKD = 0.005;//0.69018;
 
     public static final double maxVelo = 3;
     public static final double maxAccel = 15;

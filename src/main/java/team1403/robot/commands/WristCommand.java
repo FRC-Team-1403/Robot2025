@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import team1403.robot.Constants;
 import team1403.robot.subsystems.WristSubsystem;
 
 public class WristCommand extends Command {
@@ -27,24 +28,23 @@ public class WristCommand extends Command {
         addRequirements(m_wrist);
     }
 
-    public void init() {}
+    public void initialize() {
+        m_wrist.setWristAngle(0.23);
+    }
     
     @Override
     public void execute() {
         if(m_zero.getAsBoolean()) {
-            m_wrist.setWristAngle(15 / 360);
+            m_wrist.setWristAngle(.23);
         }
         else if(m_low.getAsBoolean()) {
-            m_wrist.setWristAngle(17 / 360);
+            m_wrist.setWristAngle(Constants.Wrist.Setpoints.L2Setpoint / 360);
         }
         else if(m_mid.getAsBoolean()) {
-            m_wrist.setWristAngle(-.15);
+            m_wrist.setWristAngle(Constants.Wrist.Setpoints.L3Setpoint / 360);
         }
         else if (m_high.getAsBoolean()) {
-            m_wrist.setWristAngle(.1);
-        }  
-        else {
-            m_wrist.setWristAngle(.23);
+            m_wrist.setWristAngle(Constants.Wrist.Setpoints.L4Setpoint / 360);
         }
     }
 }
