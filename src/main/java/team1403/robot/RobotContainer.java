@@ -42,7 +42,7 @@ public class RobotContainer {
 
   private Elevator m_elevator;
   private WristSubsystem m_wrist;
-  private IntakeSubsystem m_coralIntakeSubsystem;
+  private CoralIntakeSubsystem m_coralIntakeSubsystem;
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -63,7 +63,7 @@ public class RobotContainer {
 
     m_elevator = new Elevator();
     m_wrist = new WristSubsystem();
-    m_coralIntakeSubsystem = new IntakeSubsystem();
+    m_coralIntakeSubsystem = new CoralIntakeSubsystem();
 
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);

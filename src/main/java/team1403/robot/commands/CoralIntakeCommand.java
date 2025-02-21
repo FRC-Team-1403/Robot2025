@@ -6,15 +6,15 @@ import org.ejml.ops.DElementCoorBoolean;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.Constants;
-import team1403.robot.subsystems.IntakeSubsystem;
+import team1403.robot.subsystems.CoralIntakeSubsystem;
 
 public class CoralIntakeCommand extends Command {
 
     private BooleanSupplier m_release;
-    private IntakeSubsystem m_intakeSubsystem;
+    private CoralIntakeSubsystem m_intakeSubsystem;
     private int counter;
     
-    public CoralIntakeCommand(IntakeSubsystem intakeSubsystem, BooleanSupplier release) {
+    public CoralIntakeCommand(CoralIntakeSubsystem intakeSubsystem, BooleanSupplier release) {
         m_intakeSubsystem = intakeSubsystem;
         m_release = release;
 

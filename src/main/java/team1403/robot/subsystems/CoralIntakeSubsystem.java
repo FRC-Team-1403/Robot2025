@@ -16,11 +16,11 @@ import team1403.robot.Constants;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
 
-    public IntakeSubsystem() {
+    public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
         configMotors();
         m_CANRange = new CANrange(Constants.CanBus.CANRangeID);
