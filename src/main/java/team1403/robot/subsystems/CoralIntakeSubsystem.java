@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
-    private boolean hasPiece = false;
 
     public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
@@ -58,6 +57,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
             }
         }
 
+        Logger.recordOutput("intake speed", getIntakeSpeed());
         Logger.recordOutput("Distance", getDistance());
         Logger.recordOutput("Has Piece", Constants.CoralIntake.hasPiece);
         Logger.recordOutput("Current current", m_intakeMotor.getOutputCurrent());
