@@ -1,4 +1,3 @@
-
 package team1403.robot.vision;
 
 import java.util.ArrayList;

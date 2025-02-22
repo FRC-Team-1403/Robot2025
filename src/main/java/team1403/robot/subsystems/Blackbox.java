@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,6 +23,14 @@ import team1403.robot.commands.CoralDepositCommand;
 //WIP (work in progress)
 //Stores data that is shared between subsystems
 public class Blackbox {
+
+    public enum State{
+        loading,
+        driving,
+        aligning,
+        placing
+    }
+
 
     public enum ReefSelect {
         LEFT,
@@ -49,12 +58,14 @@ public class Blackbox {
     private static Pose2d processorPoseRED;
     private static ReefSelect reefSide = ReefSelect.LEFT;
     private static ReefScoreLevel reefLevel = ReefScoreLevel.L2; //todo: figure out what we want to default to
-    private static boolean coralLoaded = false;
+    //private static State allignState = State.aligning; 
+    private static boolean coralLoaded = true;
     private static boolean algaeLoaded = false;
     private static boolean trigger = false;
     private static boolean aligning = false;
-
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);
+
+    public  static State m_state = State.loading;
 
     //meters
     private static final double kMaxAlignDist = 2.5;
@@ -87,14 +98,14 @@ public class Blackbox {
         for(int i = 0; i < reefPosesLeftBLUE.length; i++) {
             reefPosesLeftBLUE[i] = CougarUtil.rotatePose2d(
                 CougarUtil.addDistanceToPose(reefPosesLeftBLUE[i], kHalfBumperLengthMeters), 
-                Rotation2d.kZero);
+                Rotation2d.k180deg);
             reefPosesLeftRED[i] = FlippingUtil.flipFieldPose(reefPosesLeftBLUE[i]);
         }
 
         for(int i = 0; i < reefPosesRightBLUE.length; i++) {
             reefPosesRightBLUE[i] = CougarUtil.rotatePose2d(
                 CougarUtil.addDistanceToPose(reefPosesRightBLUE[i], kHalfBumperLengthMeters), 
-                Rotation2d.kZero);
+                Rotation2d.k180deg);
             reefPosesRightRED[i] = FlippingUtil.flipFieldPose(reefPosesRightBLUE[i]);
         }
 
@@ -117,6 +128,10 @@ public class Blackbox {
         return reefLevel;
     }
 
+    // public static State getState(){
+    //     return allignState;
+    // }
+
     public static Command reefSelectCmd(ReefSelect select) {
         return new InstantCommand(() -> reefSelect(select));
     }
@@ -130,8 +145,9 @@ public class Blackbox {
     }
 
     public static Command setAligningCmd(boolean align, ReefSelect select){
-        return new SequentialCommandGroup(new InstantCommand(() -> reefSelect(select)), 
-        new InstantCommand(() -> setAligning(align)));        
+        return Commands.sequence(
+                reefSelectCmd(select),
+                new InstantCommand(() -> setAligning(align)));        
     }
 
     private static Pose2d[] getReefPoses() {
@@ -188,6 +204,8 @@ public class Blackbox {
         Logger.recordOutput("ReefPositions Blue Left", reefPosesLeftBLUE);
         Logger.recordOutput("ReefPositions Red Right", reefPosesRightRED);
         Logger.recordOutput("ReefPositions Red Left", reefPosesLeftRED);
+        Logger.recordOutput("isCoral", coralLoaded);
+        Logger.recordOutput("Reefselect", getReefSelect());
 
         debugModeAlert.set(Constants.DEBUG_MODE);
         sysIdActiveAlert.set(Constants.ENABLE_SYSID);

@@ -1,12 +1,6 @@
 package team1403.robot.subsystems;
-
-<<<<<<< HEAD
-import javax.imageio.plugins.tiff.TIFFDirectory;
-
-=======
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
->>>>>>> ed9f11c2a49f08d6947bc53b9e5d8b9820b0319d
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -23,13 +17,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-<<<<<<< HEAD
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-=======
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
->>>>>>> ed9f11c2a49f08d6947bc53b9e5d8b9820b0319d
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,17 +34,6 @@ public class WristSubsystem extends SubsystemBase {
     private SparkAbsoluteEncoder m_encoder;                    
     private ArmFeedforward m_feedForward;
     private PIDController m_wristPID;
-<<<<<<< HEAD
-    private TrapezoidProfile m_trapezoidPID;
-
-    public WristSubsystem() {
-        m_wristMotor = new SparkMax(Constants.CanBus.wristMotorID, MotorType.kBrushless);
-        m_feedForward = new ArmFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKG, Constants.Wrist.WristKV);
-        m_wristPID = new PIDController(Constants.Wrist.WristKP, Constants.Wrist.WristKI, Constants.Wrist.WristKD);
-        m_trapezoidPID = new TrapezoidProfile(new TrapezoidProfile.Constraints(Constants.Wrist.trapezoidVel*5,Constants.Wrist.trapezoidAcc*5));
-
-        
-=======
     private ProfiledPIDController m_profiled;
     private SysIdRoutine m_SysIDRoutine;
 
@@ -123,6 +102,5 @@ public class WristSubsystem extends SubsystemBase {
             -m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 
                 Units.rotationsToRadians(getWristVelocity())));
->>>>>>> ed9f11c2a49f08d6947bc53b9e5d8b9820b0319d
     }
 }

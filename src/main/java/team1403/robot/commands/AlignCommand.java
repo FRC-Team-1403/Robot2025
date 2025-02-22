@@ -20,8 +20,6 @@ public class AlignCommand extends Command {
     private Pose2d m_target;
     private PPHolonomicDriveController m_driveController;
     private PathPlannerTrajectoryState m_state;
-    private IntakeSubsystem m_intakeSubsystem;
-
     private static final double kTreshM = 0.01;
 
     public AlignCommand(SwerveSubsystem swerve, Pose2d target) {

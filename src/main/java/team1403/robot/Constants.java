@@ -158,7 +158,7 @@ public class Constants {
 
     public static final int leftElevatorMotorID = 10;
     public static final int rightElevatorMotorID = 11;
-    public static final int elbowMotorID = 1;
+    //public static final int elbowMotorID = 1;
     public static final int algaeIntakeMotorID = 4;
 
     // Swerve CanBus ids
@@ -271,7 +271,7 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final int leftMotor = 0; //check 
-    public static final int rightMotor = 0;
+  //   public static final int leftMotor = 0; //check 
+  //   public static final int rightMotor = 0;
   }
 }

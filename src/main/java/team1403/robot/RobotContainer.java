@@ -24,12 +24,15 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.*;
 import team1403.robot.subsystems.*;
+import team1403.robot.subsystems.Blackbox.ReefSelect;
+
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.Constants;
@@ -48,10 +51,12 @@ public class RobotContainer {
   private Elevator m_elevator;
   private IntakeSubsystem m_intake;
   private WristSubsystem m_wrist;
-  private final AlgaeIntake m_AlgaeIntake;
-  private ClimberSubsystem m_climberSubsystem;
-  private StateMachine m_stateMachine;
+  //private final AlgaeIntake m_AlgaeIntake;
+  //private ClimberSubsystem m_climberSubsystem;
+  private Command m_stateMachine;
   private Command m_vibrationCmd;
+
+  
   
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -75,13 +80,13 @@ public class RobotContainer {
     m_swerve = new SwerveSubsystem();
     m_elevator = new Elevator();
     m_intake = new IntakeSubsystem();
-    m_climberSubsystem = new ClimberSubsystem();
-    m_AlgaeIntake = new AlgaeIntake();
+    //m_climberSubsystem = new ClimberSubsystem();
+    //m_AlgaeIntake = new AlgaeIntake();
     m_wrist = new WristSubsystem();
     m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
     
-
+     
 
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
@@ -133,39 +138,79 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     // Setting default command of swerve subPsystem
     // red
+    m_teleopCommand = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
     
-    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
-    //     m_swerve,
-    //     () -> -m_driverController.getLeftX(),
-    //     () -> -m_driverController.getLeftY(),
-    //     () -> -m_driverController.getRightX(),
-    //     () -> m_driverController.getHID().getYButtonPressed(),
-    //     () -> m_driverController.getHID().getBButtonPressed(),
-    //     () -> m_driverController.getHID().getXButton(),
-    //     () -> m_driverController.getRightTriggerAxis(),
-    //     () -> m_driverController.getLeftTriggerAxis()));
+    m_swerve.setDefaultCommand(new DefaultSwerveCommand(
+        m_swerve,
+        () -> -m_driverController.getLeftX(),
+        () -> -m_driverController.getLeftY(),
+        () -> -m_driverController.getRightX(),
+        () -> m_driverController.getHID().getYButtonPressed(),
+        () -> m_driverController.getHID().getBButtonPressed(),
+        () -> m_driverController.getHID().getXButton(),
+        () -> m_driverController.getRightTriggerAxis(),
+        () -> m_driverController.getLeftTriggerAxis()));
 
-    // Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 
-    // //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
-    // //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+    m_driverController.povRight().onTrue(Blackbox.reefSelectCmd(ReefSelect.RIGHT));
+    m_driverController.povLeft().onTrue(Blackbox.reefSelectCmd(ReefSelect.LEFT));
 
-    // m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT));
+    // m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT))
+    //   .onFalse(Blackbox.setAligningCmd(false, ReefSelect.RIGHT));
 
-    // m_driverController.leftBumper().whileTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT));
+    // m_driverController.leftBumper().onTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT))
+    //   .onFalse(Blackbox.setAligningCmd(false, ReefSelect.LEFT));
 
-    // //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
-    // //SmartDashboard.putNumber("vibration", 0);
+    m_driverController.rightBumper().onTrue(new DeferredCommand(() -> {
+                                            Blackbox.reefSelect(ReefSelect.RIGHT);
+                                            Pose2d currentPose = m_swerve.getPose();
+                                            Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+                                            if (target == null) return Commands.none();
+                                            target = CougarUtil.addDistanceToPoseLeft(target, (m_intake.getDistance() - 0.2016));
+                                            return Commands.sequence(
+                                                AutoUtil.pathFindToPose(target),
+                                                new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+                                                    if(!interrupted) m_vibrationCmd.schedule();
+                                                }),
+                                                Blackbox.setAligningCmd(false, ReefSelect.RIGHT)
+                                            ); 
+                                        }, Set.of()));
+    
+    m_driverController.leftBumper().onTrue(new DeferredCommand(() -> {
+                                            Blackbox.reefSelect(ReefSelect.LEFT);
+                                            Pose2d currentPose = m_swerve.getPose();
+                                            Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+                                            if (target == null) return Commands.none();
+                                            target = CougarUtil.addDistanceToPoseLeft(target, (m_intake.getDistance() - 0.2016));
+                                            return Commands.sequence(
+                                                AutoUtil.pathFindToPose(target),
+                                                new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+                                                    if(!interrupted) m_vibrationCmd.schedule();
+                                               }),
+                                                Blackbox.setAligningCmd(false, ReefSelect.LEFT)
+                                            ); 
+                                        }, Set.of()));
 
-    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+    
 
-    m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
-      () -> m_operatorController.getHID().getAButtonPressed(), 
-      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
-    m_wristCommand = new WristCommand(m_wrist, m_operatorController.a(),
-      m_operatorController.b(), m_operatorController.x());
+    m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
+    SmartDashboard.putNumber("vibration", 0);
 
-    m_wrist.setDefaultCommand(m_wristCommand);
+    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
+
+    // Command m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
+
+    RobotModeTriggers.disabled().whileFalse(m_teleopCommand);
+    
+
+    // m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
+    //   () -> m_operatorController.getHID().getAButtonPressed(), 
+    //   () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
+    //m_wristCommand = new WristCommand(m_wrist, m_operatorController.a(),
+      //m_operatorController.b(), m_operatorController.x());
+
+    //m_wrist.setDefaultCommand(m_wristCommand);
 
 
 
@@ -185,4 +230,6 @@ public class RobotContainer {
   public Command getTeleopCommand() {
     return m_teleopCommand;
   }
+
+ 
 }

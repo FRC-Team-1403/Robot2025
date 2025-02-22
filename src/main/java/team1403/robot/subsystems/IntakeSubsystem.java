@@ -27,8 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //TODO add in the distance threholds
     public double getDistance() {
-        return m_CANRange.getDistance(true).getValue().in(Meters);
-
+        //return m_CANRange.getDistance(true).getValue().in(Meters);
+        return 0.2;
     }
 
     public void periodic() {
