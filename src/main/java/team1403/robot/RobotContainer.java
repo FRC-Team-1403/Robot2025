@@ -171,7 +171,7 @@ public class RobotContainer {
     // m_wrist.setDefaultCommand(m_wristCommand);
 
 
-    m_candle.setDefaultCommand(CandleCommand(m_candle));
+    // m_candle.setDefaultCommand(CandleCommand(m_candle));
     
   }
 

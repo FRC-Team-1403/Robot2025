@@ -8,11 +8,13 @@ public class candle extends SubsystemBase {
     private CANdle m_candle;
     private Timer m_timer; 
     private int idx;
+    private CoralIntakeSubsystem m_coralIntakeSubsystem;
     
     public candle() {
         m_candle = new CANdle(4);
-        // m_timer = new Timer(); 
-        // m_timer.start(); 
+        m_timer = new Timer(); 
+        m_timer.start(); 
+        
     }
 
     public void setLED() {
@@ -25,18 +27,33 @@ public class candle extends SubsystemBase {
         // }
         // while (m_timer.get() % 0.5 == 0.0) {
         //     m_candle.setLEDs(0, 100, 30);
-        // }        
+        // }       
 
+    double brightness = 0;
 
+    while (m_timer.get() <= 30) {
+        if(!m_coralIntakeSubsystem.isCoralLoaded()) {
+                    // If coral is not in, set the LED to red
+            m_candle.setLEDs(242,2,34,0,0,8);
+        } else {
+                    // If coral is in, set the LED to green 
+            m_candle.setLEDs(10,245,143,0,0,8);
+        }
 
+        if (m_timer.get() == 25) {
+            for (int counter = 1; counter < 21; counter++) {
+                m_candle.setLEDs(0,0,255,0,0,8);
+                m_candle.configBrightnessScalar(brightness);
 
+                if (brightness <= 1) {
+                    brightness += 0.1;
+                } else {
+                    brightness -= 0.1;
+                }
+            }
+        }
 
-
-
-
-
-
-
+    }
 
         // if (m_timer.get() >= 0.3) { 
            
