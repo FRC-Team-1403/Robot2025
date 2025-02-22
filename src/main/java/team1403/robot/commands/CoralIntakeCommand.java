@@ -36,9 +36,9 @@ public class CoralIntakeCommand extends Command {
                 Constants.CoralIntake.hasPiece = false;
             }
         }
-        else if (!Constants.CoralIntake.hasPiece
-                && Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
-                && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source) {
+        else if (!Constants.CoralIntake.hasPiece) {
+                //&& Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
+                //&& Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source) {
             m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.intake);
         }
         else { 

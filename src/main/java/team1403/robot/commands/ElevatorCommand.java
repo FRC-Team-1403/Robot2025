@@ -34,15 +34,19 @@ public class ElevatorCommand extends Command {
     public void execute() {
         if (m_zero.getAsBoolean()) {
           setpoint = Constants.Elevator.Setpoints.L1;
+          Constants.Elevator.Setpoints.current = Constants.Elevator.Setpoints.L1 / 360.0;
         }
         else if (m_low.getAsBoolean()) {
           setpoint = Constants.Elevator.Setpoints.L2;
+          Constants.Elevator.Setpoints.current = Constants.Elevator.Setpoints.L2 / 360.0;
         }
         else if (m_mid.getAsBoolean()) {
           setpoint = Constants.Elevator.Setpoints.L3;
+          Constants.Elevator.Setpoints.current = Constants.Elevator.Setpoints.L3 / 360.0;
         }
         else if (m_high.getAsBoolean()) {
           setpoint = Constants.Elevator.Setpoints.L4;
+          Constants.Elevator.Setpoints.current = Constants.Elevator.Setpoints.L4 / 360.0;
         }
         m_elevator.moveToSetPoint(setpoint);
     }

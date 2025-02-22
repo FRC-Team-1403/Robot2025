@@ -126,7 +126,8 @@ public class RobotContainer {
 
     m_wrist.setDefaultCommand(new WristCommand(m_wrist, 
     () -> m_operatorController.getHID().getXButton(), () -> m_operatorController.getHID().getAButton(),  
-    () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getYButton()));
+    () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getYButton(),
+    () -> m_operatorController.getHID().getRightBumperButton()));
 
     m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
     () -> m_driverController.getHID().getXButton(), () -> m_driverController.getHID().getAButton(),  

@@ -220,7 +220,7 @@ public class Constants {
   public static class CoralIntake {
     public static final double release = -0.3;
     public static final double intake = 0.2;
-    public static final double neutral = 0.02;
+    public static final double neutral = 0.04;
     public static boolean hasPiece = false;
   }
 
@@ -265,7 +265,7 @@ public class Constants {
       public static final double L2Setpoint = 15;
       public static final double L3Setpoint = 20;
       public static final double L4Setpoint = 39;
-      public static final double source = 0; //placehold
+      public static final double source = -0.1; //placehold
       public static double current = 0.23;
     }
 
