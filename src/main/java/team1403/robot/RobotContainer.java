@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -43,6 +44,8 @@ import team1403.robot.Constants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+  private final candle m_candle = new candle();
 
   // private SwerveSubsystem m_swerve;
   // private Elevator m_elevator;
@@ -168,7 +171,7 @@ public class RobotContainer {
     // m_wrist.setDefaultCommand(m_wristCommand);
 
 
-
+    m_candle.setDefaultCommand(CandleCommand(m_candle));
     
   }
 
