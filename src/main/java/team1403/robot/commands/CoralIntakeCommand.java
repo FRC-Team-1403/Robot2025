@@ -43,13 +43,13 @@ public class CoralIntakeCommand extends Command {
         }
         else if (Constants.CoralIntake.hasPiece && iCounter > 0) {
             iCounter ++;
-            if (iCounter < 50) {
+            if (iCounter < 20) {
                 m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.intake);
             }
-            else if ((iCounter >= 50 && iCounter < 100) || (iCounter >= 150 && iCounter < 200) || (iCounter >= 250 && iCounter < 300)) {
+            else if ((iCounter >= 20 && iCounter < 40) || (iCounter >= 60 && iCounter < 80) || (iCounter >= 100 && iCounter < 120) || (iCounter >= 140 && iCounter < 160)) {
                 m_intakeSubsystem.setIntakeMotorSpeed(-Constants.CoralIntake.wiggle);
             }
-            else if ((iCounter >= 100 && iCounter < 150) || (iCounter >= 200 && iCounter < 250) || (iCounter >= 300 && iCounter < 350)) {
+            else if ((iCounter >= 40 && iCounter < 60) || (iCounter >= 80 && iCounter < 100) || (iCounter >= 120 && iCounter < 140) || (iCounter >= 160 && iCounter < 180)) {
                 m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.wiggle);
             }
             else {
