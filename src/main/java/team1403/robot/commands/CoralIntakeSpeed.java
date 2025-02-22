@@ -5,19 +5,19 @@ import team1403.robot.subsystems.CoralIntakeSubsystem;
 
 public class CoralIntakeSpeed extends Command {
     
-    private CoralIntakeSubsystem m_subsystem;
+    private CoralIntakeSubsystem m_coralIntake;
     private double m_speed;
 
-    public CoralIntakeSpeed(CoralIntakeSubsystem s, double speed)
+    public CoralIntakeSpeed(CoralIntakeSubsystem coralIntake, double speed)
     {
-        m_subsystem = s;
+        m_coralIntake = coralIntake;
         m_speed = speed;
 
-        addRequirements(m_subsystem);
+        addRequirements(m_coralIntake);
     }
 
     public void execute() {
-        m_subsystem.setIntakeMotorSpeed(m_speed);
+        m_coralIntake.setIntakeMotorSpeed(m_speed);
     }
 
     @Override
