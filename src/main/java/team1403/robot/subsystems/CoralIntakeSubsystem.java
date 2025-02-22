@@ -13,15 +13,17 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import team1403.robot.Constants;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
-
     private LinearFilter m_filter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 10, Constants.kLoopTime);
+    private Debouncer m_debouncer = new Debouncer(0.4, DebounceType.kRising);
 
     public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
@@ -57,6 +59,10 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
     private boolean pieceIn() {
         return getDistance() < 0.37;
+    }
+
+    public boolean hasPiece() {
+        return m_debouncer.calculate(pieceIn());
     }
 
     @Override

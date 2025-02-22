@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.robot.commands.*;
 import team1403.robot.subsystems.*;
+import team1403.lib.RepeatNTimes;
 import team1403.robot.Constants;
 
 
@@ -102,8 +103,20 @@ public class RobotContainer {
     () -> m_driverController.getHID().getXButton(), () -> m_driverController.getHID().getAButton(),  
     () -> m_driverController.getHID().getBButton(), () -> m_driverController.getHID().getYButton()));
 
-    m_coralIntake.setDefaultCommand(new CoralIntakeCommand(m_coralIntake, 
-    () -> m_operatorController.getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getLeftBumperButton()));
+    m_operatorController.leftBumper().whileTrue(new CoralIntakeSpeed(m_coralIntake, 0));
+    new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
+      new CoralIntakeSpeed(m_coralIntake, -0.3).withTimeout(.2));
+    new Trigger(() -> m_coralIntake.hasPiece()).toggleOnTrue(
+      new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.4),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4)
+      ), 4)
+    );
+  new Trigger(() -> !m_coralIntake.hasPiece()).and(() -> 
+  Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
+  && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0)
+  .whileFalse(new CoralIntakeSpeed(m_coralIntake, 0.5));
+
   }
 
   /**
