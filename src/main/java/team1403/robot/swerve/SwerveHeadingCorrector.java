@@ -1,9 +1,8 @@
-package team1403.robot.swerve.util;
+package team1403.robot.swerve;
 
 import java.util.Optional;
 
-import org.littletonrobotics.junction.Logger;
-
+import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -11,16 +10,16 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team1403.robot.swerve.TunerConstants;
 import team1403.lib.util.TimeDelayedBoolean;
-import team1403.robot.Constants;
 
 //adapted from team 254
 public class SwerveHeadingCorrector {
     //initial rotation is unknown
     private Optional<Double> yaw_setpoint = Optional.empty();
-    private PIDController m_controller = new PIDController(5, 0, 0, Constants.kLoopTime);
+    private PIDController m_controller = new PIDController(5, 0, 0, 0.02);
     private TimeDelayedBoolean m_yawZeroDetector = new TimeDelayedBoolean();
-    private LinearFilter m_gyroVelFilter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 5, Constants.kLoopTime);
+    private LinearFilter m_gyroVelFilter = LinearFilter.singlePoleIIR(0.02 * 5, 0.02);
     private ChassisSpeeds m_retSpeeds = new ChassisSpeeds();
 
 
@@ -28,7 +27,7 @@ public class SwerveHeadingCorrector {
     {
         m_controller.enableContinuousInput(-Math.PI, Math.PI);
 
-        if (Constants.DEBUG_MODE) {
+        if (TunerConstants.DEBUG_MODE) {
             SmartDashboard.putData("SwerveHC PID", m_controller);
         }
     }
@@ -54,9 +53,10 @@ public class SwerveHeadingCorrector {
             resetHeadingSetpoint();
         }
 
-        Logger.recordOutput("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
-        Logger.recordOutput("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
-        Logger.recordOutput("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
+        SignalLogger.writeDouble("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
+        SignalLogger.writeBoolean("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
+        SignalLogger.writeDouble("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
+        
 
         if(is_near_zero && yaw_setpoint.isEmpty())
         {

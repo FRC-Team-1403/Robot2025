@@ -161,6 +161,8 @@ public class Constants {
     public static final int elbowMotorID = 1;
     public static final int algaeIntakeMotorID = 4;
 
+    public static final int pigeon2ID = 2;
+
     // Swerve CanBus ids
     public static final int frontLeftDriveID = 12;
     public static final int frontLeftSteerID = 15;

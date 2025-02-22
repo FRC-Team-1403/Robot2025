@@ -46,7 +46,7 @@ public class AlignCommand extends Command {
     @Override
     public void execute() {
         ChassisSpeeds speeds = m_driveController.calculateRobotRelativeSpeeds(m_swerve.getPose(), m_state);
-        m_swerve.drive(speeds, true);
+        m_swerve.drive(speeds);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class AlignCommand extends Command {
     @Override
     public boolean isFinished() {
         return CougarUtil.getDistance(m_swerve.getPose(), m_target) <= kTreshM &&
-                CougarUtil.dot(m_swerve.getRotation(), m_target.getRotation()) >= Math.cos(0.01);
+                CougarUtil.dot(m_swerve.getPigeon2().getRotation2d(), m_target.getRotation()) >= Math.cos(0.01);
     }
 
 }

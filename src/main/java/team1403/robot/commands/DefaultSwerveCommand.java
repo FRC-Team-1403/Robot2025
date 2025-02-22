@@ -1,7 +1,14 @@
 package team1403.robot.commands;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -13,9 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import team1403.lib.util.CougarUtil;
-import team1403.robot.Constants;
-import team1403.robot.Constants.Swerve;
+import team1403.robot.swerve.TunerConstants;
 import team1403.robot.swerve.SwerveSubsystem;
 
 /**
@@ -28,16 +33,17 @@ public class DefaultSwerveCommand extends Command {
   private final DoubleSupplier m_horizontalTranslationSupplier;
   private final DoubleSupplier m_rotationSupplier;
   private final BooleanSupplier m_fieldRelativeSupplier;
-  private final BooleanSupplier m_xModeSupplier;
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
-  private final BooleanSupplier m_zeroGyroSupplier;
   private boolean m_isFieldRelative;
   
   private SlewRateLimiter m_rotationRateLimiter;
   private double prev_horizontal = 0;
   private double prev_vertical = 0;
-  private static final double kMaxVelocityChange = 13 * Constants.kLoopTime;
+  
+  private final double kMaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private final double kMaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private static final double kMaxVelocityChange = 13 * 0.02;
 
   private double m_speedLimiter = 0.2;
 
@@ -64,8 +70,6 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
       BooleanSupplier fieldRelativeSupplier,
-      BooleanSupplier zeroGyroSupplier,
-      BooleanSupplier xModeSupplier,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
     this.m_drivetrainSubsystem = drivetrain;
@@ -74,8 +78,6 @@ public class DefaultSwerveCommand extends Command {
     this.m_rotationSupplier = rotationSupplier;
     this.m_fieldRelativeSupplier = fieldRelativeSupplier;
     this.m_speedSupplier = speedSupplier;
-    this.m_xModeSupplier = xModeSupplier;
-    this.m_zeroGyroSupplier = zeroGyroSupplier;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
@@ -96,7 +98,7 @@ public class DefaultSwerveCommand extends Command {
     m_speedLimiter = 0.3 * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
   
     if (DriverStation.isAutonomousEnabled()) {
-      m_drivetrainSubsystem.drive(new ChassisSpeeds(), false);
+      m_drivetrainSubsystem.drive(new ChassisSpeeds());
       return;
     }
 
@@ -104,21 +106,12 @@ public class DefaultSwerveCommand extends Command {
       m_isFieldRelative = !m_isFieldRelative;
     }
 
-    if(m_zeroGyroSupplier.getAsBoolean()) {
-      m_drivetrainSubsystem.zeroHeading();
-    }
-
-    if (m_xModeSupplier.getAsBoolean()) {
-      m_drivetrainSubsystem.xMode();
-      return;
-    }
-
     ChassisSpeeds chassisSpeeds;
     double horizontal = m_horizontalTranslationSupplier.getAsDouble();
     double vertical = m_verticalTranslationSupplier.getAsDouble();
     double vel_hypot = Math.hypot(horizontal, vertical);
 
-    if(CougarUtil.getAlliance() == Alliance.Red && m_isFieldRelative) {
+    if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red && m_isFieldRelative) {
       horizontal *= -1;
       vertical *= -1;
     }
@@ -130,11 +123,11 @@ public class DefaultSwerveCommand extends Command {
       velocity = MathUtil.applyDeadband(velocity, 0.05);
       
       //scale unit vector by speed limiter and convert to speed
-      horizontal *= velocity / vel_hypot * Constants.Swerve.kMaxSpeed * m_speedLimiter;
-      vertical *= velocity / vel_hypot * Constants.Swerve.kMaxSpeed * m_speedLimiter;
+      horizontal *= velocity / vel_hypot * kMaxSpeed * m_speedLimiter;
+      vertical *= velocity / vel_hypot * kMaxSpeed * m_speedLimiter;
     }
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
-    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * Swerve.kMaxAngularSpeed;
+    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * kMaxAngularRate;
 
     Pose2d curPose = m_drivetrainSubsystem.getPose();
     Rotation2d curRotation = curPose.getRotation();
@@ -167,7 +160,7 @@ public class DefaultSwerveCommand extends Command {
       //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     }
 
-    m_drivetrainSubsystem.drive(chassisSpeeds, true);
+    m_drivetrainSubsystem.drive(chassisSpeeds);
   }
 
   private static double squareNum(double num) {
