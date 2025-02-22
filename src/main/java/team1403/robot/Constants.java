@@ -219,8 +219,9 @@ public class Constants {
 
   public static class CoralIntake {
     public static final double release = -0.3;
-    public static final double intake = 0.3;
+    public static final double intake = 0.5;
     public static final double neutral = 0.04;
+    public static final double wiggle = 0.1;
     public static boolean hasPiece = false;
   }
 
@@ -261,11 +262,11 @@ public class Constants {
 
   public static class Wrist {
     public static class Setpoints{
-      public static final double L1Setpoint = 0;
+      public static final double L1Setpoint = 39; // same as L4 for now
       public static final double L2Setpoint = 15;
       public static final double L3Setpoint = 20;
       public static final double L4Setpoint = 39;
-      public static final double source = -0.15; //placehold
+      public static final double source = -54; //placehold
       public static double current = 0.23;
     }
 
