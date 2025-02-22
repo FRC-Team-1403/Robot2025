@@ -13,12 +13,15 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import team1403.robot.Constants;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
+
+    private LinearFilter m_filter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 10, Constants.kLoopTime);
 
     public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
@@ -30,6 +33,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         SparkMaxConfig intakeConfig = new SparkMaxConfig();
         intakeConfig
             .idleMode(IdleMode.kBrake);
+        intakeConfig.smartCurrentLimit(40);
 
         m_intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
@@ -47,12 +51,18 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         return m_CANRange.getDistance(true).getValue().in(Meters);
     }
 
+    private double getFilteredCurrent() {
+        return m_filter.calculate(m_intakeMotor.getOutputCurrent());
+    }
+
+    private boolean pieceIn() {
+        return getDistance() < 0.37;
+    }
+
+    @Override
     public void periodic() {
-        if (!Constants.CoralIntake.hasPiece && getIntakeSpeed() > 0.0) {
-            setIntakeMotorSpeed(0);
-        }
-        if (getIntakeSpeed() > 0.02) {
-            if (m_intakeMotor.getOutputCurrent() > 40) {
+        if (getIntakeSpeed() > 0.04) {
+            if (getFilteredCurrent() > 40 && pieceIn()) {
                 Constants.CoralIntake.hasPiece = true;
             }
         }
@@ -60,6 +70,6 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake speed", getIntakeSpeed());
         Logger.recordOutput("Distance", getDistance());
         Logger.recordOutput("Has Piece", Constants.CoralIntake.hasPiece);
-        Logger.recordOutput("Current current", m_intakeMotor.getOutputCurrent());
+        Logger.recordOutput("Current current", getFilteredCurrent());
     }
 }

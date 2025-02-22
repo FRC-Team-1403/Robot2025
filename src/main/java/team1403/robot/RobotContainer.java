@@ -103,7 +103,7 @@ public class RobotContainer {
     () -> m_driverController.getHID().getBButton(), () -> m_driverController.getHID().getYButton()));
 
     m_coralIntake.setDefaultCommand(new CoralIntakeCommand(m_coralIntake, 
-    () -> m_operatorController.getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getRightBumperButton()));
+    () -> m_operatorController.getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getLeftBumperButton()));
   }
 
   /**

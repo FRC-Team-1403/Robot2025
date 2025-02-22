@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
@@ -41,12 +42,10 @@ public class WristSubsystem extends SubsystemBase {
     public WristSubsystem() {
         m_wristMotor = new SparkMax(Constants.CanBus.wristMotorID, MotorType.kBrushless);
 
-        SparkMaxConfig config = new SparkMaxConfig();
+        configMotors();
         //AbsoluteEncoderConfig config2 = new AbsoluteEncoderConfig();
         //config2.zeroOffset(Constants.Wrist.WristEncoderOffset);
         //config.absoluteEncoder.apply(config2);
-
-        m_wristMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         m_encoder = m_wristMotor.getAbsoluteEncoder();
         // m_feedForward = new ArmFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKG, Constants.Wrist.WristKV);
@@ -64,6 +63,13 @@ public class WristSubsystem extends SubsystemBase {
             }, (log)  -> {
             }, this));
     }
+
+    private void configMotors() {
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    motorConfig
+        .idleMode(IdleMode.kBrake);
+    m_wristMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+   }
 
     //in rotations!!
     @AutoLogOutput
@@ -101,7 +107,7 @@ public class WristSubsystem extends SubsystemBase {
         getWristAngle();
         getWristVelocity();
         getWristAngleDeg();
-        
+
         Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
         m_wristMotor.set(m_profiled.calculate(getWristAngle()) + 
             -m_feedForward.calculate(

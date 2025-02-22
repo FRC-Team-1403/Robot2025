@@ -32,7 +32,7 @@ public class CoralIntakeCommand extends Command {
         }
         else if (m_release.getAsBoolean() || counter > 0) {
             Constants.CoralIntake.hasPiece = true;
-            if (counter <= 50) {
+            if (counter <= 10) {
                 m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.release);
                 counter++;
             }
