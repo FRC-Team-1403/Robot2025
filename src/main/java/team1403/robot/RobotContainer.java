@@ -45,7 +45,8 @@ import team1403.robot.Constants;
  */
 public class RobotContainer {
 
-  private final candle m_candle = new candle();
+  private final candle m_candle;
+  private Command m_CandleCommmand;
 
   // private SwerveSubsystem m_swerve;
   // private Elevator m_elevator;
@@ -71,6 +72,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_candle = new candle();
     // Configure the trigger bindings
     // m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     // m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
@@ -83,6 +85,7 @@ public class RobotContainer {
     // m_wrist = new WristSubsystem();
     // m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     // m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
+    
     
 
 
@@ -130,6 +133,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    
+    m_CandleCommmand = new CandleCommand(m_candle, 255, 200, 160);
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
@@ -171,7 +176,8 @@ public class RobotContainer {
     // m_wrist.setDefaultCommand(m_wristCommand);
 
 
-    // m_candle.setDefaultCommand(CandleCommand(m_candle));
+  m_candle.setDefaultCommand(m_CandleCommmand);
+
     
   }
 
