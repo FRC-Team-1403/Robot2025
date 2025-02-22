@@ -18,6 +18,7 @@ public class WristCommand extends Command {
     private BooleanSupplier m_high;
     private BooleanSupplier m_source;
     private WristSubsystem m_wrist;
+    private double target;
     
     public WristCommand(WristSubsystem wrist, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid, BooleanSupplier high, BooleanSupplier source) {
         m_wrist = wrist;
@@ -37,23 +38,21 @@ public class WristCommand extends Command {
     @Override
     public void execute() {
         if(m_zero.getAsBoolean()) {
-            m_wrist.setWristAngle(.23);
+            target = 0.23;
         }
         else if(m_low.getAsBoolean()) {
-            m_wrist.setWristAngle(Constants.Wrist.Setpoints.L2Setpoint / 360.0);
-            Constants.Wrist.Setpoints.current = Constants.Wrist.Setpoints.L2Setpoint / 360.0;
+            target = Constants.Wrist.Setpoints.L2Setpoint / 360.0;
         }
         else if(m_mid.getAsBoolean()) {
-            m_wrist.setWristAngle(Constants.Wrist.Setpoints.L3Setpoint / 360.0);
-            Constants.Wrist.Setpoints.current = Constants.Wrist.Setpoints.L3Setpoint / 360.0;
+            target = Constants.Wrist.Setpoints.L3Setpoint / 360.0;
         }
         else if (m_high.getAsBoolean()) {
-            m_wrist.setWristAngle(Constants.Wrist.Setpoints.L4Setpoint / 360.0);
-            Constants.Wrist.Setpoints.current = Constants.Wrist.Setpoints.L4Setpoint / 360.0;
+            target = Constants.Wrist.Setpoints.L4Setpoint / 360.0;
         }
         else if (m_source.getAsBoolean()) {
-            m_wrist.setWristAngle(Constants.Wrist.Setpoints.source / 360.0);
-            Constants.Wrist.Setpoints.current = Constants.Wrist.Setpoints.source / 360.0;
+            target = Constants.Wrist.Setpoints.source / 360.0;
         }
+        Constants.Wrist.Setpoints.current = target;
+        m_wrist.setWristAngle(target);
     }
 }
