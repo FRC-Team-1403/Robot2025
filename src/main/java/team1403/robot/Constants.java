@@ -275,5 +275,9 @@ public class Constants {
   public static class Climber {
     public static final int leftMotor = 0; //check 
     public static final int rightMotor = 0;
+    public static final double upSpeed = 0.3;
+    public static final double downSpeed = -0.3;
+    public static final double liftPos = 100;  // check
+    public static final double lowerPos = -100; // check
   }
 }

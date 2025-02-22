@@ -190,11 +190,7 @@ public class RobotContainer {
 
     m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
       () -> m_operatorController.getHID().getAButtonPressed(), 
-      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
-
-
-
-
+      () -> m_operatorController.getHID().getBButtonPressed()));
     
   }
 

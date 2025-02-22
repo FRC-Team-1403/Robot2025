@@ -11,13 +11,11 @@ public class ClimberCommand extends Command{
     private ClimberSubsystem m_climber;
     BooleanSupplier m_lift; 
     BooleanSupplier m_lower;
-    double m_speed;
 
-    public ClimberCommand(ClimberSubsystem climber, BooleanSupplier lift, BooleanSupplier lower, double speed) {   
+    public ClimberCommand(ClimberSubsystem climber, BooleanSupplier lift, BooleanSupplier lower) {   
         m_climber = climber;
         m_lift = lift; 
         m_lower = lower; 
-        m_speed = speed;
 
         addRequirements(m_climber);
     }
@@ -30,9 +28,10 @@ public class ClimberCommand extends Command{
     @Override
     public void execute() {
         if(m_lift.getAsBoolean()){
-            m_climber.lift(m_speed);
-        } else if (m_lower.getAsBoolean()) {
-            m_climber.lower(m_speed); //use 
+            m_climber.lift();
+        } 
+        else if (m_lower.getAsBoolean()) {
+            m_climber.lower(); //use 
         }
     }
 
