@@ -94,28 +94,40 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
+    // wrist
     m_wrist.setDefaultCommand(new WristCommand(m_wrist, 
-    () -> m_operatorController.getHID().getXButton(), () -> m_operatorController.getHID().getAButton(),  
-    () -> m_operatorController.getHID().getBButton(), () -> m_operatorController.getHID().getYButton(),
-    () -> m_operatorController.getHID().getRightBumperButton()));
+      () -> m_operatorController.getHID().getXButton(),             // level 1 angle
+      () -> m_operatorController.getHID().getAButton(),             // level 2 angle
+      () -> m_operatorController.getHID().getBButton(),             // level 3 angle
+      () -> m_operatorController.getHID().getYButton(),             // level 4 angle
+      () -> m_operatorController.getHID().getRightBumperButton())); // source angle
 
+    // elevator
     m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
-    () -> m_driverController.getHID().getXButton(), () -> m_driverController.getHID().getAButton(),  
-    () -> m_driverController.getHID().getBButton(), () -> m_driverController.getHID().getYButton()));
+      () -> m_driverController.getHID().getXButton(),   // level 1 / source
+      () -> m_driverController.getHID().getAButton(),   // level 2
+      () -> m_driverController.getHID().getBButton(),   // level 3
+      () -> m_driverController.getHID().getYButton())); // level 4
 
+    // coral intake
+
+    // stop intake
     m_operatorController.leftBumper().whileTrue(new CoralIntakeSpeed(m_coralIntake, 0));
+    // release coral
     new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
       new CoralIntakeSpeed(m_coralIntake, -0.3).withTimeout(.2));
+    // wiggle
     new Trigger(() -> m_coralIntake.hasPiece()).toggleOnTrue(
       new RepeatNTimes(Commands.sequence(
         new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.4),
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4)
       ), 4)
     );
-  new Trigger(() -> !m_coralIntake.hasPiece()).and(() -> 
-  Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
-  && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0)
-  .whileFalse(new CoralIntakeSpeed(m_coralIntake, 0.5));
+    // start intake
+    new Trigger(() -> !m_coralIntake.hasPiece()).and(() -> 
+    Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
+    && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0)
+    .whileFalse(new CoralIntakeSpeed(m_coralIntake, 0.5));
 
   }
 
