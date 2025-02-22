@@ -115,7 +115,7 @@ public class RobotContainer {
     m_operatorController.leftBumper().whileTrue(new CoralIntakeSpeed(m_coralIntake, 0));
     // release coral
     new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
-      new CoralIntakeSpeed(m_coralIntake, -0.3).withTimeout(.2));
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(.2));
     // wiggle
     new Trigger(() -> m_coralIntake.hasPiece()).toggleOnTrue(
       new RepeatNTimes(Commands.sequence(
@@ -127,7 +127,12 @@ public class RobotContainer {
     new Trigger(() -> !m_coralIntake.hasPiece()).and(() -> 
     Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
     && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0)
-    .whileTrue(new CoralIntakeSpeed(m_coralIntake, 0.5));
+    .whileTrue(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
+    // neutral speed
+    new Trigger(() -> m_coralIntake.getIntakeSpeed() >= 0).and
+      (() -> !(Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
+      && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0))
+      .whileTrue(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral));
 
   }
 
