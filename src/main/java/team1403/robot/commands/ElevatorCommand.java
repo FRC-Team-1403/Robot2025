@@ -3,10 +3,11 @@ package team1403.robot.commands;
 import java.util.function.BooleanSupplier;
 
 import org.ejml.ops.DElementCoorBoolean;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.Constants;
-import team1403.robot.subsystems.Elevator;
+import team1403.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorCommand extends Command {
 
@@ -15,9 +16,9 @@ public class ElevatorCommand extends Command {
     private BooleanSupplier m_mid;
     private BooleanSupplier m_high;
     private double setpoint;
-    private Elevator m_elevator;
+    private ElevatorSubsystem m_elevator;
     
-    public ElevatorCommand(Elevator elevator, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid, BooleanSupplier high) {
+    public ElevatorCommand(ElevatorSubsystem elevator, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid, BooleanSupplier high) {
         m_elevator = elevator;
         m_zero = zero;
         m_low = low;
@@ -46,5 +47,5 @@ public class ElevatorCommand extends Command {
         }
         Constants.Elevator.Setpoints.current = setpoint;
         m_elevator.moveToSetPoint(setpoint);
-    }
+  }
 }

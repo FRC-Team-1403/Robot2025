@@ -40,9 +40,9 @@ import team1403.robot.Constants;
  */
 public class RobotContainer {
 
-  private Elevator m_elevator;
+  private ElevatorSubsystem m_elevator;
   private WristSubsystem m_wrist;
-  private CoralIntakeSubsystem m_coralIntakeSubsystem;
+  private CoralIntakeSubsystem m_coralIntake;
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -61,9 +61,9 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
 
-    m_elevator = new Elevator();
+    m_elevator = new ElevatorSubsystem();
     m_wrist = new WristSubsystem();
-    m_coralIntakeSubsystem = new CoralIntakeSubsystem();
+    m_coralIntake = new CoralIntakeSubsystem();
 
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
@@ -92,37 +92,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
-    // Setting default command of swerve subPsystem
-    // red
-    
-    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
-    //     m_swerve,
-    //     () -> -m_driverController.getLeftX(),
-    //     () -> -m_driverController.getLeftY(),
-    //     () -> -m_driverController.getRightX(),
-    //     () -> m_driverController.getHID().getYButtonPressed(),
-    //     () -> m_driverController.getHID().getBButtonPressed(),
-    //     () -> m_driverController.getHID().getXButton(),
-    //     () -> m_driverController.getRightTriggerAxis(),
-    //     () -> m_driverController.getLeftTriggerAxis()));
-
-    // Command driverVibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
-
-    // //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
-    // //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
-
-    // m_driverController.rightBumper().onTrue(Blackbox.setAligningCmd(true, ReefSelect.RIGHT));
-
-    // m_driverController.leftBumper().whileTrue(Blackbox.setAligningCmd(true,ReefSelect.LEFT));
-
-    // //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
-    // //SmartDashboard.putNumber("vibration", 0);
-
-    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
 
     m_wrist.setDefaultCommand(new WristCommand(m_wrist, 
     () -> m_operatorController.getHID().getXButton(), () -> m_operatorController.getHID().getAButton(),  
@@ -133,8 +102,8 @@ public class RobotContainer {
     () -> m_driverController.getHID().getXButton(), () -> m_driverController.getHID().getAButton(),  
     () -> m_driverController.getHID().getBButton(), () -> m_driverController.getHID().getYButton()));
 
-    m_coralIntakeSubsystem.setDefaultCommand(new CoralIntakeCommand(m_coralIntakeSubsystem, () -> m_operatorController.getRightTriggerAxis() > 0.5));
-    
+    m_coralIntake.setDefaultCommand(new CoralIntakeCommand(m_coralIntake, 
+    () -> m_operatorController.getRightTriggerAxis() > 0.5, () -> m_operatorController.getHID().getRightBumperButton()));
   }
 
   /**

@@ -11,12 +11,14 @@ import team1403.robot.subsystems.CoralIntakeSubsystem;
 public class CoralIntakeCommand extends Command {
 
     private BooleanSupplier m_release;
+    private BooleanSupplier m_stop;
     private CoralIntakeSubsystem m_intakeSubsystem;
     private int counter;
     
-    public CoralIntakeCommand(CoralIntakeSubsystem intakeSubsystem, BooleanSupplier release) {
+    public CoralIntakeCommand(CoralIntakeSubsystem intakeSubsystem, BooleanSupplier release, BooleanSupplier stop) {
         m_intakeSubsystem = intakeSubsystem;
         m_release = release;
+        m_stop = stop;
 
         addRequirements(m_intakeSubsystem);
     }
@@ -25,7 +27,10 @@ public class CoralIntakeCommand extends Command {
     
     @Override
     public void execute() {
-        if (m_release.getAsBoolean() || counter > 0) {
+        if (m_stop.getAsBoolean()) {
+            m_intakeSubsystem.setIntakeMotorSpeed(0);
+        }
+        else if (m_release.getAsBoolean() || counter > 0) {
             Constants.CoralIntake.hasPiece = true;
             if (counter <= 50) {
                 m_intakeSubsystem.setIntakeMotorSpeed(Constants.CoralIntake.release);

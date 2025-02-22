@@ -26,12 +26,12 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         m_CANRange = new CANrange(Constants.CanBus.CANRangeID);
     }
 
-      private void configMotors() {
-    SparkMaxConfig intakeConfig = new SparkMaxConfig();
-    intakeConfig
-        .idleMode(IdleMode.kBrake);
+    private void configMotors() {
+        SparkMaxConfig intakeConfig = new SparkMaxConfig();
+        intakeConfig
+            .idleMode(IdleMode.kBrake);
 
-    m_intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
 
     public void setIntakeMotorSpeed(double speed) {
@@ -52,12 +52,12 @@ public class CoralIntakeSubsystem extends SubsystemBase {
             setIntakeMotorSpeed(0);
         }
         if (getIntakeSpeed() > 0.02) {
-            if (m_intakeMotor.getOutputCurrent() > 20) {
+            if (m_intakeMotor.getOutputCurrent() > 40) {
                 Constants.CoralIntake.hasPiece = true;
             }
         }
 
-        Logger.recordOutput("intake speed", getIntakeSpeed());
+        Logger.recordOutput("Intake speed", getIntakeSpeed());
         Logger.recordOutput("Distance", getDistance());
         Logger.recordOutput("Has Piece", Constants.CoralIntake.hasPiece);
         Logger.recordOutput("Current current", m_intakeMotor.getOutputCurrent());

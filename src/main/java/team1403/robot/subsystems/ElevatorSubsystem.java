@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
 
-public class Elevator extends SubsystemBase {
+public class ElevatorSubsystem extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
   private ElevatorFeedforward m_ElevatorFeedforward;
@@ -36,7 +36,7 @@ public class Elevator extends SubsystemBase {
 
   private SysIdRoutine m_sysIdRoutine;
 
-  public Elevator() {
+  public ElevatorSubsystem() {
     m_leftMotor = new SparkMax(Constants.CanBus.leftElevatorMotorID, MotorType.kBrushless);
     m_rightMotor = new SparkMax(Constants.CanBus.rightElevatorMotorID, MotorType.kBrushless);
     configMotors();
