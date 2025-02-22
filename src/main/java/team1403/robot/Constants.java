@@ -222,7 +222,6 @@ public class Constants {
     public static final double intake = 0.5;
     public static final double neutral = 0.04;
     public static final double wiggle = 0.1;
-    public static boolean hasPiece = false;
   }
 
   public static class Elevator {

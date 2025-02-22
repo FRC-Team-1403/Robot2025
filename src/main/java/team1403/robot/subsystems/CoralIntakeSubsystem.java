@@ -67,15 +67,8 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (getIntakeSpeed() > 0.04) {
-            if (getFilteredCurrent() > 40 && pieceIn()) {
-                Constants.CoralIntake.hasPiece = true;
-            }
-        }
-
         Logger.recordOutput("Intake speed", getIntakeSpeed());
         Logger.recordOutput("Distance", getDistance());
-        Logger.recordOutput("Has Piece", Constants.CoralIntake.hasPiece);
         Logger.recordOutput("Current current", getFilteredCurrent());
     }
 }
