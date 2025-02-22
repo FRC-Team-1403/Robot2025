@@ -127,7 +127,7 @@ public class RobotContainer {
     new Trigger(() -> !m_coralIntake.hasPiece()).and(() -> 
     Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
     && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0)
-    .whileFalse(new CoralIntakeSpeed(m_coralIntake, 0.5));
+    .whileTrue(new CoralIntakeSpeed(m_coralIntake, 0.5));
 
   }
 
