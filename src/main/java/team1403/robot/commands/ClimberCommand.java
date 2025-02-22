@@ -31,7 +31,7 @@ public class ClimberCommand extends Command{
             m_climber.lift();
         } 
         else if (m_lower.getAsBoolean()) {
-            m_climber.lower(); //use 
+            m_climber.lower();
         }
     }
 

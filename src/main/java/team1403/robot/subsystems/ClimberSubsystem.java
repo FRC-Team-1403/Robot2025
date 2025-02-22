@@ -5,6 +5,8 @@ import edu.wpi.first.util.datalog.DataLog;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -30,10 +32,13 @@ public class ClimberSubsystem extends SubsystemBase{
         leftConfig 
             .idleMode(IdleMode.kBrake)
             .follow(m_rightMotor);
-        SparkMaxConfig righConfig = new SparkMaxConfig();
-        righConfig 
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+        rightConfig 
             .idleMode(IdleMode.kBrake)
             .inverted(true);
+
+        m_leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void stopMotors() {
