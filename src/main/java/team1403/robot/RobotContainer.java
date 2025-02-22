@@ -48,20 +48,12 @@ import team1403.robot.Constants;
 public class RobotContainer {
 
   private SwerveSubsystem m_swerve;
-  private Elevator m_elevator;
-  private IntakeSubsystem m_intake;
-  private WristSubsystem m_wrist;
-  private final AlgaeIntake m_AlgaeIntake;
-  private ClimberSubsystem m_climberSubsystem;
-  private StateMachine m_stateMachine;
-  private Command m_vibrationCmd;
+  
   
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
   private final CommandXboxController m_operatorController;
-
-  private final AlgaeEstimateSubystem test = new AlgaeEstimateSubystem();
 
   private final PowerDistribution m_powerDistribution;
 
@@ -93,13 +85,6 @@ public class RobotContainer {
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
     Blackbox.init();
     m_swerve = TunerConstants.createDrivetrain();
-    m_elevator = new Elevator();
-    m_intake = new IntakeSubsystem();
-    m_climberSubsystem = new ClimberSubsystem();
-    m_AlgaeIntake = new AlgaeIntake();
-    m_wrist = new WristSubsystem();
-    m_vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
-    m_stateMachine = new StateMachine(m_intake, m_wrist, m_elevator, m_swerve, () -> m_vibrationCmd);
     
 
 
@@ -162,7 +147,7 @@ public class RobotContainer {
       () -> m_driverController.getHID().getBButton(),
       () -> m_driverController.getRightTriggerAxis(),
       () -> m_driverController.getLeftTriggerAxis()));
-      
+
     // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
     //     m_swerve,
     //     () -> -m_driverController.getLeftX(),
@@ -187,11 +172,6 @@ public class RobotContainer {
     // //SmartDashboard.putNumber("vibration", 0);
 
     // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()));
-
-    m_climberSubsystem.setDefaultCommand(new ClimberCommand(m_climberSubsystem, 
-      () -> m_operatorController.getHID().getAButtonPressed(), 
-      () -> m_operatorController.getHID().getBButtonPressed(), 0.1));
-
 
 
 

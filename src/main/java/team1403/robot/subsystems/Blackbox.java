@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
-import team1403.robot.commands.CoralDepositCommand;
 
 //WIP (work in progress)
 //Stores data that is shared between subsystems
@@ -123,10 +122,6 @@ public class Blackbox {
 
     public static Command reefScoreLevelCmd(ReefScoreLevel level) {
         return new InstantCommand(() -> reefScoreLevel(level));
-    }
-
-    public static Command Score(ReefScoreLevel level, ReefSelect select){
-        return new CoralDepositCommand(level, select);
     }
 
     public static Command setAligningCmd(boolean align, ReefSelect select){

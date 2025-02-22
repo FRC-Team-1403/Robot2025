@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.swerve.SwerveSubsystem;
-import team1403.robot.subsystems.IntakeSubsystem;
 
 public class AlignCommand extends Command {
 
@@ -20,7 +19,6 @@ public class AlignCommand extends Command {
     private Pose2d m_target;
     private PPHolonomicDriveController m_driveController;
     private PathPlannerTrajectoryState m_state;
-    private IntakeSubsystem m_intakeSubsystem;
 
     private static final double kTreshM = 0.01;
 
