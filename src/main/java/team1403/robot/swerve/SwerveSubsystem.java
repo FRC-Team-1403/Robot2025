@@ -63,6 +63,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     private final Field2d m_field = new Field2d();
     private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
     private final Alert m_gyroDisconnected = new Alert("Gyroscope Disconnected!", AlertType.kError);
+    private Rotation2d m_headingOffset = Rotation2d.kZero;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -403,6 +404,18 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         return getPose().getRotation();
     }
 
+    public Rotation2d getShallowRotation() {
+        return getRotation().minus(m_headingOffset);
+    }
+
+    public void resetShallowHeading(Rotation2d r) {
+        m_headingOffset = r;
+    }
+
+    public void resetShallowHeading() {
+        resetShallowHeading(getRotation());
+    }
+
     private SwerveRequest.ApplyRobotSpeeds req = new SwerveRequest.ApplyRobotSpeeds();
 
     private boolean m_rotDriftCorrect = true;
@@ -419,15 +432,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
 
     private static final double[] kEmptyDoubleArr = {};
     public void drive(ChassisSpeeds s) {
-        s = rotationalDriftCorrection(s);
-        req.Speeds = s;
-        req.DesaturateWheelSpeeds = true;
-        req.DriveRequestType = DriveRequestType.Velocity;
-        req.SteerRequestType = SteerRequestType.Position;
-        req.CenterOfRotation = Translation2d.kZero;
-        req.WheelForceFeedforwardsX = kEmptyDoubleArr;
-        req.WheelForceFeedforwardsY = kEmptyDoubleArr;
-        super.setControl(req);
+        drive(s, null);
     }
 
     public void drive(ChassisSpeeds s, DriveFeedforwards ff) {
@@ -437,8 +442,13 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         req.DriveRequestType = DriveRequestType.Velocity;
         req.SteerRequestType = SteerRequestType.Position;
         req.CenterOfRotation = Translation2d.kZero;
-        req.WheelForceFeedforwardsX = ff.robotRelativeForcesXNewtons();
-        req.WheelForceFeedforwardsY = ff.robotRelativeForcesYNewtons();
+        if(ff != null) {
+            req.WheelForceFeedforwardsX = ff.robotRelativeForcesXNewtons();
+            req.WheelForceFeedforwardsY = ff.robotRelativeForcesYNewtons();
+        } else {
+            req.WheelForceFeedforwardsX = kEmptyDoubleArr;
+            req.WheelForceFeedforwardsY = kEmptyDoubleArr;
+        }
         super.setControl(req);
     }
 

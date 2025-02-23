@@ -45,7 +45,7 @@ public class RobotContainer {
 
   private final PowerDistribution m_powerDistribution;
 
-  private SendableChooser<Command> autoChooser;
+  private SendableChooser<Command> m_autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -57,25 +57,25 @@ public class RobotContainer {
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
 
-    if (AutoBuilder.isConfigured()) autoChooser = AutoBuilder.buildAutoChooser();
+    if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
     else
     {
-      autoChooser = new SendableChooser<>();
+      m_autoChooser = new SendableChooser<>();
       System.err.println("Auto builder wasn't configured!");
     }
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {
-      autoChooser.addOption("Swerve SysID QF", m_swerve.sysIdQuasistatic(Direction.kForward));
-      autoChooser.addOption("Swerve SysID QR", m_swerve.sysIdQuasistatic(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID DF", m_swerve.sysIdDynamic(Direction.kForward));
-      autoChooser.addOption("Swerve SysID DR", m_swerve.sysIdDynamic(Direction.kReverse));
+      m_autoChooser.addOption("Swerve SysID QF", m_swerve.sysIdQuasistatic(Direction.kForward));
+      m_autoChooser.addOption("Swerve SysID QR", m_swerve.sysIdQuasistatic(Direction.kReverse));
+      m_autoChooser.addOption("Swerve SysID DF", m_swerve.sysIdDynamic(Direction.kForward));
+      m_autoChooser.addOption("Swerve SysID DR", m_swerve.sysIdDynamic(Direction.kReverse));
     }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
     if(Constants.DEBUG_MODE) {
       SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
       SmartDashboard.putData("Power Distribution", m_powerDistribution);
@@ -147,7 +147,13 @@ public class RobotContainer {
 
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);
-    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.seedFieldCentric()));
+    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.resetShallowHeading()));
+
+    m_driverController.b().debounce(2.0).onTrue(Commands.sequence(
+      m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
+      m_swerve.runOnce(() -> m_swerve.resetRotation(Rotation2d.kZero)),
+      new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
+    ));
   }
    
   /**
@@ -157,6 +163,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return autoChooser.getSelected();
+    return m_autoChooser.getSelected();
   }
 }
