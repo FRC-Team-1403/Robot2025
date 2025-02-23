@@ -7,15 +7,12 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
-
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,14 +32,13 @@ public class DefaultSwerveCommand extends Command {
   private final BooleanSupplier m_fieldRelativeSupplier;
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
+  private final BooleanSupplier m_xMode;
   private boolean m_isFieldRelative;
   
   private SlewRateLimiter m_rotationRateLimiter;
   private double prev_horizontal = 0;
   private double prev_vertical = 0;
   
-  private final double kMaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-  private final double kMaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
   private static final double kMaxVelocityChange = 13 * 0.02;
 
   private double m_speedLimiter = 0.2;
@@ -70,6 +66,7 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
       BooleanSupplier fieldRelativeSupplier,
+      BooleanSupplier xMode,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
     this.m_drivetrainSubsystem = drivetrain;
@@ -78,6 +75,7 @@ public class DefaultSwerveCommand extends Command {
     this.m_rotationSupplier = rotationSupplier;
     this.m_fieldRelativeSupplier = fieldRelativeSupplier;
     this.m_speedSupplier = speedSupplier;
+    this.m_xMode = xMode;
     m_snipingMode = snipingMode;
     m_isFieldRelative = true;
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
@@ -102,6 +100,11 @@ public class DefaultSwerveCommand extends Command {
       return;
     }
 
+    if (m_xMode.getAsBoolean()) {
+      m_drivetrainSubsystem.setControl(new SwerveRequest.SwerveDriveBrake());
+      return;
+    }
+
     if (m_fieldRelativeSupplier.getAsBoolean()) {
       m_isFieldRelative = !m_isFieldRelative;
     }
@@ -123,11 +126,11 @@ public class DefaultSwerveCommand extends Command {
       velocity = MathUtil.applyDeadband(velocity, 0.05);
       
       //scale unit vector by speed limiter and convert to speed
-      horizontal *= velocity / vel_hypot * kMaxSpeed * m_speedLimiter;
-      vertical *= velocity / vel_hypot * kMaxSpeed * m_speedLimiter;
+      horizontal *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
+      vertical *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
     }
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
-    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * kMaxAngularRate;
+    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * TunerConstants.kMaxAngularRate;
 
     Pose2d curPose = m_drivetrainSubsystem.getPose();
     Rotation2d curRotation = curPose.getRotation();

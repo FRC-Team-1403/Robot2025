@@ -2,17 +2,31 @@ package team1403.robot.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -20,12 +34,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.swerve.TunerConstants.TunerSwerveDrivetrain;
+import team1403.robot.swerve.util.SwerveHeadingCorrector;
+import team1403.robot.vision.AprilTagCamera;
+import team1403.robot.vision.ITagCamera;
+import team1403.robot.vision.LimelightWrapper;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -36,6 +56,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     private final SwerveHeadingCorrector m_headingCorrector = new SwerveHeadingCorrector();
+    private final Field2d m_field = new Field2d();
+    private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -111,6 +133,41 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+    //stuff to run after ctre generator is constructed
+    private void onConstruct() {
+      SmartDashboard.putData("Field", m_field);
+      super.resetPose(CougarUtil.getInitialRobotPose());
+
+      AutoBuilder.configure(
+        this::getPose,
+        this::resetOdometry,
+        () -> this.getState().Speeds,
+        (s, ff) -> drive(s, ff),
+        new PPHolonomicDriveController(
+            TunerConstants.kTranslationPID,
+            TunerConstants.kRotationPID,
+            Constants.kLoopTime
+        ),
+        CougarUtil.loadRobotConfig(),
+        () -> CougarUtil.shouldMirrorPath(),
+        this);
+
+        Pathfinding.setPathfinder(new LocalADStar());
+        PathfindingCommand.warmupCommand().schedule();
+
+        PathPlannerLogging.setLogActivePathCallback((activePath) -> {
+            Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+            m_field.getObject("traj").setPoses(activePath);
+        });
+            PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
+            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
+
+        m_cameras.add(new LimelightWrapper("limelight", 
+            () -> Constants.Swerve.kLimelightTransform,
+            () -> getRotation3d()));
+    }
+
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
@@ -129,6 +186,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        onConstruct();
     }
 
     /**
@@ -153,6 +211,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        onConstruct();
     }
 
     /**
@@ -185,6 +244,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        onConstruct();
     }
 
     /**
@@ -246,6 +306,18 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        m_field.setRobotPose(getPose());
+
+        for (ITagCamera c : m_cameras)
+        {
+            if (c.hasPose() && c.checkVisionResult())
+            {
+                Pose3d p = c.getPose();
+                if (p != null)
+                    addVisionMeasurement(p.toPose2d(), c.getTimestamp(), c.getEstStdv());
+            }
+        }
     }
 
     private void startSimThread() {
@@ -301,7 +373,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         return super.getState().Pose;
     }
 
-    private SwerveRequest.RobotCentric req = new SwerveRequest.RobotCentric();
+    private SwerveRequest.ApplyRobotSpeeds req = new SwerveRequest.ApplyRobotSpeeds();
 
     private boolean m_rotDriftCorrect = true;
 
@@ -317,9 +389,25 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
 
     public void drive(ChassisSpeeds s) {
         s = rotationalDriftCorrection(s);
-        req.VelocityX = s.vxMetersPerSecond;
-        req.VelocityY = s.vyMetersPerSecond;
-        req.RotationalRate = s.omegaRadiansPerSecond;
+        req.Speeds = s;
+        req.DesaturateWheelSpeeds = true;
+        req.DriveRequestType = DriveRequestType.Velocity;
+        req.SteerRequestType = SteerRequestType.Position;
+        req.CenterOfRotation = Translation2d.kZero;
+        req.WheelForceFeedforwardsX = null;
+        req.WheelForceFeedforwardsY = null;
+        super.setControl(req);
+    }
+
+    public void drive(ChassisSpeeds s, DriveFeedforwards ff) {
+        s = rotationalDriftCorrection(s);
+        req.Speeds = s;
+        req.DesaturateWheelSpeeds = true;
+        req.DriveRequestType = DriveRequestType.Velocity;
+        req.SteerRequestType = SteerRequestType.Position;
+        req.CenterOfRotation = Translation2d.kZero;
+        req.WheelForceFeedforwardsX = ff.robotRelativeForcesXNewtons();
+        req.WheelForceFeedforwardsY = ff.robotRelativeForcesYNewtons();
         super.setControl(req);
     }
 

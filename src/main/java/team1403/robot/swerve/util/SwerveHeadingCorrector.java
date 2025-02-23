@@ -1,6 +1,8 @@
-package team1403.robot.swerve;
+package team1403.robot.swerve.util;
 
 import java.util.Optional;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 
@@ -27,7 +29,7 @@ public class SwerveHeadingCorrector {
     {
         m_controller.enableContinuousInput(-Math.PI, Math.PI);
 
-        if (TunerConstants.DEBUG_MODE) {
+        if (TunerConstants.SWERVE_DEBUG_MODE) {
             SmartDashboard.putData("SwerveHC PID", m_controller);
         }
     }
@@ -53,9 +55,9 @@ public class SwerveHeadingCorrector {
             resetHeadingSetpoint();
         }
 
-        SignalLogger.writeDouble("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
-        SignalLogger.writeBoolean("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
-        SignalLogger.writeDouble("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
+        Logger.recordOutput("SwerveHC/Yaw Setpoint", yaw_setpoint.orElse(current_rotation));
+        Logger.recordOutput("SwerveHC/Yaw Setpoint Present", yaw_setpoint.isPresent());
+        Logger.recordOutput("SwerveHC/Ang Vel Filtered", filtered_ang_vel);
         
 
         if(is_near_zero && yaw_setpoint.isEmpty())
