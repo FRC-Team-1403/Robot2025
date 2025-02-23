@@ -45,7 +45,6 @@ import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.swerve.TunerConstants.TunerSwerveDrivetrain;
 import team1403.robot.swerve.util.SwerveHeadingCorrector;
-import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.LimelightWrapper;
 
@@ -167,7 +166,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         });
 
         m_cameras.add(new LimelightWrapper("limelight", 
-            () -> Constants.Swerve.kLimelightTransform,
+            () -> Constants.Vision.kLimelightTransform,
             () -> getRotation3d()));
     }
 

@@ -37,22 +37,6 @@ public class Constants {
   //controls if the debug tab is used on shuffleboard
   public static final boolean DEBUG_MODE = false;
   public static final boolean ENABLE_SYSID = true;
-  //controls if the debug tab is used on shuffleboard
-
-  /**
-   * Swerve Constants.
-   * 
-   */
-  public static class Swerve {
-    //front-to-back-disp = ~8.568 inches 
-    //left-to-right-disp = 0 inches
-    //top-to-bottom disp = 17.82426 inches
-    public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
-    public static final Rotation3d kLimelightRotation = new Rotation3d(0, Units.degreesToRadians(-25), Math.PI);
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426-48));
-    public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
-    public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
-  }
 
   public static class PathPlanner {
   }
@@ -133,6 +117,15 @@ public class Constants {
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public static final boolean kExtraVisionDebugInfo = true;
     public static final double algaeEstimateKonstant = 3.8;
+
+    //front-to-back-disp = ~8.568 inches 
+    //left-to-right-disp = 0 inches
+    //top-to-bottom disp = 17.82426 inches
+    public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
+    public static final Rotation3d kLimelightRotation = new Rotation3d(0, Units.degreesToRadians(-25), Math.PI);
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(-8.568),0,Units.inchesToMeters(17.82426-48));
+    public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
+    public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
   }
 
   public static class AlgaeIntake {
