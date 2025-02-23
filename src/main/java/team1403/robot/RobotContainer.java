@@ -4,6 +4,8 @@
 
 package team1403.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -37,7 +39,7 @@ public class RobotContainer {
 
   private final PowerDistribution m_powerDistribution;
 
-  private SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> m_autoChooser;
 
   private Command m_teleopCommand;
 
@@ -57,7 +59,8 @@ public class RobotContainer {
    // m_operatorController.a().whileTrue().new InstantCommand(() -> m_elevator.)
     
 
-
+    if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
+    else m_autoChooser = new SendableChooser<>();
 
     
     // //avoid cluttering up auto chooser at competitions
@@ -81,6 +84,8 @@ public class RobotContainer {
       // SmartDashboard.putData("Swerve Drive", m_swerve);
       SmartDashboard.putData("Power Distribution", m_powerDistribution);
     }
+
+    SmartDashboard.putData(m_autoChooser);
 
     configureBindings();
   }
@@ -149,7 +154,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return autoChooser.getSelected();
+    return m_autoChooser.getSelected();
   }
 
   public Command getTeleopCommand() {

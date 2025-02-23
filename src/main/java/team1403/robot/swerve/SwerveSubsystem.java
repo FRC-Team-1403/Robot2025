@@ -30,10 +30,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -58,6 +60,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
     private final SwerveHeadingCorrector m_headingCorrector = new SwerveHeadingCorrector();
     private final Field2d m_field = new Field2d();
     private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
+    private final Alert m_gyroDisconnected = new Alert("Gyroscope Disconnected!", AlertType.kError);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -307,6 +310,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
             });
         }
 
+        m_gyroDisconnected.set(!super.getPigeon2().isConnected());
         m_field.setRobotPose(getPose());
 
         for (ITagCamera c : m_cameras)
@@ -387,6 +391,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         return speeds;
     }
 
+    private static final double[] kEmptyDoubleArr = {};
     public void drive(ChassisSpeeds s) {
         s = rotationalDriftCorrection(s);
         req.Speeds = s;
@@ -394,8 +399,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem 
         req.DriveRequestType = DriveRequestType.Velocity;
         req.SteerRequestType = SteerRequestType.Position;
         req.CenterOfRotation = Translation2d.kZero;
-        req.WheelForceFeedforwardsX = null;
-        req.WheelForceFeedforwardsY = null;
+        req.WheelForceFeedforwardsX = kEmptyDoubleArr;
+        req.WheelForceFeedforwardsY = kEmptyDoubleArr;
         super.setControl(req);
     }
 
