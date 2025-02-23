@@ -10,7 +10,6 @@ import org.ejml.dense.row.MatrixFeatures_CDRM;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.FlippingUtil;
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -95,7 +94,7 @@ public class RobotContainer {
     
 
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+
     
     // //avoid cluttering up auto chooser at competitions
     // if (Constants.ENABLE_SYSID) {
@@ -112,7 +111,7 @@ public class RobotContainer {
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
     if(Constants.DEBUG_MODE) {
       SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
       // SmartDashboard.putData("Swerve Drive", m_swerve);
