@@ -153,7 +153,7 @@ public class DefaultSwerveCommand extends Command {
 
     {
       if (m_isFieldRelative) {
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, m_drivetrainSubsystem.getRotation());
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, m_drivetrainSubsystem.getShallowRotation());
       } else {
         chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }
