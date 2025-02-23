@@ -39,7 +39,7 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightRED;
     private static ReefSelect reefSide = ReefSelect.LEFT;
     private static ReefScoreLevel reefLevel = ReefScoreLevel.L2; //todo: figure out what we want to default to
-    private static boolean coralLoaded = false;
+    private static boolean coralLoaded = true;
     private static boolean algaeLoaded = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);

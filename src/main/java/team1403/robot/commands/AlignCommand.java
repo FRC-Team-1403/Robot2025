@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.swerve.TunerConstants;
 
 public class AlignCommand extends Command {
 
@@ -27,8 +28,8 @@ public class AlignCommand extends Command {
 
         m_driveController = 
         new PPHolonomicDriveController(
-            Constants.PathPlanner.kTranslationPID,
-            Constants.PathPlanner.kRotationPID,
+            TunerConstants.kTranslationPID,
+            TunerConstants.kRotationPID,
             Constants.kLoopTime);
         m_state = new PathPlannerTrajectoryState();
 
@@ -43,7 +44,7 @@ public class AlignCommand extends Command {
     @Override
     public void execute() {
         ChassisSpeeds speeds = m_driveController.calculateRobotRelativeSpeeds(m_swerve.getPose(), m_state);
-        m_swerve.drive(speeds, true);
+        m_swerve.drive(speeds);
     }
 
     @Override

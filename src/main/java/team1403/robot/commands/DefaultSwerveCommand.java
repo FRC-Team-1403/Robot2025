@@ -2,6 +2,9 @@ package team1403.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -15,8 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
-import team1403.robot.Constants.Swerve;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.swerve.TunerConstants;
 
 /**
  * The default command for the swerve drivetrain subsystem.
@@ -93,7 +96,7 @@ public class DefaultSwerveCommand extends Command {
     m_speedLimiter = 0.3 * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
   
     if (DriverStation.isAutonomousEnabled()) {
-      m_drivetrainSubsystem.drive(new ChassisSpeeds(), false);
+      m_drivetrainSubsystem.drive(new ChassisSpeeds());
       return;
     }
 
@@ -102,7 +105,7 @@ public class DefaultSwerveCommand extends Command {
     }
 
     if (m_xModeSupplier.getAsBoolean()) {
-      m_drivetrainSubsystem.xMode();
+      m_drivetrainSubsystem.setControl(new SwerveRequest.SwerveDriveBrake());
       return;
     }
 
@@ -123,11 +126,11 @@ public class DefaultSwerveCommand extends Command {
       velocity = MathUtil.applyDeadband(velocity, 0.05);
       
       //scale unit vector by speed limiter and convert to speed
-      horizontal *= velocity / vel_hypot * Constants.Swerve.kMaxSpeed * m_speedLimiter;
-      vertical *= velocity / vel_hypot * Constants.Swerve.kMaxSpeed * m_speedLimiter;
+      horizontal *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
+      vertical *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
     }
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
-    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * Swerve.kMaxAngularSpeed;
+    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * TunerConstants.kMaxAngularRate;
     // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
     
     //limit change in translation of the overall robot, based on orbit's slideshow
@@ -150,14 +153,14 @@ public class DefaultSwerveCommand extends Command {
 
     {
       if (m_isFieldRelative) {
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, m_drivetrainSubsystem.getShallowRotation());
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, m_drivetrainSubsystem.getRotation());
       } else {
         chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }
       //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     }
 
-    m_drivetrainSubsystem.drive(chassisSpeeds, true);
+    m_drivetrainSubsystem.drive(chassisSpeeds);
   }
 
   private static double squareNum(double num) {

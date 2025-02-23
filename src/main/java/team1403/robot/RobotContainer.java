@@ -28,6 +28,7 @@ import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.swerve.TunerConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,8 +37,7 @@ import team1403.robot.swerve.SwerveSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
-  private SwerveSubsystem m_swerve;
+  private final SwerveSubsystem m_swerve;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -49,11 +49,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
-    Blackbox.init();
-    m_swerve = new SwerveSubsystem();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
+    // Configure the trigger bindings
+    Blackbox.init();
+    m_swerve = TunerConstants.createDrivetrain();
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
 
@@ -66,14 +66,10 @@ public class RobotContainer {
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {
-      autoChooser.addOption("Swerve SysID QF", m_swerve.getSysIDQ(Direction.kForward));
-      autoChooser.addOption("Swerve SysID QR", m_swerve.getSysIDQ(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID DF", m_swerve.getSysIDD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID DR", m_swerve.getSysIDD(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID Steer QF", m_swerve.getSysIDSteerQ(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer QR", m_swerve.getSysIDSteerQ(Direction.kReverse));
-      autoChooser.addOption("Swerve SysID Steer DF", m_swerve.getSysIDSteerD(Direction.kForward));
-      autoChooser.addOption("Swerve SysID Steer DR", m_swerve.getSysIDSteerD(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID QF", m_swerve.sysIdQuasistatic(Direction.kForward));
+      autoChooser.addOption("Swerve SysID QR", m_swerve.sysIdQuasistatic(Direction.kReverse));
+      autoChooser.addOption("Swerve SysID DF", m_swerve.sysIdDynamic(Direction.kForward));
+      autoChooser.addOption("Swerve SysID DR", m_swerve.sysIdDynamic(Direction.kReverse));
     }
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
@@ -82,8 +78,11 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     if(Constants.DEBUG_MODE) {
       SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
-      SmartDashboard.putData("Swerve Drive", m_swerve);
       SmartDashboard.putData("Power Distribution", m_powerDistribution);
+    }
+
+    if(TunerConstants.SWERVE_DEBUG_MODE) {
+      SmartDashboard.putData("Swerve Drive", m_swerve);
     }
 
     configureBindings();
@@ -148,14 +147,7 @@ public class RobotContainer {
 
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);
-
-    m_driverController.b().debounce(1.5).onTrue(
-      Commands.sequence(
-          m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
-          m_swerve.runOnce(() -> m_swerve.zeroHeading()),
-          new DeferredCommand(() -> vibrationCmd, Set.of())
-        ));
-    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.resetShallowHeading()));
+    m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.seedFieldCentric()));
   }
    
   /**

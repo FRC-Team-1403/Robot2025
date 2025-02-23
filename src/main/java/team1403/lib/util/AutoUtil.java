@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import team1403.robot.Constants;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.swerve.TunerConstants;
 
 public class AutoUtil {
     
@@ -28,10 +29,10 @@ public class AutoUtil {
   }
 
   public static Command pathFindToPose(Pose2d target) {
-    return AutoBuilder.pathfindToPose(target, Constants.PathPlanner.kPathConstraints);
+    return AutoBuilder.pathfindToPose(target, TunerConstants.kPathConstraints);
   }
 
   public static Command pathFindtoPath(PathPlannerPath path) {
-    return AutoBuilder.pathfindThenFollowPath(path, Constants.PathPlanner.kPathConstraints);
+    return AutoBuilder.pathfindThenFollowPath(path, TunerConstants.kPathConstraints);
   }
 }
