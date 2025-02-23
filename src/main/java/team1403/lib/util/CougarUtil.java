@@ -98,7 +98,7 @@ public class CougarUtil {
 
     //TODO: update when we get robot
     private static RobotConfig config = new RobotConfig(
-        Pounds.of(120), 
+        Pounds.of(130), 
         KilogramSquareMeters.of(1),
         new ModuleConfig(
             TunerConstants.kWheelRadius, 
