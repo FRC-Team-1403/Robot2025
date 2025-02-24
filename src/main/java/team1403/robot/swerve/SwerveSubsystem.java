@@ -172,6 +172,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
             () -> getRotation3d()));
+
+        SmartDashboard.putData("Gyro", super.getPigeon2());
     }
 
     /**
@@ -316,6 +318,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         m_gyroDisconnected.set(!super.getPigeon2().isConnected());
         m_field.setRobotPose(getPose());
 
+        SmartDashboard.putNumber("Velocity", CougarUtil.norm(getState().Speeds));
+
         for (ITagCamera c : m_cameras)
         {
             if (c.hasPose() && c.checkVisionResult())
@@ -421,7 +425,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     private boolean m_rotDriftCorrect = true;
 
     private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-        ChassisSpeeds corrected = m_headingCorrector.update(speeds, super.getState().Speeds, super.getPigeon2().getRotation2d(), super.getPigeon2().getAngularVelocityZWorld().getValue().in(DegreesPerSecond));
+        ChassisSpeeds corrected = m_headingCorrector.update(speeds, super.getState().Speeds, 
+            super.getPigeon2().getRotation2d(), super.getPigeon2().getAngularVelocityZWorld().getValue().in(DegreesPerSecond));
         if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
         {
           return corrected;

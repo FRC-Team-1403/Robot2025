@@ -5,6 +5,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,6 +46,10 @@ public class CougarUtil {
 
     public static double dot(Rotation2d a, Rotation2d b) {
         return a.getCos() * b.getCos() + a.getSin() * b.getSin(); // 2d dot product: a_x * b_x + a_y * b_y
+    }
+
+    public static double norm(ChassisSpeeds s) {
+        return Math.hypot(s.vxMetersPerSecond, s.vyMetersPerSecond);
     }
 
     public static Pose2d addDistanceToPoseRot(Pose2d pose, Rotation2d rot, double distance) {

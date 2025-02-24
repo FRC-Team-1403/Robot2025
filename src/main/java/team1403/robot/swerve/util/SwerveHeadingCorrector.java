@@ -11,6 +11,7 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team1403.lib.util.CougarUtil;
 import team1403.lib.util.TimeDelayedBoolean;
 import team1403.robot.Constants;
 
@@ -38,7 +39,7 @@ public class SwerveHeadingCorrector {
     public ChassisSpeeds update(ChassisSpeeds target, ChassisSpeeds cur_vel, Rotation2d gyro, double gyro_vel)
     {
         double current_rotation = MathUtil.angleModulus(gyro.getRadians());
-        boolean is_translating = Math.hypot(target.vxMetersPerSecond, target.vyMetersPerSecond) > 0.1;
+        boolean is_translating = CougarUtil.norm(target) > 0.1;
         //timeout can be lowered with a well tuned slew rate
         boolean is_near_zero = m_yawZeroDetector.update(Math.abs(target.omegaRadiansPerSecond) < OMEGA_THRESH, 0.2);
         double filtered_ang_vel = m_gyroVelFilter.calculate(gyro_vel);
