@@ -46,10 +46,16 @@ public class Constants {
 
     // other
     public static final int powerDistributionID = 42;
-  
-    public static final int candleID = kTBD;
+    public static final int intakeMotorID = 1;
+    public static final int CANRangeID = 27;
+    public static final int wristMotorID = 3;
 
-    public static final int algaeIntakeMotorID = kTBD;
+    public static final int kCandleID = kTBD;
+
+
+    public static final int leftElevatorMotorID = 10;
+    public static final int rightElevatorMotorID = 11;
+    public static final int algaeIntakeMotorID = 4;
   }
 
   /**
@@ -88,4 +94,76 @@ public class Constants {
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
   }
 
+  public static class CoralIntake {
+    public static final double release = -0.3;
+    public static final double intake = 0.5;
+    public static final double neutral = 0.04;
+    public static final double wiggle = 0.1;
+  }
+
+  public static class Elevator {
+    public static final double kPSparkMax = 0.0135;
+    public static final double kISparkMax = 0.0;
+    public static final double kDSparkMax = 0;
+    public static final double kGearRatio = 9.0;
+    public static final double kMultiplier = 2.0;
+    public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
+
+    public static final double kFeedforwardG = 0.03;
+    public static final double kFeedforwardV = 0.001;
+
+    public static class Command {
+      public static final double movementUpGain = 6; //9.0;
+      public static final double movementDownGain = 5; //6.0;
+      public static final double upMinSpeed = 5.75;
+      public static final double downMinSpeed = 5;
+      public static final double upMaxSpeed = 100;
+      public static final double downMaxSpeed = 100;
+      public static final double setPointMargin = 0.5;
+      // public static final double simPositionFactor = 1; 
+      public static final double elevatorUpRampUpTime = 0.5; //0.2;
+      public static final double elevatorUpRampDownTime = 0.001; //0.01;
+      public static final double elevatorDownRampUpTime = 0.1; //0.25;
+      public static final double elevatorDownRampDownTime = 0.001; //0.01;
+    }
+
+    public static class Setpoints {
+      public static final double L1 = 1;
+      public static final double L2 = 2;
+      public static final double L3 = 18.5;
+      public static final double L4 = 50;
+      public static final double Source = 1;
+      public static double current = 1;
+    }
+}
+
+  public static class Wrist {
+    public static class Setpoints{
+      public static final double L1 = 39; // same as L4 for now
+      public static final double L2 = 15;
+      public static final double L3 = 20;
+      public static final double L4 = 39;
+      public static final double Source = -54; //placehold
+      public static double current = 0.23;
+    }
+
+    public static final double WristKS = 0;
+    public static final double WristKG = 0.51 / 12;
+    public static final double WristKV = 0;
+
+    public static final double WristKP = 3.2;//2.7079; //keep testing
+    public static final double WristKI = 0;
+    public static final double WristKD = 0.005;//0.69018;
+
+    public static final double maxVelo = 3;
+    public static final double maxAccel = 15;
+
+    public static final double WristEncoderOffset = -0.75;
+
+  }
+
+  public static class Climber {
+    public static final int leftMotor = 0; //check 
+    public static final int rightMotor = 0;
+  }
 }

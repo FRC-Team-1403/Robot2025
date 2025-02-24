@@ -7,6 +7,7 @@ package team1403.robot;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,17 +19,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
-import team1403.lib.util.CougarUtil;
+import team1403.lib.util.RepeatNTimes;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
+import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.DefaultSwerveCommand;
+import team1403.robot.commands.ElevatorCommand;
+import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
+import team1403.robot.subsystems.CoralIntakeSubsystem;
+import team1403.robot.subsystems.ElevatorSubsystem;
+import team1403.robot.subsystems.WristSubsystem;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.swerve.TunerConstants;
 
@@ -40,6 +48,9 @@ import team1403.robot.swerve.TunerConstants;
  */
 public class RobotContainer {
   private final SwerveSubsystem m_swerve;
+  private final ElevatorSubsystem m_elevator;
+  private final WristSubsystem m_wrist;
+  private final CoralIntakeSubsystem m_coralIntake;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -58,6 +69,10 @@ public class RobotContainer {
     m_swerve = TunerConstants.createDrivetrain();
     // Enables power distribution logging
     m_powerDistribution = new PowerDistribution(Constants.CanBus.powerDistributionID, ModuleType.kRev);
+
+    m_elevator = new ElevatorSubsystem();
+    m_wrist = new WristSubsystem();
+    m_coralIntake = new CoralIntakeSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
     else
@@ -160,6 +175,45 @@ public class RobotContainer {
       m_swerve.runOnce(() -> m_swerve.resetRotation(Rotation2d.kZero)),
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
+
+    // wrist
+    m_operatorController.b().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1));
+    m_operatorController.a().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2));
+    m_operatorController.x().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3));
+    m_operatorController.y().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4));
+    m_operatorController.rightBumper().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source));
+
+    // elevator
+    m_operatorController.b().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1));
+    m_operatorController.a().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2));
+    m_operatorController.x().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3));
+    m_operatorController.y().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4));
+    m_operatorController.rightBumper().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source));
+
+    // coral intake
+    // stop intake
+    m_operatorController.leftBumper().whileTrue(
+      new CoralIntakeSpeed(m_coralIntake, 0)
+      .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+    );
+    // release coral
+    new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
+      .withTimeout(.2)
+    );
+    // wiggle then neutral
+    new Trigger(() -> m_coralIntake.hasPiece()).toggleOnTrue(
+      new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.4),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4)
+      ), 4).andThen(
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
+      )
+    );
+    // start intake
+    new Trigger(() -> !m_coralIntake.hasPiece())
+      .whileTrue(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
+
   }
    
   /**

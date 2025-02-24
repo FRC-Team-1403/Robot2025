@@ -18,7 +18,7 @@ public class LEDSubsystem extends SubsystemBase {
     private LEDState m_state;
 
     public LEDSubsystem() {
-        m_candle = new CANdle(Constants.CanBus.candleID);
+        m_candle = new CANdle(Constants.CanBus.kCandleID);
         CANdleConfiguration config = new CANdleConfiguration();
         m_candle.configAllSettings(config);
 
