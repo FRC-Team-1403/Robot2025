@@ -54,23 +54,6 @@ public class Constants {
 
     private static final int kTBD = 0;
 
-    // Swerve CanBus ids
-    public static final int frontLeftDriveID = 13;
-    public static final int frontLeftSteerID = 12;
-    public static final int frontLeftEncoderID = 22;
-
-    public static final int frontRightDriveID = 9;
-    public static final int frontRightSteerID = 8;
-    public static final int frontRightEncoderID = 20;
-
-    public static final int backLeftDriveID = 11;
-    public static final int backLeftSteerID = 10;
-    public static final int backLeftEncoderID = 21;
-
-    public static final int backRightDriveID = 7;
-    public static final int backRightSteerID = 6;
-    public static final int backRightEncoderID = 23;
-
     // other
     public static final int powerDistributionID = 60;
   
