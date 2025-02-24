@@ -26,6 +26,7 @@ import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
+import team1403.robot.commands.auto.AutoHelper;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.swerve.SwerveSubsystem;
@@ -64,6 +65,10 @@ public class RobotContainer {
       m_autoChooser = new SendableChooser<>();
       DriverStation.reportError("Auto builder wasn't configured!", true);
     }
+
+    /* Move forward 1 m from any position on the starting line 
+      (make sure robot is facing a tag to seed the position) */
+    m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {

@@ -47,10 +47,14 @@ public class CougarUtil {
         return a.getCos() * b.getCos() + a.getSin() * b.getSin(); // 2d dot product: a_x * b_x + a_y * b_y
     }
 
-    public static Pose2d addDistanceToPose(Pose2d pose, double distance) {
+    public static Pose2d addDistanceToPoseRot(Pose2d pose, Rotation2d rot, double distance) {
         return new Pose2d(pose.getTranslation().plus(
-            new Translation2d(distance, pose.getRotation())), 
+            new Translation2d(distance, rot)),
             pose.getRotation());
+    }
+
+    public static Pose2d addDistanceToPose(Pose2d pose, double distance) {
+        return addDistanceToPoseRot(pose, pose.getRotation(), distance);
     }
 
     public static Pose2d addDistanceToPoseLeft(Pose2d pose, double distance) {
