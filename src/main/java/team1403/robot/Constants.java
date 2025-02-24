@@ -183,7 +183,11 @@ public class Constants {
     public static final int wristMotorID = 15;
 
     // other
-    public static final int powerDistributionID = 60;
+    public static final int powerDistributionID = 42;
+
+    public static final int leftClimberMotor = 0;
+    public static final int rightClimberMotor = 0;
+
   }
   
   /**
@@ -356,5 +360,10 @@ public class Constants {
       
       public static final int leftMotor = 0;
       public static final int rightMotor = 1;
+  }
+
+  public static class Climber {
+    public static final double upSpeed = 0.5;
+    public static final double downSpeed = -0.3;
   }
 }

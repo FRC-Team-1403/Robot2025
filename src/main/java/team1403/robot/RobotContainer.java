@@ -33,16 +33,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.auto.TreeAuto;
 import team1403.lib.auto.TreeCommandNode;
 import team1403.lib.auto.TreeCommandProxy;
-import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants.Driver;
 import team1403.robot.Constants.Setpoints;
 import team1403.robot.autos.AutoHelper;
-import team1403.robot.commands.ElevatorCommand;
-import team1403.robot.subsystems.Blackbox;
-import team1403.robot.swerve.DefaultSwerveCommand;
-import team1403.robot.swerve.SwerveSubsystem;
-import team1403.robot.subsystems.Elevator;
+import team1403.robot.commands.ClimberCommand;
+import team1403.robot.subsystems.ClimberSubsystem;
+
 // import team1403.robot.subsystems.Arm;
 
 /**
@@ -53,8 +50,7 @@ import team1403.robot.subsystems.Elevator;
  */
 public class RobotContainer {
 
-  private SwerveSubsystem m_swerve;
-  private Elevator m_elevator = new Elevator();
+  private ClimberSubsystem m_climber = new ClimberSubsystem();
   // private Arm m_arm = new Arm(); 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -160,7 +156,9 @@ public class RobotContainer {
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 10, 70, 0));
+    m_operatorController.a().onTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
+    m_operatorController.b().onTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_operatorController.x().onTrue(new ClimberCommand(m_climber, 0));
   }
 
   
