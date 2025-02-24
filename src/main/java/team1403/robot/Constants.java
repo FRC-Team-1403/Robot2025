@@ -169,8 +169,6 @@ public class Constants {
   public static class Climber {
     public static final double upPos = 90; // check
     public static final double downPos = 1; // probaby
-    public static final double upSpeed = 0.3; // check
-    public static final double downSpeed = -0.3; // check
 
     public static final double maxVelo = 1;
     public static final double maxAccel = 3;  
@@ -179,8 +177,6 @@ public class Constants {
   public static class AlgaeIntake {
     public static final double upPos = 90; // check
     public static final double downPos = 1; // probaby
-    public static final double upSpeed = 0.3; // check
-    public static final double downSpeed = -0.3; // check
 
     public static final double maxVelo = 1;
     public static final double maxAccel = 3;

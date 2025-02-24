@@ -23,13 +23,11 @@ import team1403.robot.Constants;
 public class ClimberSubsystem extends SubsystemBase {
   private final SparkMax m_leftMotor;
   private final SparkMax m_rightMotor;
-  private final ProfiledPIDController m_pid;
 
   public ClimberSubsystem() {
     m_leftMotor = new SparkMax(Constants.CanBus.climberLeftMotor, MotorType.kBrushless);
     m_rightMotor = new SparkMax(Constants.CanBus.climberRightMotor, MotorType.kBrushless);
     configMotors();
-    m_pid = new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(Constants.Climber.maxVelo, Constants.Climber.maxAccel));
   }
 
   private void configMotors() {
@@ -46,24 +44,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_rightMotor.configure(rightconfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public double getAngle() {
-    return m_rightMotor.getEncoder().getPosition() * 360;
-  }
-
-  public void setClimberAngle(double targetAngle) {
-        m_pid.setGoal(targetAngle);
-    }
-
-  public boolean isAtSetpoint() {
-      return Math.abs(getAngle() - m_pid.getGoal().position) 
-          < Units.degreesToRotations(5);
-  }
-
   @Override
   public void periodic() {
-    m_rightMotor.set(m_pid.calculate(getAngle()));
-
-    Logger.recordOutput("Climber at setpoint", isAtSetpoint());
-    Logger.recordOutput("Climber Angle", getAngle());
   }
 }
