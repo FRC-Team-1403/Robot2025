@@ -55,7 +55,7 @@ public class Constants {
     private static final int kTBD = 0;
 
     // other
-    public static final int powerDistributionID = 60;
+    public static final int powerDistributionID = 42;
   
     public static final int candleID = kTBD;
 

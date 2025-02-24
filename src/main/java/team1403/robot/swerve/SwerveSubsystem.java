@@ -165,7 +165,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
             Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
             m_field.getObject("traj").setPoses(activePath);
         });
-            PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
+        PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
             Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
