@@ -117,8 +117,7 @@ public class WristSubsystem extends SubsystemBase {
         getWristAngleDeg();
 
         Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
-        m_wristMotor.set(m_profiled.calculate(getWristAngle()) + 
-            -m_feedForward.calculate(
+        m_wristMotor.set(m_profiled.calculate(getWristAngle()) - m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 
                 Units.rotationsToRadians(getWristVelocity())));
     }
