@@ -50,6 +50,7 @@ import team1403.robot.swerve.TunerConstants.TunerSwerveDrivetrain;
 import team1403.robot.swerve.util.SwerveHeadingCorrector;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.LimelightWrapper;
+import team1403.robot.vision.VisionSimUtil;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -141,7 +142,6 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
 
     //stuff to run after ctre generator is constructed
     private void onConstruct() {
-      SmartDashboard.putData("Field", m_field);
       super.resetPose(CougarUtil.getInitialRobotPose());
 
       AutoBuilder.configure(
@@ -169,11 +169,13 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
             Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
+        VisionSimUtil.initVisionSim();
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
             () -> getRotation3d()));
 
         SmartDashboard.putData("Gyro", super.getPigeon2());
+        SmartDashboard.putData("Field", m_field);
     }
 
     /**
