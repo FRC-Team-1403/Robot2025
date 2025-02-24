@@ -9,6 +9,7 @@ import java.util.Set;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -61,7 +62,7 @@ public class RobotContainer {
     else
     {
       m_autoChooser = new SendableChooser<>();
-      System.err.println("Auto builder wasn't configured!");
+      DriverStation.reportError("Auto builder wasn't configured!", true);
     }
     
     //avoid cluttering up auto chooser at competitions
