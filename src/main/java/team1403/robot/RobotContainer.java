@@ -126,42 +126,16 @@ public class RobotContainer {
     // Setting default command of swerve subPsystem
     // red
 
-    // Translation2d pos_blue = new Translation2d(-0.038099999999999995,  5.547867999999999);
-    // Translation2d pos_red = FlippingUtil.flipFieldPosition(pos_blue);
-    
-    // m_swerve.setDefaultCommand(new DefaultSwerveCommand(
-    //     m_swerve,
-    //     () -> -m_driverController.getLeftX(),
-    //     () -> -m_driverController.getLeftY(),
-    //     () -> -m_driverController.getRightX(),
-    //     () -> m_driverController.getHID().getYButtonPressed(),
-    //     () -> m_driverController.getHID().getXButton(),
-    //     () -> m_driverController.getHID().getAButton(),
-    //     () -> m_driverController.getHID().getLeftBumperButton(),
-    //     () -> m_driverController.getHID().getRightBumperButton(),
-    //     () -> CougarUtil.getAlliance() == Alliance.Blue ? pos_blue : pos_red,
-    //     () -> m_driverController.getRightTriggerAxis(),
-    //     () -> m_driverController.getLeftTriggerAxis()));
-
-    // m_driverController.b().onTrue(m_swerve.runOnce(() -> m_swerve.zeroHeading()))
-
-    // //disable NT publish if FMS is attached at any point
-
-    // if (m_operatorController.getHID().getYButtonPressed()) {
-    //   m_arm.moveToSetPoint(10);
-    // }; 
-
     new Trigger(() -> DriverStation.isFMSAttached())
     .onTrue(new InstantCommand(
       () -> DogLog.setOptions(
         DogLog.getOptions().withNtPublish(false))));
 
-    m_operatorController.a().onTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    m_operatorController.b().onTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
-    m_operatorController.x().onTrue(new ClimberCommand(m_climber, 0));
+    m_driverController.x().onTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
+    m_driverController.a().onTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_driverController.y().onTrue(new ClimberCommand(m_climber, 0));
   }
 
-  
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

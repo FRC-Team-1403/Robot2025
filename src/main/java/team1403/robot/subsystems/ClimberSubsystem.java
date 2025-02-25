@@ -18,7 +18,6 @@ import team1403.robot.Constants;
 public class ClimberSubsystem extends SubsystemBase{
     private SparkMax m_leftMotor;
     private SparkMax m_rightMotor;
-    private double m_target;
 
     public ClimberSubsystem(){
         m_leftMotor = new SparkMax(Constants.CanBus.leftClimberMotor, MotorType.kBrushless);
