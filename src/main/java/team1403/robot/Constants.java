@@ -177,5 +177,8 @@ public class Constants {
 
     public static final double maxVelo = 1;
     public static final double maxAccel = 3;
+
+    public static final double intakeSpeed = 0.1;
+    public static final double expelSpeed = -0.1;
   }
 }
