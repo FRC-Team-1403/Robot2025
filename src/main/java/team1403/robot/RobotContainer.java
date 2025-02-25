@@ -34,7 +34,7 @@ import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
-import team1403.robot.subsystems.AlgaeIntakeSubsystem;
+// import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
@@ -54,7 +54,7 @@ public class RobotContainer {
   private final ElevatorSubsystem m_elevator;
   private final WristSubsystem m_wrist;
   private final CoralIntakeSubsystem m_coralIntake;
-  private final AlgaeIntakeSubsystem m_algaeIntake;
+  // private final AlgaeIntakeSubsystem m_algaeIntake;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -77,7 +77,7 @@ public class RobotContainer {
     m_elevator = new ElevatorSubsystem();
     m_wrist = new WristSubsystem();
     m_coralIntake = new CoralIntakeSubsystem();
-    m_algaeIntake = new AlgaeIntakeSubsystem();
+    // m_algaeIntake = new AlgaeIntakeSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
     else
@@ -221,19 +221,18 @@ public class RobotContainer {
 
     // algae
     // intake
-    m_operatorController.leftBumper().onTrue(
-      new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, 0)
-    );
-    new Trigger(() -> !m_algaeIntake.hasAlgae()).onTrue(
-      new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, Constants.AlgaeIntake.intakeSpeed)
-    );
-    // expel
-    new Trigger(() -> m_operatorController.getLeftTriggerAxis() > 0.5).onTrue(
-      new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, Constants.AlgaeIntake.expelSpeed).withTimeout(0.5)
-    .andThen(
-      new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.downPos, 0)
-    ));
-
+    // m_operatorController.leftBumper().onTrue(
+    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, 0)
+    // );
+    // new Trigger(() -> !m_algaeIntake.hasAlgae()).onTrue(
+    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, Constants.AlgaeIntake.intakeSpeed)
+    // );
+    // // expel
+    // new Trigger(() -> m_operatorController.getLeftTriggerAxis() > 0.5).onTrue(
+    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, Constants.AlgaeIntake.expelSpeed).withTimeout(0.5)
+    // .andThen(
+    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.downPos, 0)
+    // ));
   }
    
   /**
