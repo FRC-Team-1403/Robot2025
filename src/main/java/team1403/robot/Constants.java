@@ -58,8 +58,8 @@ public class Constants {
     public static final int algaeIntakeMotorID = 4;
     public static final int algaeWristMotorID = 0; //tbd
     
-    public static final int climberLeftMotor = 0; //check 
-    public static final int climberRightMotor = 0; //check
+    public static final int leftClimberMotor = 18; //check 
+    public static final int rightClimberMotor = 5; //check
   }
 
   /**
@@ -167,11 +167,8 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upPos = 90; // check
-    public static final double downPos = 1; // probaby
-
-    public static final double maxVelo = 1;
-    public static final double maxAccel = 3;  
+    public static final double upSpeed = 0.1;
+    public static final double downSpeed = -0.1;
   }
 
   public static class AlgaeIntake {
