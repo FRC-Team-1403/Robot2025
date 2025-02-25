@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -54,7 +55,6 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
   private Command m_pathFinder = Commands.none();
-  private Command m_teleopCommand = Commands.none();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -94,46 +94,55 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // wrist
-    m_wrist.setDefaultCommand(new WristCommand(m_wrist, 
-      () -> m_operatorController.getHID().getXButton(),             // level 1 angle
-      () -> m_operatorController.getHID().getAButton(),             // level 2 angle
-      () -> m_operatorController.getHID().getBButton(),             // level 3 angle
-      () -> m_operatorController.getHID().getYButton(),             // level 4 angle
-      () -> m_operatorController.getHID().getRightBumperButton())); // source angle
+    m_operatorController.b().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+    )); 
+    m_operatorController.a().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+    )); 
+    m_operatorController.x().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+    )); 
+    m_operatorController.y().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+    )); 
+    m_operatorController.rightBumper().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+    )); 
 
-    // elevator
-    m_elevator.setDefaultCommand(new ElevatorCommand(m_elevator, 
-      () -> m_driverController.getHID().getXButton(),   // level 1 / source
-      () -> m_driverController.getHID().getAButton(),   // level 2
-      () -> m_driverController.getHID().getBButton(),   // level 3
-      () -> m_driverController.getHID().getYButton())); // level 4
+    m_coralIntake.setDefaultCommand(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
 
     // coral intake
-
     // stop intake
-    m_operatorController.leftBumper().whileTrue(new CoralIntakeSpeed(m_coralIntake, 0));
+    m_operatorController.leftBumper().whileTrue(
+      new CoralIntakeSpeed(m_coralIntake, 0)
+      .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+    );
     // release coral
     new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
-      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(.2));
-    // wiggle
-    new Trigger(() -> m_coralIntake.hasPiece()).toggleOnTrue(
-      new RepeatNTimes(Commands.sequence(
-        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.4),
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4)
-      ), 4)
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
+      .withTimeout(.3)
     );
     // start intake
-    new Trigger(() -> !m_coralIntake.hasPiece()).and(() -> 
-    Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
-    && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0)
-    .whileTrue(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
-    // neutral speed
-    new Trigger(()-> m_coralIntake.getIntakeSpeed() > 0).and
-      (() -> !(Constants.Elevator.Setpoints.current == Constants.Elevator.Setpoints.source
-      && Constants.Wrist.Setpoints.current == Constants.Wrist.Setpoints.source / 360.0))
-      .whileTrue(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral));
-
+    new Trigger(() -> !m_coralIntake.hasPiece())
+      .onFalse(
+      new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3)
+      ), 4).andThen(
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
+      )
+    );
   }
 
   /**
@@ -144,9 +153,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return autoChooser.getSelected();
-  }
-
-  public Command getTeleopCommand() {
-    return m_teleopCommand;
   }
 }

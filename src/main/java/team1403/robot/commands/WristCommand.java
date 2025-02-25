@@ -13,46 +13,28 @@ import team1403.robot.subsystems.WristSubsystem;
 
 public class WristCommand extends Command {
     private BooleanSupplier m_zero;
-    private BooleanSupplier m_low;
-    private BooleanSupplier m_mid;
-    private BooleanSupplier m_high;
-    private BooleanSupplier m_source;
     private WristSubsystem m_wrist;
-    private double target;
+    private double m_target;
     
-    public WristCommand(WristSubsystem wrist, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid, BooleanSupplier high, BooleanSupplier source) {
+    public WristCommand(WristSubsystem wrist, double target) {
         m_wrist = wrist;
-        m_zero = zero;
-        m_low = low;
-        m_mid = mid;
-        m_high = high;
-        m_source = source;
+        m_target = target;
 
         addRequirements(m_wrist);
     }
 
     public void initialize() {
-        m_wrist.setWristAngle(0.23);
+        m_wrist.setWristAngle(m_target / 360.);
     }
     
     @Override
     public void execute() {
-        if(m_zero.getAsBoolean()) {
-            target = 0.23;
-        }
-        else if(m_low.getAsBoolean()) {
-            target = Constants.Wrist.Setpoints.L2Setpoint / 360.0;
-        }
-        else if(m_mid.getAsBoolean()) {
-            target = Constants.Wrist.Setpoints.L3Setpoint / 360.0;
-        }
-        else if (m_high.getAsBoolean()) {
-            target = Constants.Wrist.Setpoints.L4Setpoint / 360.0;
-        }
-        else if (m_source.getAsBoolean()) {
-            target = Constants.Wrist.Setpoints.source / 360.0;
-        }
-        Constants.Wrist.Setpoints.current = target;
-        m_wrist.setWristAngle(target);
+        Constants.Wrist.Setpoints.current = m_target;
+        m_wrist.setWristAngle(m_target / 360.);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return m_wrist.isAtSetpoint();
     }
 }

@@ -11,20 +11,12 @@ import team1403.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorCommand extends Command {
 
-    private BooleanSupplier m_zero;
-    private BooleanSupplier m_low;
-    private BooleanSupplier m_mid;
-    private BooleanSupplier m_high;
-    private double setpoint;
+    private double m_setpoint;
     private ElevatorSubsystem m_elevator;
     
-    public ElevatorCommand(ElevatorSubsystem elevator, BooleanSupplier zero, BooleanSupplier low, BooleanSupplier mid, BooleanSupplier high) {
+    public ElevatorCommand(ElevatorSubsystem elevator, double setpoint) {
         m_elevator = elevator;
-        m_zero = zero;
-        m_low = low;
-        m_mid = mid;
-        m_high = high;
-        setpoint = 0;
+        m_setpoint = setpoint;
 
         addRequirements(m_elevator);
     }
@@ -33,19 +25,12 @@ public class ElevatorCommand extends Command {
     
     @Override
     public void execute() {
-        if (m_zero.getAsBoolean()) {
-          setpoint = Constants.Elevator.Setpoints.L1;
-        }
-        else if (m_low.getAsBoolean()) {
-          setpoint = Constants.Elevator.Setpoints.L2;
-        }
-        else if (m_mid.getAsBoolean()) {
-          setpoint = Constants.Elevator.Setpoints.L3;
-        }
-        else if (m_high.getAsBoolean()) {
-          setpoint = Constants.Elevator.Setpoints.L4;
-        }
-        Constants.Elevator.Setpoints.current = setpoint;
-        m_elevator.moveToSetPoint(setpoint);
+        Constants.Elevator.Setpoints.current = m_setpoint;
+        m_elevator.moveToSetPoint(m_setpoint);
+  }
+
+  @Override
+  public boolean isFinished() {
+    return m_elevator.isAtSetpoint();
   }
 }

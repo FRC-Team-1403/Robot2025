@@ -67,6 +67,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("Has piece", hasPiece());
         Logger.recordOutput("Intake speed", getIntakeSpeed());
         Logger.recordOutput("Distance", getDistance());
         Logger.recordOutput("Current current", getFilteredCurrent());

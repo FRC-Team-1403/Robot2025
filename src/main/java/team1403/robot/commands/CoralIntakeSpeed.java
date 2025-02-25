@@ -20,6 +20,10 @@ public class CoralIntakeSpeed extends Command {
         m_coralIntake.setIntakeMotorSpeed(m_speed);
     }
 
+    public void end(boolean b) {
+        m_coralIntake.setIntakeMotorSpeed(0);
+    }
+
     @Override
     public boolean isFinished() {
         return false;

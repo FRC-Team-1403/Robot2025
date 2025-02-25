@@ -254,18 +254,18 @@ public class Constants {
       public static final double L2 = 2;
       public static final double L3 = 18.5;
       public static final double L4 = 50;
-      public static final double source = 1;
+      public static final double Source = 1;
       public static double current = 1;
     }
 }
 
   public static class Wrist {
     public static class Setpoints{
-      public static final double L1Setpoint = 39; // same as L4 for now
-      public static final double L2Setpoint = 15;
-      public static final double L3Setpoint = 20;
-      public static final double L4Setpoint = 39;
-      public static final double source = -54; //placehold
+      public static final double L1 = 39; // same as L4 for now
+      public static final double L2 = 15;
+      public static final double L3 = 20;
+      public static final double L4 = 39;
+      public static final double Source = -22; //placehold
       public static double current = 0.23;
     }
 

@@ -55,7 +55,9 @@ public class WristSubsystem extends SubsystemBase {
         m_feedForward = new ArmFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKG, 0);
 
         //SmartDashboard.putData("wrist 0idp", m_wristPID);
-        SmartDashboard.putData("trapezdoi ipd", m_profiled);
+
+        if(Constants.DEBUG_MODE)
+            SmartDashboard.putData("trapezoid pid", m_profiled);
 
         m_SysIDRoutine = new SysIdRoutine(new SysIdRoutine.Config(null, null, null, 
             (state) -> Logger.recordOutput("SYSID Wrist", state.toString())),
@@ -91,7 +93,13 @@ public class WristSubsystem extends SubsystemBase {
         m_profiled.setGoal(targetAngle);
     }
 
+    public boolean isAtSetpoint() {
+        return Math.abs(getWristAngle() - m_profiled.getGoal().position) 
+            < Units.degreesToRotations(5);
+    }
+
     public void stop() {
+        m_wristMotor.set(0);
     }
 
     public Command getSysIDQ(SysIdRoutine.Direction d){
@@ -109,8 +117,7 @@ public class WristSubsystem extends SubsystemBase {
         getWristAngleDeg();
 
         Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
-        m_wristMotor.set(m_profiled.calculate(getWristAngle()) + 
-            -m_feedForward.calculate(
+        m_wristMotor.set(m_profiled.calculate(getWristAngle()) - m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 
                 Units.rotationsToRadians(getWristVelocity())));
     }

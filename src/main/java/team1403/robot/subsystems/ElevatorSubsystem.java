@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
+import team1403.robot.Constants.Elevator.Setpoints;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private SparkMax m_leftMotor;
@@ -94,28 +95,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
     public void moveToSetPoint(double setPoint) {
-        // update current position with encoder
-        currentPos = (Constants.Elevator.kMultiplier * (getPosition() / Constants.Elevator.kGearRatio) * Constants.Elevator.kConversionFactorRotationstoInches);
         setpoint = setPoint;
-        if(directionFlag && Math.abs(setPoint - currentPos) > Constants.Elevator.Command.setPointMargin) {
-            checkDirection(setPoint);
-        }
-        desiredMotorOutput = getDesiredOutput(setPoint);
-
-        // run ramp function with parameters depending on whether elevator needs to go up or down
-        if(isGoingUp) {
-            currMotorOutput = ramp(Constants.Elevator.Command.elevatorUpRampUpTime, Constants.Elevator.Command.elevatorUpRampDownTime, currMotorOutput, desiredMotorOutput);
-        }
-        else if(isGoingDown) {
-            currMotorOutput = ramp(Constants.Elevator.Command.elevatorDownRampUpTime, Constants.Elevator.Command.elevatorDownRampDownTime, Math.abs(currMotorOutput), desiredMotorOutput);
-        }
-        checkDirection(setPoint);
-        adjustCurrentOutput();
-        checkIfReachedSetPoint(setPoint);
-        currMotorOutput += 100.0 * calculation(currentPos, setpoint);
-        // set the speed to the motors
-        setMotorSpeed(currMotorOutput / 100.0); 
-        //simulatePos();
     }
 
     //check whether component is moving up or down
@@ -217,7 +197,35 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
+    public boolean isAtSetpoint() {
+        return Math.abs(setpoint - currentPos) <= Constants.Elevator.Command.setPointMargin;
+    }
+
     public void periodic() {
+
+        // update current position with encoder
+        currentPos = (Constants.Elevator.kMultiplier * (getPosition() / Constants.Elevator.kGearRatio) * Constants.Elevator.kConversionFactorRotationstoInches);
+        //setpoint = setPoint;
+        if(directionFlag && Math.abs(setpoint - currentPos) > Constants.Elevator.Command.setPointMargin) {
+            checkDirection(setpoint);
+        }
+        desiredMotorOutput = getDesiredOutput(setpoint);
+
+        // run ramp function with parameters depending on whether elevator needs to go up or down
+        if(isGoingUp) {
+            currMotorOutput = ramp(Constants.Elevator.Command.elevatorUpRampUpTime, Constants.Elevator.Command.elevatorUpRampDownTime, currMotorOutput, desiredMotorOutput);
+        }
+        else if(isGoingDown) {
+            currMotorOutput = ramp(Constants.Elevator.Command.elevatorDownRampUpTime, Constants.Elevator.Command.elevatorDownRampDownTime, Math.abs(currMotorOutput), desiredMotorOutput);
+        }
+        checkDirection(setpoint);
+        adjustCurrentOutput();
+        checkIfReachedSetPoint(setpoint);
+        currMotorOutput += 100.0 * calculation(currentPos, setpoint);
+        // set the speed to the motors
+        setMotorSpeed(currMotorOutput / 100.0); 
+        //simulatePos();
+
         Logger.recordOutput("Right Motor RPM", getSpeed());
         Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
         Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
@@ -235,5 +243,5 @@ public class ElevatorSubsystem extends SubsystemBase {
         Logger.recordOutput("is going down", isGoingDown);
         Logger.recordOutput("checking direction", directionFlag);
         Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
-      }
+    }
 }
