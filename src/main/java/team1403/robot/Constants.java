@@ -170,10 +170,6 @@ public class Constants {
     public static final int rightPivotMotorID = 5;
     public static final int leftPivotMotorID = 14;
 
-    // hanger ID
-    public static final int rightHangerMotorID = 27;
-    public static final int leftHangerMotorID = 28;
-
     // intake and shooter IDs
     public static final int shooterMotorTopID = 2;
     public static final int shooterMotorBottomID = 1;
@@ -185,8 +181,8 @@ public class Constants {
     // other
     public static final int powerDistributionID = 42;
 
-    public static final int leftClimberMotor = 0;
-    public static final int rightClimberMotor = 0;
+    public static final int leftClimberMotor = 18;
+    public static final int rightClimberMotor = 5;
 
   }
   
@@ -363,7 +359,7 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upSpeed = 0.5;
-    public static final double downSpeed = -0.3;
+    public static final double upSpeed = 0.1;
+    public static final double downSpeed = -0.1;
   }
 }

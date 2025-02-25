@@ -29,11 +29,10 @@ public class ClimberSubsystem extends SubsystemBase{
         SparkMaxConfig leftConfig = new SparkMaxConfig();
         leftConfig 
             .idleMode(IdleMode.kBrake)
-            .follow(m_rightMotor);
+            .follow(m_rightMotor, true);
         SparkMaxConfig rightConfig = new SparkMaxConfig();
         rightConfig 
-            .idleMode(IdleMode.kBrake)
-            .inverted(true);
+            .idleMode(IdleMode.kBrake);
 
         m_leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
