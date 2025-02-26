@@ -69,7 +69,7 @@ public class Blackbox {
         reefPosesLeftBLUE[1] = new Pose2d(3.66, 4.1951, Rotation2d.fromDegrees(180));
         reefPosesLeftBLUE[2] = new Pose2d(4.212980794, 4.83255, Rotation2d.fromDegrees(120));
         reefPosesLeftBLUE[3] = new Pose2d(5.042980794, 4.66745, Rotation2d.fromDegrees(60));
-        reefPosesLeftBLUE[4] = new Pose2d(5.32, 3.8649, Rotation2d.fromDegrees(0));
+        reefPosesLeftBLUE[4] = new Pose2d(5.32, 3.8649, Rotation2d.kZero);
         reefPosesLeftBLUE[5] = new Pose2d(4.757019206, 3.22745, Rotation2d.fromDegrees(-60));
 
         for(int i = 0; i < reefPosesLeftBLUE.length; i++) {
