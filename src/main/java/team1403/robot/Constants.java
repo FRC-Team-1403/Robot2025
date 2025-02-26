@@ -147,7 +147,7 @@ public class Constants {
       public static final double L2 = 15;
       public static final double L3 = 20;
       public static final double L4 = 39;
-      public static final double Source = -54; //placehold
+      public static final double Source = -16; //placehold
       public static double current = 0.23;
     }
 

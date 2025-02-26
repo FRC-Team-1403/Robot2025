@@ -12,7 +12,7 @@ public class WristCommand extends Command {
     //angle in degrees
     public WristCommand(WristSubsystem wrist, double angle) {
         m_wrist = wrist;
-        m_angle = angle;
+        m_angle = angle / 360.;
 
         addRequirements(m_wrist);
     }
