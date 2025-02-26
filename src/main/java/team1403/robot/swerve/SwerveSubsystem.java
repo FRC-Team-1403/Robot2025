@@ -140,6 +140,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
+    private Telemetry m_telemetry;
+
     //stuff to run after ctre generator is constructed
     private void onConstruct() {
       super.resetPose(CougarUtil.getInitialRobotPose());
@@ -176,6 +178,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
 
         SmartDashboard.putData("Gyro", super.getPigeon2());
         SmartDashboard.putData("Field", m_field);
+
+        m_telemetry = new Telemetry(TunerConstants.kMaxSpeed);
     }
 
     /**
