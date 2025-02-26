@@ -44,6 +44,7 @@ public class RepeatNTimes extends Command {
 
   @Override
   public void initialize() {
+    times = 1;
     m_ended = false;
     m_command.initialize();
   }

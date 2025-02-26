@@ -136,12 +136,14 @@ public class RobotContainer {
     // start intake
     new Trigger(() -> !m_coralIntake.hasPiece())
       .onFalse(
-      new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
+    );
+    m_operatorController.leftStick().onTrue(
+    new RepeatNTimes(Commands.sequence(
         new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3)
-      ), 4).andThen(
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
-      )
+      ), 4)
+      .andThen(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral))
     );
   }
 

@@ -265,7 +265,7 @@ public class Constants {
       public static final double L2 = 15;
       public static final double L3 = 20;
       public static final double L4 = 39;
-      public static final double Source = -22; //placehold
+      public static final double Source = -16; //placehold
       public static double current = 0.23;
     }
 
@@ -285,7 +285,5 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final int leftMotor = 0; //check 
-    public static final int rightMotor = 0;
   }
 }
