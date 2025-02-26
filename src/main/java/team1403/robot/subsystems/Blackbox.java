@@ -39,7 +39,7 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightRED;
     private static ReefSelect reefSide = ReefSelect.LEFT;
     private static ReefScoreLevel reefLevel = ReefScoreLevel.L2; //todo: figure out what we want to default to
-    private static boolean coralLoaded = true;
+    private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);
@@ -69,7 +69,7 @@ public class Blackbox {
         reefPosesLeftBLUE[1] = new Pose2d(3.66, 4.1951, Rotation2d.fromDegrees(180));
         reefPosesLeftBLUE[2] = new Pose2d(4.212980794, 4.83255, Rotation2d.fromDegrees(120));
         reefPosesLeftBLUE[3] = new Pose2d(5.042980794, 4.66745, Rotation2d.fromDegrees(60));
-        reefPosesLeftBLUE[4] = new Pose2d(5.32, 3.8649, Rotation2d.fromDegrees(0));
+        reefPosesLeftBLUE[4] = new Pose2d(5.32, 3.8649, Rotation2d.kZero);
         reefPosesLeftBLUE[5] = new Pose2d(4.757019206, 3.22745, Rotation2d.fromDegrees(-60));
 
         for(int i = 0; i < reefPosesLeftBLUE.length; i++) {
