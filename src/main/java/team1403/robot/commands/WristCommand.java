@@ -19,7 +19,7 @@ public class WristCommand extends Command {
 
     @Override
     public void initialize() {
-        m_wrist.setWristAngle(m_angle);
+        m_wrist.moveToSetpoint(m_angle);
     }
 
     @Override

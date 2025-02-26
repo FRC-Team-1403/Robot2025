@@ -89,7 +89,7 @@ public class WristSubsystem extends SubsystemBase {
         return m_encoder.getVelocity() * 60;
     }
 
-    public void setWristAngle(double targetAngle) {
+    public void moveToSetpoint(double targetAngle) {
         m_profiled.setGoal(targetAngle);
     }
 
