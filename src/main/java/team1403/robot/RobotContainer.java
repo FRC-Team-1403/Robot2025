@@ -181,19 +181,33 @@ public class RobotContainer {
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
 
-    // wrist
-    m_operatorController.b().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1));
-    m_operatorController.a().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2));
-    m_operatorController.x().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3));
-    m_operatorController.y().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4));
-    m_operatorController.rightBumper().onTrue(new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source));
+    m_operatorController.b().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+    )); 
+    m_operatorController.a().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+    )); 
+    m_operatorController.x().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+    )); 
+    m_operatorController.y().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+    )); 
+    m_operatorController.rightBumper().onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+    )); 
 
-    // elevator
-    m_operatorController.b().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1));
-    m_operatorController.a().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2));
-    m_operatorController.x().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3));
-    m_operatorController.y().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4));
-    m_operatorController.rightBumper().onTrue(new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source));
+    m_coralIntake.setDefaultCommand(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
 
     // coral intake
     // stop intake
@@ -204,35 +218,20 @@ public class RobotContainer {
     // release coral
     new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
-      .withTimeout(.2)
-    );
-    // wiggle then neutral
-    new Trigger(() -> m_coralIntake.hasPiece()).toggleOnTrue(
-      new RepeatNTimes(Commands.sequence(
-        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.4),
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4)
-      ), 4).andThen(
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
-      )
+      .withTimeout(.3)
     );
     // start intake
     new Trigger(() -> !m_coralIntake.hasPiece())
-      .whileTrue(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
-
-    // algae
-    // intake
-    // m_operatorController.leftBumper().onTrue(
-    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, 0)
-    // );
-    // new Trigger(() -> !m_algaeIntake.hasAlgae()).onTrue(
-    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, Constants.AlgaeIntake.intakeSpeed)
-    // );
-    // // expel
-    // new Trigger(() -> m_operatorController.getLeftTriggerAxis() > 0.5).onTrue(
-    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.upPos, Constants.AlgaeIntake.expelSpeed).withTimeout(0.5)
-    // .andThen(
-    //   new AlgaeIntakeCommand(m_algaeIntake, Constants.AlgaeIntake.downPos, 0)
-    // ));
+      .onFalse(
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
+    );
+    m_operatorController.leftStick().onTrue(
+    new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3)
+      ), 4)
+      .andThen(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral))
+    );
   }
    
   /**
