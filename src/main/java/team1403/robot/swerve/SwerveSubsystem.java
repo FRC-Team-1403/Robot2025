@@ -443,8 +443,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     }
 
     public void drive(ChassisSpeeds s, DriveFeedforwards ff) {
-        s = rotationalDriftCorrection(s);
-        req.Speeds = s;
+        req.Speeds = rotationalDriftCorrection(s);
         req.DesaturateWheelSpeeds = true;
         req.DriveRequestType = DriveRequestType.Velocity;
         req.SteerRequestType = SteerRequestType.Position;
