@@ -100,7 +100,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //check whether component is moving up or down
     private void checkDirection(double setPoint) {
-        if(setPoint > currentPos + Constants.Elevator.Command.setPointMargin) {
+        if (currentPos < 1.0) {
+            isGoingUp = false;
+            isGoingDown = false;
+        }
+        else if(setPoint > currentPos + Constants.Elevator.Command.setPointMargin) {
             isGoingUp = true;
             isGoingDown = false;
         } 
@@ -112,7 +116,6 @@ public class ElevatorSubsystem extends SubsystemBase {
             isGoingUp = false;
             isGoingDown = false;
         } 
-        //directionFlag = false;
     }
     
     private double getDesiredOutput(double setPoint) {
@@ -198,7 +201,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isAtSetpoint() {
-        return Math.abs(setpoint - currentPos) <= Constants.Elevator.Command.setPointMargin;
+        return Math.abs(setpoint - currentPos) <= 3;
     }
 
     public void periodic() {
@@ -243,5 +246,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         Logger.recordOutput("is going down", isGoingDown);
         Logger.recordOutput("checking direction", directionFlag);
         Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
+        Logger.recordOutput("Elevator Setpoint", setpoint);
     }
 }

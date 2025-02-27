@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
+import team1403.lib.util.CougarUtil;
 import team1403.lib.util.RepeatNTimes;
 import team1403.robot.Constants.AlgaeIntake;
 // import team1403.robot.commands.AlgaeIntakeCommand;
@@ -149,7 +151,8 @@ public class RobotContainer {
       Blackbox.reefSelect(ReefSelect.RIGHT);
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-      if (target == null) return Commands.none();  
+      if (target == null) return Commands.none();
+     target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(1.75)));
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
         new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
@@ -163,6 +166,7 @@ public class RobotContainer {
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
       if (target == null) return Commands.none();
+      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(1.75)));
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
         new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
@@ -203,8 +207,8 @@ public class RobotContainer {
     )); 
     m_operatorController.rightBumper().onTrue(
       Commands.sequence(
-        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source),
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source) 
     )); 
 
     m_coralIntake.setDefaultCommand(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));

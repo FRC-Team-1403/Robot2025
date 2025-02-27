@@ -58,8 +58,8 @@ public class Constants {
     public static final int algaeIntakeMotorID = 4;
     public static final int algaeWristMotorID = 0; //tbd
     
-    public static final int leftClimberMotor = 18; //check 
-    public static final int rightClimberMotor = 5; //check
+    public static final int leftClimberMotor = 18;  
+    public static final int rightClimberMotor = 5; 
   }
 
   /**
@@ -91,10 +91,10 @@ public class Constants {
     //front-to-back-disp = ~8.568 inches 
     //left-to-right-disp = 0 inches
     //top-to-bottom disp = 17.82426 inches
-    public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
-    public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(-90), 0, Units.degreesToRadians(-9));
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(10.25),12.99,Units.inchesToMeters(30.5));
-    public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
+    //public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
+    public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(90), 0, Units.degreesToRadians(9));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(10.25),Units.inchesToMeters(-12.99),Units.inchesToMeters(30.5));
+    //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
   }
 
