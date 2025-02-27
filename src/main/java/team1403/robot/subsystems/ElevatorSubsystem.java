@@ -82,8 +82,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     return m_rightMotor.getEncoder().getPosition();
   }
 
-  public double calculation(double pos, double setpoint) {
-    return m_ElevatorFeedforward.calculate(pos, setpoint);
+  public double FFcalculation() {
+    return m_ElevatorFeedforward.calculate(0);
   }
 
   public Command getSysIDQ(SysIdRoutine.Direction dir) {
@@ -178,7 +178,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private void adjustCurrentOutput() {
         // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
         if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minSpeed) {
-            currMotorOutput = minSpeed + calculation(currentPos, setpoint);
+            currMotorOutput = minSpeed + FFcalculation();
         }
         // invert output if elevator is moving down
         if(isGoingDown) {
@@ -224,7 +224,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         checkDirection(setpoint);
         adjustCurrentOutput();
         checkIfReachedSetPoint(setpoint);
-        currMotorOutput += 100.0 * calculation(currentPos, setpoint);
+        currMotorOutput += 100.0 * FFcalculation();
         // set the speed to the motors
         setMotorSpeed(currMotorOutput / 100.0); 
         //simulatePos();
@@ -245,7 +245,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         Logger.recordOutput("is going up", isGoingUp);
         Logger.recordOutput("is going down", isGoingDown);
         Logger.recordOutput("checking direction", directionFlag);
-        Logger.recordOutput("Feedforward", calculation(currentPos, setpoint));
+        Logger.recordOutput("Feedforward", FFcalculation());
         Logger.recordOutput("Elevator Setpoint", setpoint);
     }
 }
