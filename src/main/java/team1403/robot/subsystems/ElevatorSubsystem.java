@@ -178,7 +178,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private void adjustCurrentOutput() {
         // once ramp function is done and the elevator is moving up or down, set velocity to a minimum value
         if((isGoingUp || isGoingDown) && isRampDone && currMotorOutput < minSpeed) {
-            currMotorOutput = minSpeed + FFcalculation();
+            currMotorOutput = minSpeed;
         }
         // invert output if elevator is moving down
         if(isGoingDown) {
