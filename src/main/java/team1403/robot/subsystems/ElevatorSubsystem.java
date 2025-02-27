@@ -94,7 +94,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return m_sysIdRoutine.dynamic(dir);
   }
 
-    public void moveToSetPoint(double setPoint) {
+    public void moveToSetpoint(double setPoint) {
         setpoint = setPoint;
     }
 

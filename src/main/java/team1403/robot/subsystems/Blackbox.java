@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
@@ -21,12 +22,20 @@ import team1403.robot.Constants;
 //Stores data that is shared between subsystems
 public class Blackbox {
 
+    public enum State{
+        loading,
+        driving,
+        aligning,
+        placing
+    }
+
     public enum ReefSelect {
         LEFT,
         RIGHT
     }
 
     public enum ReefScoreLevel {
+        drive,
         L1,
         L2,
         L3, 
@@ -37,12 +46,17 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightBLUE;
     private static Pose2d[] reefPosesLeftRED;
     private static Pose2d[] reefPosesRightRED;
-    private static ReefSelect reefSide = ReefSelect.LEFT;
-    private static ReefScoreLevel reefLevel = ReefScoreLevel.L2; //todo: figure out what we want to default to
+    public static ReefSelect reefSide = ReefSelect.LEFT;
+    public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
     private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
+    private static boolean aligning = false;
+    private static boolean trigger = false;
+    private static boolean closeAlign = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
+
+    public static State robotState = State.loading;
 
     //meters
     private static final double kMaxAlignDist = 2.5;
@@ -126,6 +140,35 @@ public class Blackbox {
 
     public static boolean isAlgaeLoaded() {
         return algaeLoaded;
+    }
+
+    public static void setAligning(boolean align) {
+        aligning = align;
+    }
+
+    public static Command setAligningCmd(boolean align) {
+        aligning = align;
+        return Commands.none();
+    }
+
+    public static boolean isAligning() {
+        return aligning;
+    }
+
+    public static void setTrigger(boolean trig) {
+        trigger = trig;
+    }
+
+    public static boolean getTrigger() {
+        return trigger;
+    }
+
+    public static void setCloseAlign(boolean align) {
+        closeAlign = align;
+    }
+
+    public static boolean getCloseAlign() {
+        return closeAlign;
     }
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {

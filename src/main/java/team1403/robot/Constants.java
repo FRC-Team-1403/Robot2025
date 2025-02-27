@@ -96,6 +96,8 @@ public class Constants {
     public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(10.25),Units.inchesToMeters(-12.99),Units.inchesToMeters(30.5));
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
+
+    public static final double closeAlignDistance = 0.5;
   }
 
   public static class CoralIntake {
@@ -137,7 +139,7 @@ public class Constants {
       public static final double L3 = 18.5;
       public static final double L4 = 50;
       public static final double Source = 1;
-      public static double current = 1;
+      public static final double Current = 1;
     }
 }
 
@@ -148,7 +150,7 @@ public class Constants {
       public static final double L3 = 20;
       public static final double L4 = 39;
       public static final double Source = -16; //placehold
-      public static double current = 0.23;
+      public static final double Current = 0.23 * 360;
     }
 
     public static final double WristKS = 0;

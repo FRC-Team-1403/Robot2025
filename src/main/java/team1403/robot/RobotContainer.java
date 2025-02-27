@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,6 +33,7 @@ import team1403.robot.Constants.AlgaeIntake;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
+import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.WristCommand;
@@ -144,8 +146,8 @@ public class RobotContainer {
 
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
 
-    //m_driverController.povRight().onTrue(Blackbox.reefSelect(ReefSelect.RIGHT));
-    //m_driverController.povLeft().onTrue(Blackbox.reefSelect(ReefSelect.LEFT));
+    m_driverController.povRight().onTrue(Blackbox.reefSelectCmd(ReefSelect.RIGHT));
+    m_driverController.povLeft().onTrue(Blackbox.reefSelectCmd(ReefSelect.LEFT));
 
     m_driverController.rightBumper().whileTrue(new DeferredCommand(() -> {
       Blackbox.reefSelect(ReefSelect.RIGHT);
@@ -161,7 +163,20 @@ public class RobotContainer {
       );
      }, Set.of(m_swerve)));
 
-     m_driverController.leftBumper().whileTrue(new DeferredCommand(() -> {
+    //  m_driverController.leftBumper().whileTrue(new DeferredCommand(() -> {
+    //   Blackbox.reefSelect(ReefSelect.LEFT);
+    //   Pose2d currentPose = m_swerve.getPose();
+    //   Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+    //   if (target == null) return Commands.none();
+    //   return Commands.sequence(
+    //     AutoUtil.pathFindToPose(target),
+    //     new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+    //       if(!interrupted) vibrationCmd.schedule();
+    //     })
+    //   );
+    //  }, Set.of(m_swerve)));
+
+     m_driverController.leftBumper().whileTrue(new SequentialCommandGroup(new DeferredCommand(() -> {
       Blackbox.reefSelect(ReefSelect.LEFT);
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
@@ -173,7 +188,20 @@ public class RobotContainer {
           if(!interrupted) vibrationCmd.schedule();
         })
       );
-     }, Set.of(m_swerve)));
+     }, Set.of(m_swerve)), Blackbox.setAligningCmd(false)));
+
+     m_driverController.rightBumper().whileTrue(new SequentialCommandGroup(new DeferredCommand(() -> {
+      Blackbox.reefSelect(ReefSelect.RIGHT);
+      Pose2d currentPose = m_swerve.getPose();
+      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+      if (target == null) return Commands.none();  
+      return Commands.sequence(
+        AutoUtil.pathFindToPose(target),
+        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+          if(!interrupted) vibrationCmd.schedule();
+        })
+      );
+     }, Set.of(m_swerve)), Blackbox.setAligningCmd(false)));
 
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);
@@ -211,7 +239,7 @@ public class RobotContainer {
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source) 
     )); 
 
-    m_coralIntake.setDefaultCommand(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
+    m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
 
     // coral intake
     // stop intake
@@ -224,18 +252,11 @@ public class RobotContainer {
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
       .withTimeout(.3)
     );
-    // start intake
-    new Trigger(() -> !m_coralIntake.hasPiece())
-      .onFalse(
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral).repeatedly()
-    );
     m_operatorController.leftStick().onTrue(
     new RepeatNTimes(Commands.sequence(
         new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3)
-      ), 4)
-      .andThen(new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.neutral))
-    );
+      ), 4));
   }
    
   /**
