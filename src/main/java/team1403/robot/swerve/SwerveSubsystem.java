@@ -61,7 +61,6 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     private final SwerveHeadingCorrector m_headingCorrector = new SwerveHeadingCorrector();
-    private final Field2d m_field = new Field2d();
     private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
     private final Alert m_gyroDisconnected = new Alert("Gyroscope Disconnected!", AlertType.kError);
     private Rotation2d m_headingOffset = Rotation2d.kZero;
@@ -163,21 +162,12 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         Pathfinding.setPathfinder(new LocalADStar());
         PathfindingCommand.warmupCommand().schedule();
 
-        PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-            Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-            m_field.getObject("traj").setPoses(activePath);
-        });
-        PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
-            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-        });
-
         VisionSimUtil.initVisionSim();
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
             () -> getRotation3d()));
 
         SmartDashboard.putData("Gyro", super.getPigeon2());
-        SmartDashboard.putData("Field", m_field);
 
         m_telemetry = new Telemetry(TunerConstants.kMaxSpeed);
     }
@@ -322,7 +312,6 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         }
 
         m_gyroDisconnected.set(!super.getPigeon2().isConnected());
-        m_field.setRobotPose(getPose());
 
         SmartDashboard.putNumber("Velocity", CougarUtil.norm(getState().Speeds));
 
@@ -335,6 +324,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
                     addVisionMeasurement(p.toPose2d(), c.getTimestamp(), c.getEstStdv());
             }
         }
+
+        m_telemetry.telemeterize(getState());
     }
 
     @Override

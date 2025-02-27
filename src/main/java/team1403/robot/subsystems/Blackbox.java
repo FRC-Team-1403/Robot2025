@@ -42,7 +42,7 @@ public class Blackbox {
     private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
 
-    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(26);
+    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
 
     //meters
     private static final double kMaxAlignDist = 2.5;

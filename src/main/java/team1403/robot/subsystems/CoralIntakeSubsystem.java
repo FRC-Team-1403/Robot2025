@@ -1,5 +1,6 @@
 package team1403.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import org.littletonrobotics.junction.Logger;
@@ -50,7 +51,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
     //TODO add in the distance threholds
     public double getDistance() {
-        return m_CANRange.getDistance(true).getValue().in(Meters);
+        return m_CANRange.getDistance(true).getValue().in(Inches);
     }
 
     private double getFilteredCurrent() {
@@ -71,7 +72,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         Blackbox.setCoralLoaded(hasPiece());
 
         Logger.recordOutput("Intake speed", getIntakeSpeed());
-        Logger.recordOutput("Distance", getDistance());
+        Logger.recordOutput("CoralDistance(mmmmmmmmmmmmm)", getDistance());
         Logger.recordOutput("Current current", getFilteredCurrent());
     }
 }
