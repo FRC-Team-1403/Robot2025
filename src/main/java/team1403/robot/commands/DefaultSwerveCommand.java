@@ -6,12 +6,8 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,10 +109,6 @@ public class DefaultSwerveCommand extends Command {
     ChassisSpeeds chassisSpeeds;
     double horizontal = m_horizontalTranslationSupplier.getAsDouble();
     double vertical = m_verticalTranslationSupplier.getAsDouble();
-    if(Blackbox.getCloseAlign()){
-      horizontal /= 2;
-      vertical /= 2;
-    }
     double vel_hypot = Math.hypot(horizontal, vertical);
 
     if(CougarUtil.getAlliance() == Alliance.Red && m_isFieldRelative) {
@@ -134,10 +126,16 @@ public class DefaultSwerveCommand extends Command {
       horizontal *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
       vertical *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
     }
+
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
     double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * TunerConstants.kMaxAngularRate;
-    // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
-    
+
+    if(Blackbox.getCloseAlign(m_drivetrainSubsystem.getPose())){
+      horizontal /= 2;
+      vertical /= 2;
+      angular /= 2;
+    }
+
     //limit change in translation of the overall robot, based on orbit's slideshow
     {
       double dx = horizontal - prev_horizontal;
