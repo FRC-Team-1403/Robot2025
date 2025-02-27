@@ -117,6 +117,9 @@ public class WristSubsystem extends SubsystemBase {
         getWristAngleDeg();
 
         Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
+        Logger.recordOutput("state(mmmmmmmmm)", Blackbox.robotState);
+        Logger.recordOutput("reef select level (mmmmmmmmmm)", Blackbox.reefLevel);
+        Logger.recordOutput("reef side (mmmmmmmmmmm)", Blackbox.reefSide);
         m_wristMotor.set(m_profiled.calculate(getWristAngle()) - m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 
                 Units.rotationsToRadians(getWristVelocity())));

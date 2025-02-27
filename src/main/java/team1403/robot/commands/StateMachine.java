@@ -23,8 +23,6 @@ import team1403.robot.swerve.SwerveSubsystem;
 public class StateMachine extends Command {
     private WristSubsystem m_wristSubsystem;
     private ElevatorSubsystem m_elevatorSubsystem;
-    
-   
 
     public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator){
         m_wristSubsystem = wrist;
@@ -47,14 +45,19 @@ public class StateMachine extends Command {
                 switch(Blackbox.reefLevel) {
                     case drive: {
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
+                        break;
                     } case L1: {
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1);
+                        break;
                     } case L2: {
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L2);
+                        break;
                     } case L3: {
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3);
+                        break;
                     } case L4: {
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L4);
+                        break;
                     }
                 }
                 if(Blackbox.isAligning())
@@ -65,12 +68,16 @@ public class StateMachine extends Command {
                     switch(Blackbox.reefLevel) {
                         case L1: {
                             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
+                            break;
                         } case L2: {
                             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L2);
+                            break;
                         } case L3: {
                             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L3);
+                            break;
                         } case L4: {
                             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L4);
+                            break;
                         }
                     }
 
@@ -86,8 +93,11 @@ public class StateMachine extends Command {
                 break;
             }
         }
-        // Logger.recordOutput("current pose111", currentPose);
-        // Logger.recordOutput("targ111et", target);
         Logger.recordOutput("State", Blackbox.robotState.toString());
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

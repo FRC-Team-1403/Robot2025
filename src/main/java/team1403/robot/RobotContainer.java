@@ -36,6 +36,7 @@ import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.ElevatorCommand;
+import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
@@ -58,6 +59,7 @@ public class RobotContainer {
   private final ElevatorSubsystem m_elevator;
   private final WristSubsystem m_wrist;
   private final CoralIntakeSubsystem m_coralIntake;
+  private final StateMachine m_stateMachine;
   // private final AlgaeIntakeSubsystem m_algaeIntake;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -72,6 +74,7 @@ public class RobotContainer {
   public RobotContainer() {
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
     m_operatorController = new CommandXboxController(Constants.Operator.pilotPort);
+
     // Configure the trigger bindings
     Blackbox.init();
     m_swerve = TunerConstants.createDrivetrain();
@@ -81,6 +84,7 @@ public class RobotContainer {
     m_elevator = new ElevatorSubsystem();
     m_wrist = new WristSubsystem();
     m_coralIntake = new CoralIntakeSubsystem();
+    m_stateMachine = new StateMachine(m_wrist, m_elevator);
     // m_algaeIntake = new AlgaeIntakeSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
@@ -133,6 +137,8 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     // Setting default command of swerve subPsystem
     // red
+
+    new Trigger(() -> true).whileTrue(m_stateMachine);
     
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(
         m_swerve,
@@ -162,19 +168,6 @@ public class RobotContainer {
         })
       );
      }, Set.of(m_swerve)));
-
-    //  m_driverController.leftBumper().whileTrue(new DeferredCommand(() -> {
-    //   Blackbox.reefSelect(ReefSelect.LEFT);
-    //   Pose2d currentPose = m_swerve.getPose();
-    //   Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-    //   if (target == null) return Commands.none();
-    //   return Commands.sequence(
-    //     AutoUtil.pathFindToPose(target),
-    //     new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-    //       if(!interrupted) vibrationCmd.schedule();
-    //     })
-    //   );
-    //  }, Set.of(m_swerve)));
 
      m_driverController.leftBumper().whileTrue(new SequentialCommandGroup(new DeferredCommand(() -> {
       Blackbox.reefSelect(ReefSelect.LEFT);
@@ -213,31 +206,37 @@ public class RobotContainer {
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
 
-    m_operatorController.b().onTrue(
-      Commands.sequence(
-        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
-    )); 
-    m_operatorController.a().onTrue(
-      Commands.sequence(
-        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
-    )); 
-    m_operatorController.x().onTrue(
-      Commands.sequence(
-        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
-    )); 
-    m_operatorController.y().onTrue(
-      Commands.sequence(
-        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
-    )); 
-    m_operatorController.rightBumper().onTrue(
-      Commands.sequence(
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source),
-        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source) 
-    )); 
+    m_operatorController.b().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
+    m_operatorController.a().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
+    m_operatorController.x().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
+    m_operatorController.y().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
+
+
+    // m_operatorController.b().onTrue(
+    //   Commands.sequence(
+    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
+    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+    // )); 
+    // m_operatorController.a().onTrue(
+    //   Commands.sequence(
+    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
+    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+    // )); 
+    // m_operatorController.x().onTrue(
+    //   Commands.sequence(
+    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
+    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+    // )); 
+    // m_operatorController.y().onTrue(
+    //   Commands.sequence(
+    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
+    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+    // )); 
+    // m_operatorController.rightBumper().onTrue(
+    //   Commands.sequence(
+    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source),
+    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source) 
+    // )); 
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
 

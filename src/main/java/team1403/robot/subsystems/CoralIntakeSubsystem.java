@@ -51,7 +51,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
     //TODO add in the distance threholds
     public double getDistance() {
-        return m_CANRange.getDistance(true).getValue().in(Inches);
+        return m_CANRange.getDistance(true).getValue().in(Meters);
     }
 
     private double getFilteredCurrent() {
@@ -59,7 +59,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     }
 
     private boolean pieceIn() {
-        return getDistance() < 0.37;
+        return getDistance() < 0.37;// * 100 * 2.54;
     }
 
     public boolean hasPiece() {
@@ -74,5 +74,6 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("Intake speed", getIntakeSpeed());
         Logger.recordOutput("CoralDistance(mmmmmmmmmmmmm)", getDistance()*0.0254);
         Logger.recordOutput("Current current", getFilteredCurrent());
+        Logger.recordOutput("Has Piece", hasPiece());
     }
 }
