@@ -6,7 +6,6 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 
@@ -52,7 +50,6 @@ public class Blackbox {
     private static boolean algaeLoaded = false;
     private static boolean aligning = false;
     private static boolean trigger = false;
-    private static boolean closeAlign = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
 
@@ -147,8 +144,7 @@ public class Blackbox {
     }
 
     public static Command setAligningCmd(boolean align) {
-        aligning = align;
-        return Commands.none();
+        return new InstantCommand(() -> setAligning(align));
     }
 
     public static boolean isAligning() {
@@ -163,17 +159,36 @@ public class Blackbox {
         return trigger;
     }
 
-    public static void setCloseAlign(boolean align) {
-        closeAlign = align;
+    public static boolean getCloseAlign(Pose2d pose) {
+        Pose2d closest = getNearestAlignPositionReef(pose);
+        if (closest == null) return false;
+        if (CougarUtil.getDistance(pose, closest) > Constants.Vision.closeAlignDistance) return false;
+        if (CougarUtil.dot(pose.getRotation(), closest.getRotation()) < 0.7) return false;
+        return true;
     }
 
-    public static boolean getCloseAlign() {
-        return closeAlign;
+    private static final double kDotWeight = -0.5;
+    private static double distanceHeuristic(Pose2d a, Pose2d b) {
+        return CougarUtil.getDistance(a, b) + kDotWeight * CougarUtil.dot(a.getRotation(), b.getRotation());
+    }
+
+    public static Pose2d getNearestHeuristic(Pose2d a, Pose2d[] list) {
+        if (list.length == 0) return null;
+        Pose2d min = list[0];
+        double min_dist = distanceHeuristic(a, list[0]);
+        for(Pose2d b : list) {
+            double dist = distanceHeuristic(a, b);
+            if(dist < min_dist) {
+                min_dist = dist;
+                min = b;
+            }
+        }
+        return min;
     }
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {
         Pose2d nearest = null;
-        if (isCoralLoaded()) nearest = CougarUtil.getNearestHeuristic(currentPose, getReefPoses());
+        if (isCoralLoaded()) nearest = getNearestHeuristic(currentPose, getReefPoses());
         if (nearest == null) return null;
         if (CougarUtil.getDistance(currentPose, nearest) > kMaxAlignDist) return null;
 

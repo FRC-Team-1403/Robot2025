@@ -1,32 +1,24 @@
 package team1403.robot.commands;
 
-import java.util.Set;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import team1403.lib.util.AutoUtil;
-import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import team1403.robot.subsystems.*;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
-import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
 import team1403.robot.swerve.SwerveSubsystem;
 
 public class StateMachine extends Command {
     private WristSubsystem m_wristSubsystem;
     private ElevatorSubsystem m_elevatorSubsystem;
+    //only used for getting position
+    private SwerveSubsystem m_swerve;
 
-    public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator){
+    public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator, SwerveSubsystem drivetrain){
         m_wristSubsystem = wrist;
         m_elevatorSubsystem = elevator;
+        m_swerve = drivetrain;
 
         addRequirements(m_wristSubsystem, m_elevatorSubsystem);
     }
@@ -35,7 +27,6 @@ public class StateMachine extends Command {
     public void execute(){
         switch(Blackbox.robotState){
             case loading: {
-                Blackbox.setCloseAlign(false);
                 m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source);
                 m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
                 Blackbox.reefScoreLevel(ReefScoreLevel.drive);
@@ -64,7 +55,7 @@ public class StateMachine extends Command {
                     Blackbox.robotState = State.aligning;
                 break;
             } case aligning: {
-                if(Blackbox.getCloseAlign()){
+                if(Blackbox.getCloseAlign(m_swerve.getPose())){
                     switch(Blackbox.reefLevel) {
                         case L1: {
                             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
@@ -77,6 +68,11 @@ public class StateMachine extends Command {
                             break;
                         } case L4: {
                             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L4);
+                            break;
+                        }
+                        case drive:
+                        default: {
+                            m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
                             break;
                         }
                     }

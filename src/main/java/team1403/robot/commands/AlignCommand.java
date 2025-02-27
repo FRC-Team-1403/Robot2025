@@ -46,8 +46,6 @@ public class AlignCommand extends Command {
     public void execute() {
         ChassisSpeeds speeds = m_driveController.calculateRobotRelativeSpeeds(m_swerve.getPose(), m_state);
         m_swerve.drive(speeds);
-        if(CougarUtil.getDistance(m_target, m_swerve.getPose()) < Constants.Vision.closeAlignDistance)
-            Blackbox.setCloseAlign(true);
     }
 
     @Override
