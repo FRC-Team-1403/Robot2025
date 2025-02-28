@@ -165,7 +165,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         VisionSimUtil.initVisionSim();
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
-            () -> getRotation3d()));
+            () -> getPose()));
 
         SmartDashboard.putData("Gyro", super.getPigeon2());
 

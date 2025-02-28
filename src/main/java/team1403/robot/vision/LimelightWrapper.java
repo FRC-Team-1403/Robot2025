@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -21,16 +22,16 @@ import team1403.robot.Constants;
 
 public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private final String m_name;
-    private final Supplier<Rotation3d> m_imuRotation;
+    private final Supplier<Pose2d> m_referencePose;
     private final Supplier<Transform3d> m_camTransform;
     private LimelightHelpers.PoseEstimate m_poseEstimate;
     private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
     private final Alert m_camDisconnected;
     
 
-    public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {
+    public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referencePose) {
         m_name = name.toLowerCase(); //hostname must be lowercase
-        m_imuRotation = imuRotation;
+        m_referencePose = referencePose;
         m_camTransform = cameraTransform;
         m_camDisconnected = new Alert("Limelight " + m_name + " Disconnected!", AlertType.kError);
         m_poseEstimate = null;
@@ -99,18 +100,19 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     
     @Override
     public void periodic() {    
-        LimelightHelpers.SetRobotOrientation(m_name, m_imuRotation.get());
+        LimelightHelpers.SetRobotOrientation(m_name, new Rotation3d(m_referencePose.get().getRotation()));
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
 
         m_camDisconnected.set(!LimelightHelpers.isConnected(m_name));
         
         Logger.recordOutput(m_name + "/hasPose", hasPose());
+        Logger.recordOutput(m_name + "/cameraTransform", 
+            new Pose3d(m_referencePose.get()).transformBy(m_camTransform.get()));
 
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
-            Logger.recordOutput(m_name + "/cameraTransform", m_camTransform.get());
 
             /* if the pose estimate is valid then getTargets() != null */
             LimelightHelpers.RawFiducial[] fiducials = getTargets();
