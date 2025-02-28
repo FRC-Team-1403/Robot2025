@@ -108,12 +108,20 @@ public class Blackbox {
         reefLevel = level;
     }
 
+    public static void setRobotState(State state) {
+        robotState = state;
+    }
+
     public static Command reefSelectCmd(ReefSelect select) {
         return new InstantCommand(() -> reefSelect(select));
     }
 
     public static Command reefScoreLevelCmd(ReefScoreLevel level) {
         return new InstantCommand(() -> reefScoreLevel(level));
+    }
+
+    public static Command robotStateCmd(State state) {
+        return new InstantCommand(() -> setRobotState(state));
     }
 
     private static Pose2d[] getReefPoses() {
