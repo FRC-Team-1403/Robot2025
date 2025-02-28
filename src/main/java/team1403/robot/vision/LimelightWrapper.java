@@ -84,6 +84,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         // if(getTagAreas() < 0.3) return false;
 
         if(getPose().getZ() > 1) return false;
+        if(getPose().getZ() < -0.5) return false;
 
         if(getTargets().length == 1) {
             if(getTargets()[0].ambiguity > 0.6) {

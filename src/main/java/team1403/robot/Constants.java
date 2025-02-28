@@ -115,8 +115,8 @@ public class Constants {
     public static final double kMultiplier = 2.0;
     public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
 
-    public static final double kFeedforwardG = 0.03;
-    public static final double kFeedforwardV = 0.001;
+    public static final double kFeedforwardG = 0.05;
+    public static final double kFeedforwardV = 0.000;
 
     public static class Command {
       public static final double movementUpGain = 6; //9.0;

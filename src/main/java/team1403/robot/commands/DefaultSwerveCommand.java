@@ -27,11 +27,10 @@ public class DefaultSwerveCommand extends Command {
   private final DoubleSupplier m_verticalTranslationSupplier;
   private final DoubleSupplier m_horizontalTranslationSupplier;
   private final DoubleSupplier m_rotationSupplier;
-  private final BooleanSupplier m_fieldRelativeSupplier;
   private final BooleanSupplier m_xModeSupplier;
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
-  private boolean m_isFieldRelative;
+  private boolean m_isFieldRelative = true;
   
   private SlewRateLimiter m_rotationRateLimiter;
   private double prev_horizontal = 0;
@@ -62,7 +61,6 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier horizontalTranslationSupplier,
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
-      BooleanSupplier fieldRelativeSupplier,
       BooleanSupplier xModeSupplier,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
@@ -70,7 +68,6 @@ public class DefaultSwerveCommand extends Command {
     this.m_verticalTranslationSupplier = verticalTranslationSupplier;
     this.m_horizontalTranslationSupplier = horizontalTranslationSupplier;
     this.m_rotationSupplier = rotationSupplier;
-    this.m_fieldRelativeSupplier = fieldRelativeSupplier;
     this.m_speedSupplier = speedSupplier;
     this.m_xModeSupplier = xModeSupplier;
     m_snipingMode = snipingMode;
@@ -95,10 +92,6 @@ public class DefaultSwerveCommand extends Command {
     if (DriverStation.isAutonomousEnabled()) {
       m_drivetrainSubsystem.drive(new ChassisSpeeds());
       return;
-    }
-
-    if (m_fieldRelativeSupplier.getAsBoolean()) {
-      m_isFieldRelative = !m_isFieldRelative;
     }
 
     if (m_xModeSupplier.getAsBoolean()) {

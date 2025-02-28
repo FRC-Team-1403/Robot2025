@@ -28,26 +28,26 @@ public class StateMachine extends Command {
         switch(Blackbox.robotState){
             case loading: {
                 m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source);
-                m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
+                m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source / 360.);
                 Blackbox.reefScoreLevel(ReefScoreLevel.drive);
                 if(Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 break;
             } case driving: {
                 switch(Blackbox.reefLevel) {
                     case drive: {
-                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source / 360.);
                         break;
                     } case L1: {
-                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1);
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1 / 360.);
                         break;
                     } case L2: {
-                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L2);
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L2 / 360.);
                         break;
                     } case L3: {
-                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3);
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3 / 360.);
                         break;
                     } case L4: {
-                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L4);
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L4 / 360.);
                         break;
                     }
                 }
@@ -83,8 +83,10 @@ public class StateMachine extends Command {
                 break;
             } case placing: {
                 if(!Blackbox.isCoralLoaded()){
-                    m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Current);
-                    if(m_wristSubsystem.isAtSetpoint()) Blackbox.robotState = State.loading;
+                    m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Current / 360.);
+                    if (m_wristSubsystem.isAtSetpoint())
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
+                    //if(m_wristSubsystem.isAtSetpoint()) Blackbox.robotState = State.loading;
                 }
                 break;
             }

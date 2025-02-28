@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -43,6 +44,7 @@ import team1403.robot.commands.auto.AutoHelper;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
+import team1403.robot.subsystems.Blackbox.State;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 import team1403.robot.subsystems.ElevatorSubsystem;
 import team1403.robot.subsystems.WristSubsystem;
@@ -147,7 +149,6 @@ public class RobotContainer {
         () -> -m_driverController.getLeftX(),
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getYButtonPressed(),
         () -> m_driverController.getHID().getXButton(),
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
@@ -164,7 +165,8 @@ public class RobotContainer {
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
       if (target == null) return Commands.none();
-      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(1.75)));
+      //target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2.75)));
+      target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
         new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
@@ -181,7 +183,8 @@ public class RobotContainer {
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
       if (target == null) return Commands.none();
-      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(1.75))); 
+      //target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(1.75))); 
+      target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
         new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
@@ -206,6 +209,10 @@ public class RobotContainer {
     m_operatorController.x().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     m_operatorController.y().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
 
+    m_operatorController.rightBumper().onTrue(
+      Commands.sequence(
+        new InstantCommand(() -> Blackbox.robotState = State.loading),
+        Blackbox.setAligningCmd(false)));
 
     // m_operatorController.b().onTrue(
     //   Commands.sequence(
