@@ -7,6 +7,7 @@ package team1403.robot;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,6 +42,7 @@ import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
+import team1403.robot.commands.auto.WaitForCoral;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
@@ -214,6 +216,20 @@ public class RobotContainer {
         new InstantCommand(() -> Blackbox.robotState = State.loading),
         Blackbox.setAligningCmd(false)));
 
+    
+    NamedCommands.registerCommand("CoralScore", 
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
+      .withTimeout(.3));
+    NamedCommands.registerCommand("CoralWait", 
+      new WaitForCoral().withTimeout(2.0));
+    NamedCommands.registerCommand("ReefSetL1", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
+    NamedCommands.registerCommand("ReefSetL2", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
+    NamedCommands.registerCommand("ReefSetL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
+    NamedCommands.registerCommand("ReefSetL4", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
+    NamedCommands.registerCommand("ResetState", Commands.sequence(
+      new InstantCommand(() -> Blackbox.robotState = State.loading),
+      Blackbox.setAligningCmd(false)));
+
     // m_operatorController.b().onTrue(
     //   Commands.sequence(
     //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
@@ -254,10 +270,12 @@ public class RobotContainer {
       .withTimeout(.3)
     );
     m_operatorController.leftStick().onTrue(
-    new RepeatNTimes(Commands.sequence(
+    Commands.sequence(
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4), //run in first so coral doesn't fall out
+      new RepeatNTimes(Commands.sequence(
         new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
-      ), 4));
+      ), 4)));
   }
    
   /**
