@@ -33,6 +33,7 @@ import team1403.lib.util.RepeatNTimes;
 import team1403.robot.Constants.AlgaeIntake;
 // import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.AlignCommand;
+//import team1403.robot.commands.ClimberCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.DefaultIntakeCommand;
@@ -43,6 +44,8 @@ import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
+//import team1403.robot.subsystems.ClimberSubsystem;
+import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
@@ -63,6 +66,7 @@ public class RobotContainer {
   private final WristSubsystem m_wrist;
   private final CoralIntakeSubsystem m_coralIntake;
   private final StateMachine m_stateMachine;
+  //private final ClimberSubsystem m_climber;
   // private final AlgaeIntakeSubsystem m_algaeIntake;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -88,6 +92,7 @@ public class RobotContainer {
     m_wrist = new WristSubsystem();
     m_coralIntake = new CoralIntakeSubsystem();
     m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve);
+    //m_climber = new ClimberSubsystem();
     // m_algaeIntake = new AlgaeIntakeSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
@@ -124,6 +129,47 @@ public class RobotContainer {
 
     configureBindings();
   }
+
+  private Command getAlignCommand(ReefSelect select) {
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    return Commands.sequence(
+      Blackbox.setAligningCmd(true),
+      new DeferredCommand(() -> {
+        Blackbox.reefSelect(select);
+        Pose2d currentPose = m_swerve.getPose();
+        Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+        if (target == null) return Commands.none();
+        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2)));
+
+        if(select == ReefSelect.LEFT) {
+          if(Blackbox.reefLevel == ReefScoreLevel.L1)
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+          else if(Blackbox.reefLevel == ReefScoreLevel.L2 || Blackbox.reefLevel == ReefScoreLevel.L3)
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+          else if(Blackbox.reefLevel == ReefScoreLevel.L4)
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+        }
+        else {
+          if(Blackbox.reefLevel == ReefScoreLevel.L1)
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+          else if(Blackbox.reefLevel == ReefScoreLevel.L2 || Blackbox.reefLevel == ReefScoreLevel.L3)
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+          else if(Blackbox.reefLevel == ReefScoreLevel.L4)
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+        }
+
+        return Commands.sequence(
+          AutoUtil.pathFindToPose(target),
+          new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+            if(!interrupted) vibrationCmd.schedule();
+            else Blackbox.setAligning(false);
+          })
+        );
+      }, Set.of(m_swerve)),
+      Blackbox.setAligningCmd(false)
+    );
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -142,7 +188,9 @@ public class RobotContainer {
     // red
 
     //new Trigger(() -> true).whileTrue(m_stateMachine);
+    // RobotModeTriggers.disabled().negate().and(() -> !Blackbox.isManual()).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().whileFalse(m_stateMachine);
+
     
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(
         m_swerve,
@@ -153,46 +201,49 @@ public class RobotContainer {
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 
+
+    // m_driverController.leftBumper().whileTrue(Commands.sequence(
+    //   Blackbox.setAligningCmd(true),
+    //   new DeferredCommand(() -> {
+    //   Blackbox.reefSelect(ReefSelect.LEFT);
+    //   Pose2d currentPose = m_swerve.getPose();
+    //   Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+    //   if (target == null) return Commands.none();
+    //   target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2)));
+    //   //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
+    //   return Commands.sequence(
+    //     AutoUtil.pathFindToPose(target),
+    //     new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+    //       if(!interrupted) vibrationCmd.schedule();
+    //     })
+    //   );
+    //   }, Set.of(m_swerve)), 
+    //   Blackbox.setAligningCmd(false)));
+
+    // m_driverController.rightBumper().whileTrue(Commands.sequence(
+    //   Blackbox.setAligningCmd(true),
+    //   new DeferredCommand(() -> {
+    //   Blackbox.reefSelect(ReefSelect.RIGHT);
+    //   Pose2d currentPose = m_swerve.getPose();
+    //   Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+    //   if (target == null) return Commands.none();
+    //   target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2))); 
+    //   //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
+    //   return Commands.sequence(
+    //     AutoUtil.pathFindToPose(target),
+    //     new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
+    //       if(!interrupted) vibrationCmd.schedule();
+    //     })
+    //   );
+    //   }, Set.of(m_swerve)), 
+    //   Blackbox.setAligningCmd(false)));
+
+    m_driverController.rightBumper()
+      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive).whileTrue(getAlignCommand(ReefSelect.RIGHT));
+    m_driverController.leftBumper()
+      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive).whileTrue(getAlignCommand(ReefSelect.LEFT));
+
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
-
-    //m_driverController.povRight().onTrue(Blackbox.reefSelectCmd(ReefSelect.RIGHT));
-    //m_driverController.povLeft().onTrue(Blackbox.reefSelectCmd(ReefSelect.LEFT));
-
-    m_driverController.leftBumper().whileTrue(Commands.sequence(
-      Blackbox.setAligningCmd(true),
-      new DeferredCommand(() -> {
-      Blackbox.reefSelect(ReefSelect.LEFT);
-      Pose2d currentPose = m_swerve.getPose();
-      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-      if (target == null) return Commands.none();
-      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2)));
-      //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
-      return Commands.sequence(
-        AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-          if(!interrupted) vibrationCmd.schedule();
-        })
-      );
-      }, Set.of(m_swerve)), 
-      Blackbox.setAligningCmd(false)));
-
-    m_driverController.rightBumper().whileTrue(Commands.sequence(
-      Blackbox.setAligningCmd(true),
-      new DeferredCommand(() -> {
-      Blackbox.reefSelect(ReefSelect.RIGHT);
-      Pose2d currentPose = m_swerve.getPose();
-      Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-      if (target == null) return Commands.none();
-      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2))); 
-      //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
-      return Commands.sequence(
-        AutoUtil.pathFindToPose(target),
-        new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-          if(!interrupted) vibrationCmd.schedule();
-        })
-      );
-      }, Set.of(m_swerve)), 
-      Blackbox.setAligningCmd(false)));
 
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);
@@ -203,6 +254,9 @@ public class RobotContainer {
       m_swerve.runOnce(() -> m_swerve.resetRotation(Rotation2d.kZero)),
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
+
+    // m_driverController.povUp().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
+    // m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
 
     m_operatorController.b().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
     m_operatorController.a().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
@@ -224,7 +278,7 @@ public class RobotContainer {
     //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
     //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
     // )); 
-    // m_operatorController.x().onTrue(
+    // m_operatorController.x().and(() -> Blackbox.isManual()).onTrue(
     //   Commands.sequence(
     //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
     //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)

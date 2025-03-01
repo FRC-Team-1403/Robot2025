@@ -76,7 +76,6 @@ public class StateMachine extends Command {
                             break;
                         }
                     }
-
                 }
                 if (!Blackbox.isAligning())
                     Blackbox.robotState = State.placing;
