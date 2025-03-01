@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class Telemetry {
     private final double MaxSpeed;
+    private final Field2d m_field;
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
@@ -33,15 +35,18 @@ public class Telemetry {
      */
     public Telemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
+        m_field = new Field2d();
         SignalLogger.start();
 
         PathPlannerLogging.setLogActivePathCallback((activePath) -> {
             Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-            //fieldPub.getObject("traj").setPoses(activePath); (figure out something)
+            m_field.getObject("traj").setPoses(activePath);
         });
         PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
             Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+
+        SmartDashboard.putData("Field", m_field);
     }
 
     /* What to publish over networktables for telemetry */
@@ -56,11 +61,6 @@ public class Telemetry {
     private final StructArrayPublisher<SwerveModulePosition> driveModulePositions = driveStateTable.getStructArrayTopic("ModulePositions", SwerveModulePosition.struct).publish();
     private final DoublePublisher driveTimestamp = driveStateTable.getDoubleTopic("Timestamp").publish();
     private final DoublePublisher driveOdometryFrequency = driveStateTable.getDoubleTopic("OdometryFrequency").publish();
-
-    /* Robot pose for field positioning */
-    private final NetworkTable table = inst.getTable("Pose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     /* Mechanisms to represent the swerve module states */
     private final Mechanism2d[] m_moduleMechanisms = new Mechanism2d[] {
@@ -120,9 +120,7 @@ public class Telemetry {
         SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-        /* Telemeterize the pose to a Field2d */
-        fieldTypePub.set("Field2d");
-        fieldPub.set(m_poseArray);
+        m_field.setRobotPose(state.Pose);
 
         /* Telemeterize the module states to a Mechanism2d */
         for (int i = 0; i < 4; ++i) {

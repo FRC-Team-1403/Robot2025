@@ -1523,11 +1523,11 @@ public class LimelightHelpers {
     public static void setCameraPose_RobotSpace(String limelightName, Transform3d transform) {
         setCameraPose_RobotSpace(limelightName, 
             transform.getX(),
-            transform.getY(),
+            -transform.getY(), //source: https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-coordinate-systems
             transform.getZ(),
-            Units.radiansToDegrees(-transform.getRotation().getX()),
+            Units.radiansToDegrees(transform.getRotation().getX()),
             Units.radiansToDegrees(-transform.getRotation().getY()),
-            Units.radiansToDegrees(-transform.getRotation().getZ()));
+            Units.radiansToDegrees(transform.getRotation().getZ()));
     }
 
     /**

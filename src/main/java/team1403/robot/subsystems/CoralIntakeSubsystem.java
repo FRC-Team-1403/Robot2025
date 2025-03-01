@@ -72,7 +72,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         Blackbox.setCoralLoaded(hasPiece());
 
         Logger.recordOutput("Intake speed", getIntakeSpeed());
-        Logger.recordOutput("CoralDistance(mmmmmmmmmmmmm)", getDistance()*0.0254);
+        Logger.recordOutput("CoralDistance", getDistance());
         Logger.recordOutput("Current current", getFilteredCurrent());
         Logger.recordOutput("Has Piece", hasPiece());
     }
