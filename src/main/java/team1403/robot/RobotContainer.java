@@ -165,8 +165,8 @@ public class RobotContainer {
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
       if (target == null) return Commands.none();
-      //target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2.75)));
-      target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
+      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2)));
+      //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
         new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
@@ -183,8 +183,8 @@ public class RobotContainer {
       Pose2d currentPose = m_swerve.getPose();
       Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
       if (target == null) return Commands.none();
-      //target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(1.75))); 
-      target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
+      target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2))); 
+      //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
       return Commands.sequence(
         AutoUtil.pathFindToPose(target),
         new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
