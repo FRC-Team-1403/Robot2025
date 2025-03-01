@@ -82,10 +82,14 @@ public class StateMachine extends Command {
                     Blackbox.robotState = State.placing;
                 break;
             } case placing: {
-                if(!Blackbox.isCoralLoaded()){
+                if(!Blackbox.isCoralLoaded()) {
                     m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Current / 360.);
-                    if (m_wristSubsystem.isAtSetpoint())
-                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
+                    if (m_wristSubsystem.isAtSetpoint()) {
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current); 
+                        if(m_elevatorSubsystem.isAtSetpoint() && !Blackbox.getCloseAlign(m_swerve.getPose())) {
+                            Blackbox.robotState = State.loading;
+                        }
+                    }
                     //if(m_wristSubsystem.isAtSetpoint()) Blackbox.robotState = State.loading;
                 }
                 break;
