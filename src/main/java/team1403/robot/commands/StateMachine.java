@@ -2,6 +2,7 @@ package team1403.robot.commands;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.Constants;
@@ -97,8 +98,10 @@ public class StateMachine extends Command {
                 }
                 break;
             } case ManualElevator: {
-                m_elevatorSubsystem.moveToSetpoint(m_elevatorSubsystem.getSetpoint() - m_op.getRightY() * Constants.kLoopTime * 5);
-                m_wristSubsystem.moveToSetpoint(m_wristSubsystem.getSetpoint() + m_op.getLeftY() * Constants.kLoopTime / 30.0);
+                m_elevatorSubsystem.moveToSetpoint(m_elevatorSubsystem.getSetpoint() - 
+                    MathUtil.applyDeadband(m_op.getRightY(), 0.05) * Constants.kLoopTime * 8);
+                m_wristSubsystem.moveToSetpoint(m_wristSubsystem.getSetpoint() + 
+                    MathUtil.applyDeadband(m_op.getLeftY(), 0.05) * Constants.kLoopTime / 10.0);
                 break;
             }
         }

@@ -242,6 +242,7 @@ public class RobotContainer {
       .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive).whileTrue(getAlignCommand(ReefSelect.LEFT));
 
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    Command opVibrationCmd = new ControllerVibrationCommand(m_operatorController.getHID(), 0.28, 1);
 
     //m_driverController.a().onTrue(new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1));
     //SmartDashboard.putNumber("vibration", 0);
@@ -267,7 +268,9 @@ public class RobotContainer {
         Blackbox.setAligningCmd(false)));
 
     m_operatorController.povUp().debounce(0.5).onTrue(
-      new InstantCommand(() -> Blackbox.robotState = Blackbox.State.ManualElevator)
+      Commands.sequence(
+      new InstantCommand(() -> Blackbox.robotState = Blackbox.State.ManualElevator),
+      opVibrationCmd)
     );
 
     // m_operatorController.b().onTrue(
