@@ -273,31 +273,38 @@ public class RobotContainer {
       opVibrationCmd)
     );
 
-    // m_operatorController.b().onTrue(
-    //   Commands.sequence(
-    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
-    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
-    // )); 
-    // m_operatorController.a().onTrue(
-    //   Commands.sequence(
-    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
-    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
-    // )); 
-    // m_operatorController.x().and(() -> Blackbox.isManual()).onTrue(
-    //   Commands.sequence(
-    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
-    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
-    // )); 
-    // m_operatorController.y().onTrue(
-    //   Commands.sequence(
-    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
-    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
-    // )); 
-    // m_operatorController.rightBumper().onTrue(
-    //   Commands.sequence(
-    //     new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source),
-    //     new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source) 
-    // )); 
+    /*
+    m_operatorController.b()
+      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+    ).withTimeout(2)); 
+    m_operatorController.a()
+      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+    ).withTimeout(2)); 
+    m_operatorController.x()
+      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+    ).withTimeout(2)); 
+    m_operatorController.y()
+      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+    ).withTimeout(2)); 
+    */ /*
+    m_operatorController.rightBumper()
+      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      Commands.sequence(
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source),
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source) 
+    ).withTimeout(2)); */
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
 
@@ -331,6 +338,8 @@ public class RobotContainer {
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
     m_autoChooser.addOption("OneP Center", AutoHelper.getOnePCenter(m_swerve));
+    m_autoChooser.addOption("OneP Processor", AutoHelper.getOnePProc(m_swerve));
+    m_autoChooser.addOption("OneP Non Processor", AutoHelper.getOnePNonProc(m_swerve));
   }
    
   /**

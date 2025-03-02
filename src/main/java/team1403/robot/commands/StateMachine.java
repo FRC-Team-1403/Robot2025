@@ -99,9 +99,9 @@ public class StateMachine extends Command {
                 break;
             } case ManualElevator: {
                 m_elevatorSubsystem.moveToSetpoint(m_elevatorSubsystem.getSetpoint() - 
-                    MathUtil.applyDeadband(m_op.getRightY(), 0.05) * Constants.kLoopTime * 8);
+                    MathUtil.applyDeadband(m_op.getRightY(), 0.05) * Constants.kLoopTime * 32);
                 m_wristSubsystem.moveToSetpoint(m_wristSubsystem.getSetpoint() + 
-                    MathUtil.applyDeadband(m_op.getLeftY(), 0.05) * Constants.kLoopTime / 10.0);
+                    MathUtil.applyDeadband(m_op.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
                 break;
             }
         }

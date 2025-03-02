@@ -51,7 +51,6 @@ public class Blackbox {
     private static boolean algaeLoaded = false;
     private static boolean aligning = false;
     private static boolean trigger = false;
-    private static boolean manual = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(25);
 
@@ -102,13 +101,6 @@ public class Blackbox {
         //Manipulate red alliance positions here in case field elems move this year as well
     }
 
-    public static void setManual(boolean man) {
-        manual = man;
-    }
-
-    public static boolean isManual() {
-        return manual;
-    }
     public static void reefSelect(ReefSelect select) {
         reefSide = select;
     }
