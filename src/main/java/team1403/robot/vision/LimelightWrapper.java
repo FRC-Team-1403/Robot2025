@@ -106,6 +106,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         m_camDisconnected.set(!LimelightHelpers.isConnected(m_name));
         
         Logger.recordOutput(m_name + "/hasPose", hasPose());
+        targets.clear();
 
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
@@ -118,7 +119,6 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
           
             if(Constants.Vision.kExtraVisionDebugInfo)
             {
-                targets.clear();
                 for(int i = 0; i < fiducials.length; i++)
                 {
                     LimelightHelpers.RawFiducial f = fiducials[i];
