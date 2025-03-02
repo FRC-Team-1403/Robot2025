@@ -7,6 +7,7 @@ package team1403.robot;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -42,6 +43,7 @@ import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
+import team1403.robot.commands.auto.WaitForCoral;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.ClimberSubsystem;
@@ -101,10 +103,6 @@ public class RobotContainer {
       m_autoChooser = new SendableChooser<>();
       DriverStation.reportError("Auto builder wasn't configured!", true);
     }
-
-    /* Move forward 1 m from any position on the starting line 
-      (make sure robot is facing a tag to seed the position) */
-    m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
     
     //avoid cluttering up auto chooser at competitions
     if (Constants.ENABLE_SYSID) {
@@ -312,6 +310,20 @@ public class RobotContainer {
         new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
       ), 4));
+
+    NamedCommands.registerCommand("CoralScore", new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5));
+    NamedCommands.registerCommand("CoralL1", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
+    NamedCommands.registerCommand("CoralL2", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
+    NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
+    NamedCommands.registerCommand("CoralL4", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
+    NamedCommands.registerCommand("WaitForCoral", new WaitForCoral(2.0));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
+    
+    /* Move forward 1 m from any position on the starting line 
+      (make sure robot is facing a tag to seed the position) */
+    m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
+    m_autoChooser.addOption("OneP Center", AutoHelper.getOnePCenter(m_swerve));
   }
    
   /**

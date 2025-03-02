@@ -24,6 +24,11 @@ public class StateMachine extends Command {
     }
 
     @Override
+    public void initialize() {
+        Blackbox.robotState = Blackbox.State.loading;
+    }
+
+    @Override
     public void execute(){
         switch(Blackbox.robotState){
             case loading: {

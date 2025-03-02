@@ -12,9 +12,27 @@ import team1403.robot.swerve.TunerConstants;
 
 public class AutoUtil {
     
+  //resets odometery
   public static Command loadChoreoAuto(String name, SwerveSubsystem swerve) {
     try {
       PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(name);
+      Command cmd = AutoBuilder.followPath(path);
+      return Commands.sequence(Commands.runOnce(() -> {
+          Pose2d startPose = CougarUtil.shouldMirrorPath() ? 
+            path.flipPath().getStartingDifferentialPose() : 
+            path.getStartingDifferentialPose();
+          swerve.resetOdometry(startPose);
+      }, swerve), cmd);
+    } catch (Exception e) {
+      System.err.println("Failed to load choreo auto: " + e.getMessage());
+      return null;
+    }
+  }
+
+  //resets odometery
+  public static Command loadPathPlannerAuto(String name, SwerveSubsystem swerve) {
+    try {
+      PathPlannerPath path = PathPlannerPath.fromPathFile(name);
       Command cmd = AutoBuilder.followPath(path);
       return Commands.sequence(Commands.runOnce(() -> {
           Pose2d startPose = CougarUtil.shouldMirrorPath() ? 
