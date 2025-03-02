@@ -33,7 +33,7 @@ import team1403.lib.util.RepeatNTimes;
 import team1403.robot.Constants.AlgaeIntake;
 // import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.AlignCommand;
-//import team1403.robot.commands.ClimberCommand;
+import team1403.robot.commands.ClimberCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.DefaultIntakeCommand;
@@ -44,7 +44,7 @@ import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
-//import team1403.robot.subsystems.ClimberSubsystem;
+import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
@@ -66,7 +66,7 @@ public class RobotContainer {
   private final WristSubsystem m_wrist;
   private final CoralIntakeSubsystem m_coralIntake;
   private final StateMachine m_stateMachine;
-  //private final ClimberSubsystem m_climber;
+  private final ClimberSubsystem m_climber;
   // private final AlgaeIntakeSubsystem m_algaeIntake;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -92,7 +92,7 @@ public class RobotContainer {
     m_wrist = new WristSubsystem();
     m_coralIntake = new CoralIntakeSubsystem();
     m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve);
-    //m_climber = new ClimberSubsystem();
+    m_climber = new ClimberSubsystem();
     // m_algaeIntake = new AlgaeIntakeSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
@@ -255,8 +255,8 @@ public class RobotContainer {
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
 
-    // m_driverController.povUp().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    // m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_driverController.povUp().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
+    m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
 
     m_operatorController.b().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
     m_operatorController.a().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));

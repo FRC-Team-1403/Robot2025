@@ -169,8 +169,8 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upSpeed = 0.1;
-    public static final double downSpeed = -0.1;
+    public static final double upSpeed = 0.2;
+    public static final double downSpeed = -0.2;
   }
 
   public static class AlgaeIntake {
