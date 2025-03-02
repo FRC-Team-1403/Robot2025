@@ -93,7 +93,7 @@ public class RobotContainer {
     m_elevator = new ElevatorSubsystem();
     m_wrist = new WristSubsystem();
     m_coralIntake = new CoralIntakeSubsystem();
-    m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve);
+    m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_operatorController.getHID());
     m_climber = new ClimberSubsystem();
     // m_algaeIntake = new AlgaeIntakeSubsystem();
 
@@ -137,8 +137,8 @@ public class RobotContainer {
         Pose2d currentPose = m_swerve.getPose();
         Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
         if (target == null) return Commands.none();
-        //target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2)));
-        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)));
+        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(-1)));
+        //target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)));
         if(select == ReefSelect.LEFT) {
           if(Blackbox.reefLevel == ReefScoreLevel.L1)
             target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
@@ -174,7 +174,7 @@ public class RobotContainer {
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
    * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * PS4} controllers or {@link edu.wpi.first.wpilibj+.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
@@ -253,8 +253,8 @@ public class RobotContainer {
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
 
-    m_driverController.povUp().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_driverController.y().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
+    m_driverController.a().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
 
     m_operatorController.b().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
     m_operatorController.a().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
@@ -265,6 +265,10 @@ public class RobotContainer {
       Commands.sequence(
         new InstantCommand(() -> Blackbox.robotState = State.loading),
         Blackbox.setAligningCmd(false)));
+
+    m_operatorController.povUp().debounce(0.5).onTrue(
+      new InstantCommand(() -> Blackbox.robotState = Blackbox.State.ManualElevator)
+    );
 
     // m_operatorController.b().onTrue(
     //   Commands.sequence(

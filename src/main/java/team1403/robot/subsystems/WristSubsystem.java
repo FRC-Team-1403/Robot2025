@@ -102,6 +102,10 @@ public class WristSubsystem extends SubsystemBase {
         m_wristMotor.set(0);
     }
 
+    public double getSetpoint() {
+        return m_profiled.getGoal().position;
+    }
+
     public Command getSysIDQ(SysIdRoutine.Direction d){
         return m_SysIDRoutine.quasistatic(d);
     }

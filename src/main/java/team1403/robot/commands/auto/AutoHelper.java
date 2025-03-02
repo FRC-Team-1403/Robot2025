@@ -51,4 +51,34 @@ public class AutoHelper {
             return Commands.none();
         }
     }
+
+    public static Command getOnePNonProc(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.waitSeconds(0.2), //wait for state machine to reach correct state
+                NamedCommands.getCommand("CoralL4"),
+                AutoUtil.loadPathPlannerAuto("OneP NonProc", m_swerve),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore")
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
+    public static Command getOnePProc(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.waitSeconds(0.2), //wait for state machine to reach correct state
+                NamedCommands.getCommand("CoralL4"),
+                AutoUtil.loadPathPlannerAuto("OneP Proc", m_swerve),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore")
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
 }

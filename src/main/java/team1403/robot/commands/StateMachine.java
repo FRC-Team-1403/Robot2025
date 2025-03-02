@@ -2,6 +2,7 @@ package team1403.robot.commands;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.Constants;
 import team1403.robot.subsystems.*;
@@ -14,11 +15,13 @@ public class StateMachine extends Command {
     private ElevatorSubsystem m_elevatorSubsystem;
     //only used for getting position
     private SwerveSubsystem m_swerve;
+    private XboxController m_op;
 
-    public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator, SwerveSubsystem drivetrain){
+    public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator, SwerveSubsystem drivetrain, XboxController op){
         m_wristSubsystem = wrist;
         m_elevatorSubsystem = elevator;
         m_swerve = drivetrain;
+        m_op = op;
 
         addRequirements(m_wristSubsystem, m_elevatorSubsystem);
     }
@@ -92,6 +95,10 @@ public class StateMachine extends Command {
                         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
                     //if(m_wristSubsystem.isAtSetpoint()) Blackbox.robotState = State.loading;
                 }
+                break;
+            } case ManualElevator: {
+                m_elevatorSubsystem.moveToSetpoint(m_elevatorSubsystem.getSetpoint() - m_op.getRightY() * Constants.kLoopTime * 5);
+                m_wristSubsystem.moveToSetpoint(m_wristSubsystem.getSetpoint() + m_op.getLeftY() * Constants.kLoopTime / 30.0);
                 break;
             }
         }
