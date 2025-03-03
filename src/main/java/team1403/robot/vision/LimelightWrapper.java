@@ -1,5 +1,8 @@
 package team1403.robot.vision;
 
+import static edu.wpi.first.units.Units.Microseconds;
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -12,7 +15,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
@@ -26,14 +31,18 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private LimelightHelpers.PoseEstimate m_poseEstimate;
     private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
     private final Alert m_camDisconnected;
+    private final DoubleSubscriber m_latencySubscriber;
     
 
     public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {
         m_name = name.toLowerCase(); //hostname must be lowercase
         m_imuRotation = imuRotation;
         m_camTransform = cameraTransform;
-        m_camDisconnected = new Alert("Limelight " + m_name + " Disconnected!", AlertType.kError);
         m_poseEstimate = null;
+
+        m_latencySubscriber = LimelightHelpers.getLimelightNTTable(m_name)
+            .getDoubleTopic("tl").subscribe(0.0);
+        m_camDisconnected = new Alert("Limelight " + m_name + " Disconnected!", AlertType.kError);
     }
     
     @Override
@@ -95,6 +104,12 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         return true;
     }
 
+    private boolean isConnected() {
+        long dt_us = RobotController.getFPGATime() - m_latencySubscriber.getLastChange();
+        double dt = Seconds.convertFrom(dt_us, Microseconds);
+        return dt < 0.25;
+    }
+
     private final ArrayList<Pose3d> targets = new ArrayList<>();
     
     @Override
@@ -103,7 +118,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
 
-        m_camDisconnected.set(!LimelightHelpers.isConnected(m_name));
+        m_camDisconnected.set(!isConnected());
         
         Logger.recordOutput(m_name + "/hasPose", hasPose());
         targets.clear();

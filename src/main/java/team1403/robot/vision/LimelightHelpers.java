@@ -892,15 +892,6 @@ public class LimelightHelpers {
     /////
 
     /**
-     * Is there even a limelight connected? (there should always be a cl no matter the pipeline)
-     * @param limelightName Name of the Limelight camera ("" for default)
-     * @return True if connected
-     */
-    public static boolean isConnected(String limelightName) {
-        return getLimelightNTTableEntry(limelightName, "cl").exists();
-    }
-
-    /**
      * Does the Limelight have a valid target?
      * @param limelightName Name of the Limelight camera ("" for default)
      * @return True if a valid target is present, false otherwise
