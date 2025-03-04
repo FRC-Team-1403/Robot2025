@@ -140,20 +140,20 @@ public class RobotContainer {
         target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(-1)));
         //target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)));
         if(select == ReefSelect.LEFT) {
-          if(Blackbox.reefLevel == ReefScoreLevel.L1)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-          else if(Blackbox.reefLevel == ReefScoreLevel.L2 || Blackbox.reefLevel == ReefScoreLevel.L3)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-          else if(Blackbox.reefLevel == ReefScoreLevel.L4)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+          switch(Blackbox.reefLevel) {
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+          }
         }
         else {
-          if(Blackbox.reefLevel == ReefScoreLevel.L1)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-          else if(Blackbox.reefLevel == ReefScoreLevel.L2 || Blackbox.reefLevel == ReefScoreLevel.L3)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-          else if(Blackbox.reefLevel == ReefScoreLevel.L4)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+          switch(Blackbox.reefLevel) {
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+          }
         }
 
         return Commands.sequence(
