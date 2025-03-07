@@ -92,8 +92,8 @@ public class Constants {
     //left-to-right-disp = 0 inches
     //top-to-bottom disp = 17.82426 inches
     //public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
-    public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(90), 0, Units.degreesToRadians(9));
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(4.75),Units.inchesToMeters(-12.99),Units.inchesToMeters(30.5));
+    public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(0), 0, Units.degreesToRadians(0));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396));
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 

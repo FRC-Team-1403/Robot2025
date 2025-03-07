@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -51,7 +52,13 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
     //TODO add in the distance threholds
     public double getDistance() {
-        return m_CANRange.getDistance(true).getValue().in(Meters);
+        double distance = m_CANRange.getDistance(true).getValue().in(Meters);
+        if(distance < 0.01) {
+            return -0.05 + 0.201;
+        } 
+        else {
+            return distance;
+        }
     }
 
     private double getFilteredCurrent() {

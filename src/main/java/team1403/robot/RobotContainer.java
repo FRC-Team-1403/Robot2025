@@ -18,12 +18,11 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.lib.util.RepeatNTimes;
-import team1403.robot.Constants.AlgaeIntake;
 // import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ClimberCommand;
@@ -39,17 +37,15 @@ import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
-import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
-import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 import team1403.robot.commands.auto.WaitForCoral;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
-import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
+import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 import team1403.robot.subsystems.ElevatorSubsystem;
 import team1403.robot.subsystems.WristSubsystem;
@@ -137,15 +133,16 @@ public class RobotContainer {
         Pose2d currentPose = m_swerve.getPose();
         Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
         if (target == null) return Commands.none();
-        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(-1)));
-        //target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)));
+          
+        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)));
+      
         if(select == ReefSelect.LEFT) {
           if(Blackbox.reefLevel == ReefScoreLevel.L1)
             target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
           else if(Blackbox.reefLevel == ReefScoreLevel.L2 || Blackbox.reefLevel == ReefScoreLevel.L3)
             target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
           else if(Blackbox.reefLevel == ReefScoreLevel.L4)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
         }
         else {
           if(Blackbox.reefLevel == ReefScoreLevel.L1)
@@ -153,7 +150,7 @@ public class RobotContainer {
           else if(Blackbox.reefLevel == ReefScoreLevel.L2 || Blackbox.reefLevel == ReefScoreLevel.L3)
             target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
           else if(Blackbox.reefLevel == ReefScoreLevel.L4)
-            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2));
+            target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
         }
 
         return Commands.sequence(
