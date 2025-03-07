@@ -34,10 +34,9 @@ public class CougarUtil {
 
     public static Pose2d getInitialRobotPose() {
         if(getAlliance() == Alliance.Red)
-            //FIXME: put a valid red alliance position
-            return new Pose2d(new Translation2d(1 ,1), Rotation2d.k180deg);
+            return new Pose2d(new Translation2d(10 ,2), Rotation2d.kZero);
         
-        return new Pose2d(new Translation2d(1, 1), Rotation2d.kZero);
+        return new Pose2d(new Translation2d(7.6, 2), Rotation2d.k180deg);
     }
 
     public static double getDistance(Pose2d a, Pose2d b) {
