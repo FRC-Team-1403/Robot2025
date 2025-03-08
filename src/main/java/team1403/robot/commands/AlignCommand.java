@@ -55,7 +55,8 @@ public class AlignCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return CougarUtil.getDistance(m_swerve.getPose(), m_target) <= kTreshM &&
+        return CougarUtil.getXDistance(m_swerve.getPose(), m_target) <= kTreshM &&
+                CougarUtil.getYDistance(m_swerve.getPose(), m_target) <= kTreshM &&
                 CougarUtil.dot(m_swerve.getRotation(), m_target.getRotation()) >= Math.cos(0.01);
     }
 

@@ -47,15 +47,19 @@ public class StateMachine extends Command {
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source / 360.);
                         break;
                     } case L1: {
+                        //m_wristSubsystem.moveToSetpoint(-64 / 360.);                      
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1 / 360.);
                         break;
                     } case L2: {
+                        // m_wristSubsystem.moveToSetpoint(-64 / 360.);
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L2 / 360.);
                         break;
                     } case L3: {
-                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3 / 360.);
+                    //    m_wristSubsystem.moveToSetpoint(-64 / 360.);
+                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3 / 360.);
                         break;
                     } case L4: {
+                        //m_wristSubsystem.moveToSetpoint(-64 / 360.);
                         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L4 / 360.);
                         break;
                     }
@@ -64,6 +68,7 @@ public class StateMachine extends Command {
                     Blackbox.robotState = State.aligning;
                 break;
             } case aligning: {
+                m_wristSubsystem.moveToSetpoint(-64 / 360.);
                 if(Blackbox.getCloseAlign(m_swerve.getPose())){
                     switch(Blackbox.reefLevel) {
                         case L1: {

@@ -107,10 +107,10 @@ public class Constants {
     public static final double wiggle = 0.1;
 
     public static class Setpoints {
-      public static final double pose1 = 0;
-      public static final double pose2 = 0;
-      public static final double pose3 = 0;
-      public static final double pose4 = 0;
+      public static final double pose1 = 0.08;
+      public static final double pose2 = 0.16;
+      public static final double pose3 = 0.24;
+      public static final double pose4 = 0.33;
     }
   }
 
@@ -153,7 +153,7 @@ public class Constants {
   public static class Wrist {
     public static class Setpoints{
       public static final double L1 = 39; // same as L4 for now
-      public static final double L2 = 15;
+      public static final double L2 = 17;
       public static final double L3 = 20;
       public static final double L4 = 39;
       public static final double Source = -16; //placehold

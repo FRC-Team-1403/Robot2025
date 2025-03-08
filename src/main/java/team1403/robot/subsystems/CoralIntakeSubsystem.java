@@ -51,20 +51,23 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     }
 
     public double getDistance() {
-        return m_filter.calculate(m_CANRange.getDistance().getValue().in(Meters));
+        return (m_CANRange.getDistance().getValue().in(Meters));
     }
 
     //TODO add in the distance threholds
     public double getAlignOffset() {
         double distance = getDistance();
-        if(distance < 0.01) {
-            return Constants.CoralIntake.Setpoints.pose1 + 0.201;
-        } else if(distance > 0 && distance < 0){
-            return Constants.CoralIntake.Setpoints.pose2 + 0.201;
-        } else if(distance > 0 && distance < 0){
-            return Constants.CoralIntake.Setpoints.pose3 + 0.201;
-        }else {
-            return Constants.CoralIntake.Setpoints.pose4 + 0.201;
+        if(distance > 0.29){
+            return Constants.CoralIntake.Setpoints.pose4;
+        }
+        else if(distance > 0.2){
+            return Constants.CoralIntake.Setpoints.pose3;
+        }
+        else if(distance > 0.12){
+            return Constants.CoralIntake.Setpoints.pose2;
+        }
+        else {
+            return Constants.CoralIntake.Setpoints.pose1;
         }
     }
 
@@ -89,5 +92,6 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("CoralDistance", getDistance());
         Logger.recordOutput("Current current", getFilteredCurrent());
         Logger.recordOutput("Has Piece", hasPiece());
+        Logger.recordOutput("CoralPosition", getAlignOffset());
     }
 }

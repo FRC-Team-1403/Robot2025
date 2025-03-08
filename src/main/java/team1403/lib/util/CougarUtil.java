@@ -11,6 +11,8 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import static edu.wpi.first.units.Units.Meters;
+
 
 public class CougarUtil {
     
@@ -41,6 +43,14 @@ public class CougarUtil {
 
     public static double getDistance(Pose2d a, Pose2d b) {
         return a.getTranslation().getDistance(b.getTranslation());
+    }
+
+    public static double getXDistance(Pose2d a, Pose2d b) {
+        return Math.abs(a.getMeasureX().in(Meters) - b.getMeasureX().in(Meters));
+    }
+
+    public static double getYDistance(Pose2d a, Pose2d b) {
+        return Math.abs(a.getMeasureY().in(Meters) - b.getMeasureY().in(Meters));
     }
 
     public static double dot(Rotation2d a, Rotation2d b) {
