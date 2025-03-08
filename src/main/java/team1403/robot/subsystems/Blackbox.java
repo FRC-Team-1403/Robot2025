@@ -20,12 +20,20 @@ import team1403.robot.Constants;
 //Stores data that is shared between subsystems
 public class Blackbox {
 
-    public enum State{
+    public enum State {
         loading,
         driving,
         aligning,
         placing,
+        exiting,
         ManualElevator
+    }
+
+    public enum pState {
+        drive,
+        elevator,
+        wrist,
+        intake
     }
 
     public enum ReefSelect {
@@ -47,10 +55,12 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightRED;
     public static ReefSelect reefSide = ReefSelect.LEFT;
     public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
+    public static pState placingState = pState.drive;
     private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
     private static boolean aligning = false;
     private static boolean trigger = false;
+    private static boolean doneAligning = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(35);
 
@@ -152,6 +162,14 @@ public class Blackbox {
         return aligning;
     }
 
+    public static void setDoneAlign(boolean align) {
+        doneAligning = align;
+    }
+
+    public static boolean isDoneAlign() {
+        return doneAligning;
+    }
+
     public static void setTrigger(boolean trig) {
         trigger = trig;
     }
@@ -202,6 +220,11 @@ public class Blackbox {
         Logger.recordOutput("ReefPositions Blue Left", reefPosesLeftBLUE);
         Logger.recordOutput("ReefPositions Red Right", reefPosesRightRED);
         Logger.recordOutput("ReefPositions Red Left", reefPosesLeftRED);
+
+        Logger.recordOutput("robot State", robotState);
+        Logger.recordOutput("placing state", placingState);
+        Logger.recordOutput("reef select level", Blackbox.reefLevel);
+        Logger.recordOutput("reef side", Blackbox.reefSide);
 
         debugModeAlert.set(Constants.DEBUG_MODE);
         sysIdActiveAlert.set(Constants.ENABLE_SYSID);

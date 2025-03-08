@@ -56,7 +56,7 @@ public class Constants {
     public static final int leftElevatorMotorID = 10;
     public static final int rightElevatorMotorID = 11;
     public static final int algaeIntakeMotorID = 4;
-    public static final int algaeWristMotorID = 0; //tbd
+    public static final int algaeWristMotorID = kTBD; //tbd
     
     public static final int leftClimberMotor = 18;  
     public static final int rightClimberMotor = 5; 
@@ -158,6 +158,7 @@ public class Constants {
       public static final double L4 = 39;
       public static final double Source = -16; //placehold
       public static final double Current = 0.23 * 360;
+      public static final double Drive = -64 / 360.;
     }
 
     public static final double WristKS = 0;
