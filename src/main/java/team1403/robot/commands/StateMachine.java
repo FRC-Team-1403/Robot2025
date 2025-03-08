@@ -5,6 +5,8 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team1403.robot.Constants;
 import team1403.robot.subsystems.*;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
@@ -39,100 +41,131 @@ public class StateMachine extends Command {
         switch(Blackbox.robotState){
             case loading:
                 m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source);
-                m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source / 360.);
+                m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
                 Blackbox.reefScoreLevel(ReefScoreLevel.drive);
                 if(Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 break;
             case driving: 
-                if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
-                    m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
+                //if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
+                    //m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 if(Blackbox.isAligning())
                     Blackbox.robotState = State.aligning;
                 break;
             case aligning:
+                Blackbox.placingState = Blackbox.pState.elevator;
                 if (!Blackbox.isAligning())
                     Blackbox.robotState = State.placing;
                 break;
             case placing:
                 switch(Blackbox.reefLevel) {
                     case L1:
-                        switch(Blackbox.placingState){
-                            case elevator:
-                                m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
-                                if(m_elevatorSubsystem.isAtSetpoint())
-                                    Blackbox.placingState = Blackbox.pState.wrist;
-                                break;
-                            case wrist:
-                                m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1);
-                                if(m_wristSubsystem.isAtSetpoint())
-                                    Blackbox.placingState = Blackbox.pState.intake;
-                                break;
-                            case intake:
-                                if(!m_intake.hasPiece())
-                                    Blackbox.robotState = Blackbox.State.exiting;
-                                break;
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
+                        if(m_elevatorSubsystem.isAtSetpoint())
+                            m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1);
+                        if(!m_intake.hasPiece()){
+                            Blackbox.robotState = Blackbox.State.exiting;
+                            System.out.println("hello1");
                         }
-                        break;
+                        // switch(Blackbox.placingState){
+                        //     case elevator:
+                        //         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
+                        //         if(m_elevatorSubsystem.isAtSetpoint())
+                        //             Blackbox.placingState = Blackbox.pState.wrist;
+                        //         break;
+                        //     case wrist:
+                        //         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L1);
+                        //         if(m_wristSubsystem.isAtSetpoint())
+                        //             Blackbox.placingState = Blackbox.pState.intake;
+                        //         break;
+                        //     case intake:
+                        //         if(!m_intake.hasPiece())
+                        //             Blackbox.robotState = Blackbox.State.exiting;
+                        //         break;
+                        // }
+                        // break;
                     case L2:
-                    switch(Blackbox.placingState){
-                        case elevator:
-                            m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L2);
-                            if(m_elevatorSubsystem.isAtSetpoint())
-                                Blackbox.placingState = Blackbox.pState.wrist;
-                            break;
-                        case wrist:
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L2);
+                        if(m_elevatorSubsystem.isAtSetpoint())
                             m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L2);
-                            if(m_wristSubsystem.isAtSetpoint())
-                                Blackbox.placingState = Blackbox.pState.intake;
-                            break;
-                        case intake:
-                            if(!m_intake.hasPiece())
-                                Blackbox.robotState = Blackbox.State.exiting;
-                            break;
-                    }
-                        break;
+                        if(!m_intake.hasPiece()){
+                            Blackbox.robotState = Blackbox.State.exiting;
+                            System.out.println("hello2");
+                        }
+                        // switch(Blackbox.placingState){
+                        //     case elevator:
+                        //         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L2);
+                        //         if(m_elevatorSubsystem.isAtSetpoint())
+                        //             Blackbox.placingState = Blackbox.pState.wrist;
+                        //         break;
+                        //     case wrist:
+                        //         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L2);
+                        //         if(m_wristSubsystem.isAtSetpoint())
+                        //             Blackbox.placingState = Blackbox.pState.intake;
+                        //         break;
+                        //     case intake:
+                        //         if(!m_intake.hasPiece())
+                        //             Blackbox.robotState = Blackbox.State.exiting;
+                        //         break;
+                        // }
+                        //     break;
                     case L3:
-                    switch(Blackbox.placingState){
-                        case elevator:
-                            m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L3);
-                            if(m_elevatorSubsystem.isAtSetpoint())
-                                Blackbox.placingState = Blackbox.pState.wrist;
-                            break;
-                        case wrist:
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L3);
+                        if(m_elevatorSubsystem.isAtSetpoint())
                             m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3);
-                            if(m_wristSubsystem.isAtSetpoint())
-                                Blackbox.placingState = Blackbox.pState.intake;
-                            break;
-                        case intake:
-                            if(!m_intake.hasPiece())
-                                Blackbox.robotState = Blackbox.State.exiting;
-                            break;
-                    }
-                        break;
+                        if(!m_intake.hasPiece()){
+                            Blackbox.robotState = Blackbox.State.exiting;
+                            System.out.println("hello3");
+                        }
+                        // switch(Blackbox.placingState){
+                        //     case elevator:
+                        //         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L3);
+                        //         if(m_elevatorSubsystem.isAtSetpoint())
+                        //             Blackbox.placingState = Blackbox.pState.wrist;
+                        //         break;
+                        //     case wrist:
+                        //         m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L3);
+                        //         if(m_wristSubsystem.isAtSetpoint())
+                        //             Blackbox.placingState = Blackbox.pState.intake;
+                        //         break;
+                        //     case intake:
+                        //         if(!m_intake.hasPiece())
+                        //             Blackbox.robotState = Blackbox.State.exiting;
+                        //         break;
+                        // }
+                        //     break;
                     case L4:
-                    switch(Blackbox.placingState){
-                        case elevator:
-                            m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L4);
-                            if(m_elevatorSubsystem.isAtSetpoint())
-                                Blackbox.placingState = Blackbox.pState.wrist;
-                            break;
-                        case wrist:
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L4);
+                        if(m_elevatorSubsystem.isAtSetpoint())
                             m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L4);
-                            if(m_wristSubsystem.isAtSetpoint())
-                                Blackbox.placingState = Blackbox.pState.intake;
-                            break;
-                        case intake:
-                            if(!m_intake.hasPiece())
-                                Blackbox.robotState = Blackbox.State.exiting;
-                            break;
-                    }
-                        break;
+                        if(!m_intake.hasPiece()){
+                            Blackbox.robotState = Blackbox.State.exiting;
+                            System.out.println("hello4");
+                        }
+                    //     switch(Blackbox.placingState){
+                    //         case elevator:
+                    //             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L4);
+                    //             if(m_elevatorSubsystem.isAtSetpoint())
+                    //                 Blackbox.placingState = Blackbox.pState.wrist;
+                    //             break;
+                    //         case wrist:
+                    //             m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.L4);
+                    //             if(m_wristSubsystem.isAtSetpoint())
+                    //                 Blackbox.placingState = Blackbox.pState.intake;
+                    //             break;
+                    //         case intake:
+                    //             if(!m_intake.hasPiece())
+                    //                 Blackbox.robotState = Blackbox.State.exiting;
+                    //             break;
+                    //     }
+                    // break;
                 }
-            case exiting:
-                Blackbox.placingState = Blackbox.pState.drive;
+            case exiting: {
+                System.out.println("HI");
+                // Blackbox.placingState = Blackbox.pState.drive;
                 m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
-                m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
+                //m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 break;
+            }
             case ManualElevator: 
                 m_elevatorSubsystem.moveToSetpoint(m_elevatorSubsystem.getSetpoint() - 
                     MathUtil.applyDeadband(m_op.getRightY(), 0.05) * Constants.kLoopTime * 32);

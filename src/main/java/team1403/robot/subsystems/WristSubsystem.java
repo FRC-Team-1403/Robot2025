@@ -85,6 +85,16 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     @AutoLogOutput
+    public double getWristSetpoint() {
+        return m_profiled.getGoal().position;
+    }
+
+    @AutoLogOutput
+    public double getWristSetpointDeg() {
+        return m_profiled.getGoal().position * 360;
+    }
+
+    @AutoLogOutput
     public double getWristVelocity() {
         return m_encoder.getVelocity() * 60;
     }
@@ -93,6 +103,7 @@ public class WristSubsystem extends SubsystemBase {
         m_profiled.setGoal(targetAngle);
     }
 
+    @AutoLogOutput
     public boolean isAtSetpoint() {
         return Math.abs(getWristAngle() - m_profiled.getGoal().position) 
             < Units.degreesToRotations(5);
@@ -119,6 +130,9 @@ public class WristSubsystem extends SubsystemBase {
         getWristAngle();
         getWristVelocity();
         getWristAngleDeg();
+        getWristSetpoint();
+        getWristSetpointDeg();
+        isAtSetpoint();
 
         Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
         m_wristMotor.set(m_profiled.calculate(getWristAngle()) - m_feedForward.calculate(

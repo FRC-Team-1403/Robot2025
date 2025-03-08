@@ -152,12 +152,12 @@ public class Constants {
 
   public static class Wrist {
     public static class Setpoints{
-      public static final double L1 = 39; // same as L4 for now
-      public static final double L2 = 17;
-      public static final double L3 = 20;
-      public static final double L4 = 39;
-      public static final double Source = -16; //placehold
-      public static final double Current = 0.23 * 360;
+      public static final double L1 = 39 / 360.; // same as L4 for now
+      public static final double L2 = 17 /360.;
+      public static final double L3 = 20 / 360.;
+      public static final double L4 = 39 / 360.;
+      public static final double Source = -16 / 360.; //placehold
+      public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
     }
 

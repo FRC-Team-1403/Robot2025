@@ -254,5 +254,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         Logger.recordOutput("checking direction", directionFlag);
         Logger.recordOutput("Feedforward", FFcalculation());
         Logger.recordOutput("Elevator Setpoint", setpoint);
+        Logger.recordOutput("elevator is at setpoint", isAtSetpoint());
     }
 }
