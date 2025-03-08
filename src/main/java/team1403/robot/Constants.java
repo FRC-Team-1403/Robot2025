@@ -105,6 +105,13 @@ public class Constants {
     public static final double intake = 0.5;
     public static final double neutral = 0.04;
     public static final double wiggle = 0.1;
+
+    public static class Setpoints {
+      public static final double pose1 = 0;
+      public static final double pose2 = 0;
+      public static final double pose3 = 0;
+      public static final double pose4 = 0;
+    }
   }
 
   public static class Elevator {

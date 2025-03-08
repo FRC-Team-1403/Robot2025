@@ -50,14 +50,21 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         return m_intakeMotor.get();
     }
 
-    //TODO add in the distance threholds
     public double getDistance() {
-        double distance = m_CANRange.getDistance(true).getValue().in(Meters);
+        return m_filter.calculate(m_CANRange.getDistance().getValue().in(Meters));
+    }
+
+    //TODO add in the distance threholds
+    public double getAlignOffset() {
+        double distance = getDistance();
         if(distance < 0.01) {
-            return -0.05 + 0.201;
-        } 
-        else {
-            return distance;
+            return Constants.CoralIntake.Setpoints.pose1 + 0.201;
+        } else if(distance > 0 && distance < 0){
+            return Constants.CoralIntake.Setpoints.pose2 + 0.201;
+        } else if(distance > 0 && distance < 0){
+            return Constants.CoralIntake.Setpoints.pose3 + 0.201;
+        }else {
+            return Constants.CoralIntake.Setpoints.pose4 + 0.201;
         }
     }
 
