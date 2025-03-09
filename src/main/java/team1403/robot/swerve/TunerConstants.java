@@ -200,7 +200,7 @@ public class TunerConstants {
 
     /* custom extra constants */
     public static final double kMaxSpeed = kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    public static final double kMaxAngularRate = RotationsPerSecond.of(2.0).in(RadiansPerSecond); // 1 rotation per second max angular velocity
+    public static final double kMaxAngularRate = RotationsPerSecond.of(2.0).in(RadiansPerSecond); // 2 rotation per second max angular velocity
 
     public static final PIDConstants kTranslationPID = new PIDConstants(5.6, 0, 0); 
     public static final PIDConstants kRotationPID = new PIDConstants(2.8, 0, 0);
