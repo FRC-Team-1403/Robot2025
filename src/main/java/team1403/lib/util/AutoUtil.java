@@ -13,7 +13,7 @@ import team1403.robot.swerve.TunerConstants;
 public class AutoUtil {
     
   //resets odometery
-  public static Command loadChoreoAuto(String name, SwerveSubsystem swerve) {
+  public static Command loadChoreoPath(String name, SwerveSubsystem swerve) {
     try {
       PathPlannerPath path = PathPlannerPath.fromChoreoTrajectory(name);
       Command cmd = AutoBuilder.followPath(path);
@@ -30,7 +30,7 @@ public class AutoUtil {
   }
 
   //resets odometery
-  public static Command loadPathPlannerAuto(String name, SwerveSubsystem swerve) {
+  public static Command loadPathPlannerPath(String name, SwerveSubsystem swerve) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile(name);
       Command cmd = AutoBuilder.followPath(path);
@@ -41,7 +41,7 @@ public class AutoUtil {
           swerve.resetOdometry(startPose);
       }, swerve), cmd);
     } catch (Exception e) {
-      System.err.println("Failed to load choreo auto: " + e.getMessage());
+      System.err.println("Failed to load pathplanner path: " + e.getMessage());
       return null;
     }
   }

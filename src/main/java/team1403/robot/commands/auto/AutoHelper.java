@@ -42,7 +42,7 @@ public class AutoHelper {
             return Commands.sequence(
                 Commands.waitSeconds(0.2), //wait for state machine to reach correct state
                 NamedCommands.getCommand("CoralL4"),
-                AutoUtil.loadPathPlannerAuto("OneP Center", m_swerve),
+                AutoUtil.loadPathPlannerPath("OneP Center", m_swerve),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("CoralScore")
             );
@@ -57,7 +57,7 @@ public class AutoHelper {
             return Commands.sequence(
                 Commands.waitSeconds(0.2), //wait for state machine to reach correct state
                 NamedCommands.getCommand("CoralL4"),
-                AutoUtil.loadPathPlannerAuto("OneP NonProc", m_swerve),
+                AutoUtil.loadPathPlannerPath("OneP NonProc", m_swerve),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("CoralScore")
             );
@@ -72,7 +72,7 @@ public class AutoHelper {
             return Commands.sequence(
                 Commands.waitSeconds(0.2), //wait for state machine to reach correct state
                 NamedCommands.getCommand("CoralL4"),
-                AutoUtil.loadPathPlannerAuto("OneP Proc", m_swerve),
+                AutoUtil.loadPathPlannerPath("OneP Proc", m_swerve),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("CoralScore")
             );
