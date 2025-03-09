@@ -4,6 +4,8 @@
 
 package team1403.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -37,9 +39,10 @@ import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
+import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
+import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
-import team1403.robot.commands.auto.WaitForCoral;
 // import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
@@ -138,31 +141,34 @@ public class RobotContainer {
       
         if(select == ReefSelect.LEFT) {
           switch(Blackbox.reefLevel) {
-            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case drive: default: /* do nothing */ break;
           }
         }
         else {
           switch(Blackbox.reefLevel) {
-            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0));
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case drive: default: /* do nothing */ break;
           }
         }
 
         return Commands.sequence(
           AutoUtil.pathFindToPose(target),
-          new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-            if(!interrupted) vibrationCmd.schedule();
-            else Blackbox.setAligning(false);
-          })
+          new AlignCommand(m_swerve, target)
         );
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
-    );
+    ).finallyDo((interrupted) -> {
+      if(!interrupted) vibrationCmd.schedule();
+      //just in case
+      Blackbox.setAligning(false);
+    });
   }
 
   /**
@@ -183,8 +189,9 @@ public class RobotContainer {
     // red
 
     //new Trigger(() -> true).whileTrue(m_stateMachine);
-    // RobotModeTriggers.disabled().negate().and(() -> !Blackbox.isManual()).whileTrue(m_stateMachine);
-    RobotModeTriggers.disabled().whileFalse(m_stateMachine);
+    RobotModeTriggers.disabled().negate()
+      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator).whileTrue(m_stateMachine);
+    //RobotModeTriggers.disabled().whileFalse(m_stateMachine);
 
     
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(
@@ -252,51 +259,64 @@ public class RobotContainer {
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
 
-    m_driverController.y().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    m_driverController.a().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    //there's really no other good buttons unfortunately
+    m_driverController.leftStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
+    m_driverController.rightStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
 
-    m_operatorController.b().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
-    m_operatorController.a().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
-    m_operatorController.x().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
-    m_operatorController.y().onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
+    m_operatorController.b()
+      .and(() -> Blackbox.robotState != State.ManualElevator)
+      .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
+    m_operatorController.a()
+      .and(() -> Blackbox.robotState != State.ManualElevator)
+      .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
+    m_operatorController.x()
+      .and(() -> Blackbox.robotState != State.ManualElevator)
+      .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
+    m_operatorController.y()
+      .and(() -> Blackbox.robotState != State.ManualElevator)
+      .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
 
     m_operatorController.rightBumper().onTrue(
       Commands.sequence(
-        new InstantCommand(() -> Blackbox.robotState = State.loading),
+        Blackbox.robotStateCmd(State.loading),
         Blackbox.setAligningCmd(false)));
 
     m_operatorController.povUp().debounce(0.5).onTrue(
       Commands.sequence(
-      new InstantCommand(() -> Blackbox.robotState = Blackbox.State.ManualElevator),
-      opVibrationCmd)
+        Blackbox.robotStateCmd(State.ManualElevator),
+        opVibrationCmd)
     );
 
-    /*
+    
     m_operatorController.b()
-      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      .and(() -> Blackbox.robotState == State.ManualElevator)
+      .onTrue(
       Commands.sequence(
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
-    ).withTimeout(2)); 
+    )); 
     m_operatorController.a()
-      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      .and(() -> Blackbox.robotState == State.ManualElevator)
+      .onTrue(
       Commands.sequence(
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
-    ).withTimeout(2)); 
+    )); 
     m_operatorController.x()
-      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      .and(() -> Blackbox.robotState == State.ManualElevator)
+      .onTrue(
       Commands.sequence(
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
-    ).withTimeout(2)); 
+    )); 
     m_operatorController.y()
-      .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
+      .and(() -> Blackbox.robotState == State.ManualElevator)
+      .onTrue(
       Commands.sequence(
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
-    ).withTimeout(2)); 
-    */ /*
+    )); 
+    /*
     m_operatorController.rightBumper()
       .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
       Commands.sequence(
@@ -318,17 +338,22 @@ public class RobotContainer {
       .withTimeout(.3)
     );
     m_operatorController.leftStick().onTrue(
-    new RepeatNTimes(Commands.sequence(
-        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
-      ), 4));
+      Commands.sequence(
+        //initially run inward
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3),
+        //then wiggle
+        new RepeatNTimes(Commands.sequence(
+          new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
+          new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
+      ), 4)));
 
     NamedCommands.registerCommand("CoralScore", new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5));
     NamedCommands.registerCommand("CoralL1", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
     NamedCommands.registerCommand("CoralL2", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
     NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     NamedCommands.registerCommand("CoralL4", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
-    NamedCommands.registerCommand("WaitForCoral", new WaitForCoral(2.0));
+    NamedCommands.registerCommand("WaitForCoral", 
+      Commands.waitUntil(() -> m_coralIntake.hasPiece()).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     
