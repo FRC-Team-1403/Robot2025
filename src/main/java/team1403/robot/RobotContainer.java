@@ -193,6 +193,7 @@ public class RobotContainer {
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
         () -> m_driverController.getHID().getXButton(),
+        () -> m_driverController.getHID().getYButton(),
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
 

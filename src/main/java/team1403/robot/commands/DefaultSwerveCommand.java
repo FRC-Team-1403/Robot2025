@@ -6,7 +6,9 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -30,6 +32,9 @@ public class DefaultSwerveCommand extends Command {
   private final BooleanSupplier m_xModeSupplier;
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
+  private final BooleanSupplier m_robotRelativeMode;
+  private final Debouncer m_robotRelativeDebouncer 
+    = new Debouncer(0.3, DebounceType.kFalling);
   private boolean m_isFieldRelative = true;
   
   private SlewRateLimiter m_rotationRateLimiter;
@@ -62,6 +67,7 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
       BooleanSupplier xModeSupplier,
+      BooleanSupplier robotRelativeSupplier,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
     this.m_drivetrainSubsystem = drivetrain;
@@ -70,7 +76,8 @@ public class DefaultSwerveCommand extends Command {
     this.m_rotationSupplier = rotationSupplier;
     this.m_speedSupplier = speedSupplier;
     this.m_xModeSupplier = xModeSupplier;
-    m_snipingMode = snipingMode;
+    this.m_snipingMode = snipingMode;
+    this.m_robotRelativeMode = robotRelativeSupplier;
     m_isFieldRelative = true;
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
 
@@ -84,6 +91,8 @@ public class DefaultSwerveCommand extends Command {
 
   @Override
   public void execute() {
+    m_isFieldRelative = m_robotRelativeDebouncer.calculate(!m_robotRelativeMode.getAsBoolean());
+
     SmartDashboard.putBoolean("isFieldRelative", m_isFieldRelative);
     //if (Constants.DEBUG_MODE) SmartDashboard.putBoolean("Aimbot", m_aimbotSupplier.getAsBoolean());
 
@@ -153,7 +162,6 @@ public class DefaultSwerveCommand extends Command {
       } else {
         chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }
-      //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     }
 
     m_drivetrainSubsystem.drive(chassisSpeeds);
