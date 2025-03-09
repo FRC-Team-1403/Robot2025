@@ -48,7 +48,7 @@ public class StateMachine extends Command {
             case driving: 
                 //if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
                     //m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
-                if(Blackbox.isAligning())
+                if(Blackbox.isAligning() && Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     Blackbox.robotState = State.aligning;
                 break;
             case aligning:
@@ -57,6 +57,15 @@ public class StateMachine extends Command {
                     Blackbox.robotState = State.placing;
                 break;
             case placing:
+                m_elevatorSubsystem.moveToSetpoint(Blackbox.getElevatorSetpointLevel(Blackbox.reefLevel));
+                if(m_elevatorSubsystem.isAtSetpoint())
+                    m_wristSubsystem.moveToSetpoint(Blackbox.getWristSetpointLevel(Blackbox.reefLevel));
+                if(!m_intake.hasPiece()) {
+                    m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Current);
+                    if(m_wristSubsystem.isAtSetpoint())
+                        Blackbox.robotState = State.exiting;
+                }
+                /*
                 switch(Blackbox.reefLevel) {
                     case L1:
                         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
@@ -66,6 +75,7 @@ public class StateMachine extends Command {
                             Blackbox.robotState = Blackbox.State.exiting;
                             System.out.println("hello1");
                         }
+                        break;
                         // switch(Blackbox.placingState){
                         //     case elevator:
                         //         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L1);
@@ -91,6 +101,7 @@ public class StateMachine extends Command {
                             Blackbox.robotState = Blackbox.State.exiting;
                             System.out.println("hello2");
                         }
+                        break;
                         // switch(Blackbox.placingState){
                         //     case elevator:
                         //         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L2);
@@ -116,6 +127,7 @@ public class StateMachine extends Command {
                             Blackbox.robotState = Blackbox.State.exiting;
                             System.out.println("hello3");
                         }
+                        break;
                         // switch(Blackbox.placingState){
                         //     case elevator:
                         //         m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L3);
@@ -141,6 +153,7 @@ public class StateMachine extends Command {
                             Blackbox.robotState = Blackbox.State.exiting;
                             System.out.println("hello4");
                         }
+                        break;
                     //     switch(Blackbox.placingState){
                     //         case elevator:
                     //             m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.L4);
@@ -158,7 +171,12 @@ public class StateMachine extends Command {
                     //             break;
                     //     }
                     // break;
-                }
+                    case drive:
+                    default:
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
+                        m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
+                        break;
+                }*/
             case exiting: {
                 System.out.println("HI");
                 // Blackbox.placingState = Blackbox.pState.drive;
@@ -173,7 +191,6 @@ public class StateMachine extends Command {
                     MathUtil.applyDeadband(m_op.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
                 break;
         }
-        Logger.recordOutput("State", Blackbox.robotState.toString());
     }
 
     @Override

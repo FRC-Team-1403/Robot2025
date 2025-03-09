@@ -214,6 +214,48 @@ public class Blackbox {
         return nearest;
     }
 
+    public static double getWristSetpointLevel(ReefScoreLevel level)
+    {
+        switch(level) {
+            case L1:
+                return Constants.Wrist.Setpoints.L1;
+            
+            case L2:
+                return Constants.Wrist.Setpoints.L2;
+
+            case L3:
+                return Constants.Wrist.Setpoints.L3;
+            
+            case L4:
+                return Constants.Wrist.Setpoints.L4;
+
+            case drive:
+            default:
+                return Constants.Wrist.Setpoints.Source;
+        }
+    }
+
+    public static double getElevatorSetpointLevel(ReefScoreLevel level) {
+        switch(level) {
+
+            case L1:
+                return Constants.Elevator.Setpoints.L1;
+
+            case L2:
+                return Constants.Elevator.Setpoints.L2;
+
+            case L3:
+                return Constants.Elevator.Setpoints.L3;
+
+            case L4:
+                return Constants.Elevator.Setpoints.L4;
+
+            case drive:
+            default:
+                return Constants.Elevator.Setpoints.Current;
+        }
+    }
+
     public static void periodic() {
         //compute target position and other data here
         Logger.recordOutput("ReefPositions Blue Right", reefPosesRightBLUE);
