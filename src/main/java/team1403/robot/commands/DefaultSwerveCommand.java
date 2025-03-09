@@ -132,7 +132,7 @@ public class DefaultSwerveCommand extends Command {
     double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
     double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * TunerConstants.kMaxAngularRate;
 
-    if(Blackbox.getCloseAlign(m_drivetrainSubsystem.getPose())){
+    if(Blackbox.getCloseAlign(m_drivetrainSubsystem.getPose()) && Blackbox.isCoralLoaded()){
       horizontal /= 2;
       vertical /= 2;
       angular /= 2;
