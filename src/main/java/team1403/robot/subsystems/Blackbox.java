@@ -53,6 +53,8 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightBLUE;
     private static Pose2d[] reefPosesLeftRED;
     private static Pose2d[] reefPosesRightRED;
+    private static Pose2d[] sourcePosesBLUE;
+    private static Pose2d[] sourcePosesRED;
     public static ReefSelect reefSide = ReefSelect.LEFT;
     public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
     public static pState placingState = pState.drive;
@@ -75,6 +77,12 @@ public class Blackbox {
         new Alert("SysID is enabled", AlertType.kInfo);
 
     public static void init() {
+        //two different source positions on each alliance
+        sourcePosesBLUE = new Pose2d[2];
+        sourcePosesRED = new Pose2d[2];
+        sourcePosesBLUE[0] = new Pose2d();
+        sourcePosesBLUE[1] = new Pose2d();
+
         //12 different scoring locations on reef
         reefPosesLeftBLUE = new Pose2d[6];
         reefPosesRightBLUE = new Pose2d[6];
@@ -106,6 +114,10 @@ public class Blackbox {
                 CougarUtil.addDistanceToPose(reefPosesRightBLUE[i], kHalfBumperLengthMeters), 
                 Rotation2d.k180deg);
             reefPosesRightRED[i] = FlippingUtil.flipFieldPose(reefPosesRightBLUE[i]);
+        }
+
+        for(int i = 0; i < sourcePosesBLUE.length; i++) {
+            sourcePosesRED[i] = FlippingUtil.flipFieldPose(sourcePosesBLUE[i]);
         }
 
         //Manipulate red alliance positions here in case field elems move this year as well
@@ -140,6 +152,10 @@ public class Blackbox {
             return CougarUtil.getAlliance() == Alliance.Blue ? reefPosesLeftBLUE : reefPosesLeftRED;
         else
             return CougarUtil.getAlliance() == Alliance.Blue ? reefPosesRightBLUE : reefPosesRightRED;
+    }
+
+    private static Pose2d[] getSourcePoses() {
+        return CougarUtil.getAlliance() == Alliance.Blue ? sourcePosesBLUE : sourcePosesRED;
     }
 
     public static void setAlgaeLoaded(boolean loaded) {
@@ -222,6 +238,15 @@ public class Blackbox {
         return nearest;
     }
 
+    public static Pose2d getNearestSourcePose(Pose2d currentPose) {
+        Pose2d nearest = null;
+        if (!isCoralLoaded()) nearest = CougarUtil.getNearest(currentPose, getSourcePoses());
+        if (nearest == null) return null;
+        if (CougarUtil.getDistance(currentPose, nearest) > 5) return null;
+
+        return nearest;
+    }
+
     public static double getWristSetpointLevel(ReefScoreLevel level)
     {
         switch(level) {
@@ -266,15 +291,15 @@ public class Blackbox {
 
     public static void periodic() {
         //compute target position and other data here
-        Logger.recordOutput("ReefPositions Blue Right", reefPosesRightBLUE);
-        Logger.recordOutput("ReefPositions Blue Left", reefPosesLeftBLUE);
-        Logger.recordOutput("ReefPositions Red Right", reefPosesRightRED);
-        Logger.recordOutput("ReefPositions Red Left", reefPosesLeftRED);
+        Logger.recordOutput("Blackbox/ReefPositions Blue Right", reefPosesRightBLUE);
+        Logger.recordOutput("Blackbox/ReefPositions Blue Left", reefPosesLeftBLUE);
+        Logger.recordOutput("Blackbox/ReefPositions Red Right", reefPosesRightRED);
+        Logger.recordOutput("Blackbox/ReefPositions Red Left", reefPosesLeftRED);
 
-        Logger.recordOutput("robot State", robotState);
-        Logger.recordOutput("placing state", placingState);
-        Logger.recordOutput("reef select level", Blackbox.reefLevel);
-        Logger.recordOutput("reef side", Blackbox.reefSide);
+        Logger.recordOutput("Blackbox/Robot State", robotState);
+        Logger.recordOutput("Blackbox/Placing State", placingState);
+        Logger.recordOutput("Blackbox/Reef Level", reefLevel);
+        Logger.recordOutput("Blackbox/Reef Side", reefSide);
 
         debugModeAlert.set(Constants.DEBUG_MODE);
         sysIdActiveAlert.set(Constants.ENABLE_SYSID);
