@@ -67,8 +67,9 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
 
     @Override
     public Matrix<N3, N1> getEstStdv() {
-        //TODO: change it based on the confidence
-        return kDefaultStdv.div(1.0);
+        double[] d = LimelightHelpers.getStandardDeviations(m_name);
+        if (d.length == 0) return kDefaultStdv;
+        return VecBuilder.fill(d[0], d[1], d[5]); //MT1x, MT1y, MT1yaw
     }
 
     
