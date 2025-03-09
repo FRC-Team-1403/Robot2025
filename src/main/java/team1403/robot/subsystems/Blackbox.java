@@ -61,7 +61,6 @@ public class Blackbox {
     private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
     private static boolean aligning = false;
-    private static boolean trigger = false;
     private static boolean doneAligning = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(35);
@@ -192,14 +191,6 @@ public class Blackbox {
 
     public static boolean isDoneAlign() {
         return doneAligning;
-    }
-
-    public static void setTrigger(boolean trig) {
-        trigger = trig;
-    }
-
-    public static boolean getTrigger() {
-        return trigger;
     }
 
     public static boolean getCloseAlign(Pose2d pose) {
