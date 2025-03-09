@@ -88,10 +88,10 @@ public class CoralIntakeSubsystem extends SubsystemBase {
 
         Blackbox.setCoralLoaded(hasPiece());
 
-        Logger.recordOutput("Intake speed", getIntakeSpeed());
-        Logger.recordOutput("CoralDistance", getDistance());
-        Logger.recordOutput("Current current", getFilteredCurrent());
-        Logger.recordOutput("Has Piece", hasPiece());
-        Logger.recordOutput("CoralPosition", getAlignOffset());
+        Logger.recordOutput("CoralIntake/Intake speed", getIntakeSpeed());
+        Logger.recordOutput("CoralIntake/CoralDistance", getDistance());
+        Logger.recordOutput("CoralIntake/Current", getFilteredCurrent());
+        Logger.recordOutput("CoralIntake/Has Piece", hasPiece());
+        Logger.recordOutput("CoralIntake/CoralPosition", getAlignOffset());
     }
 }

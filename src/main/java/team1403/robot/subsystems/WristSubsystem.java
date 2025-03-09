@@ -1,7 +1,6 @@
 package team1403.robot.subsystems;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -12,20 +11,16 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
@@ -127,14 +122,6 @@ public class WristSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        getWristAngle();
-        getWristVelocity();
-        getWristAngleDeg();
-        getWristSetpoint();
-        getWristSetpointDeg();
-        isAtSetpoint();
-
-        Logger.recordOutput("target wrist angle", m_profiled.getGoal().position*360);
         m_wristMotor.set(m_profiled.calculate(getWristAngle()) - m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 
                 Units.rotationsToRadians(getWristVelocity())));

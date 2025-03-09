@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -76,7 +78,7 @@ public class RobotContainer {
 
   private final PowerDistribution m_powerDistribution;
 
-  private SendableChooser<Command> m_autoChooser;
+  private LoggedDashboardChooser<Command> m_autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -96,10 +98,10 @@ public class RobotContainer {
     m_climber = new ClimberSubsystem();
     // m_algaeIntake = new AlgaeIntakeSubsystem();
 
-    if (AutoBuilder.isConfigured()) m_autoChooser = AutoBuilder.buildAutoChooser();
+    if (AutoBuilder.isConfigured()) m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     else
     {
-      m_autoChooser = new SendableChooser<>();
+      m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
       DriverStation.reportError("Auto builder wasn't configured!", true);
     }
     
@@ -114,7 +116,7 @@ public class RobotContainer {
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
 
-    SmartDashboard.putData("Auto Chooser", m_autoChooser);
+    SmartDashboard.putData("Auto Chooser", m_autoChooser.getSendableChooser());
     if(Constants.DEBUG_MODE) {
       SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
       SmartDashboard.putData("Power Distribution", m_powerDistribution);
@@ -372,6 +374,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return m_autoChooser.getSelected();
+    return m_autoChooser.get();
   }
 }

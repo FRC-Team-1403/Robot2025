@@ -236,24 +236,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         setMotorSpeed(currMotorOutput / 100.0); 
         //simulatePos();
 
-        Logger.recordOutput("Right Motor RPM", getSpeed());
-        Logger.recordOutput("Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
-        Logger.recordOutput("Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
-        Logger.recordOutput("right motor degrees mod", (m_rightMotor.getEncoder().getPosition() * 360) % 360);
-        Logger.recordOutput("right motor degrees", (m_rightMotor.getEncoder().getPosition() * 360) );
-        Logger.recordOutput("Left Motor Speed", m_leftMotor.get());
-        Logger.recordOutput("Right Motor Speed", m_rightMotor.get());
-        Logger.recordOutput("desired motor output velocity", desiredMotorOutput);
-        Logger.recordOutput("current motor output", currMotorOutput);
-        Logger.recordOutput("is ramp done", isRampDone);
-        Logger.recordOutput("current position", currentPos);
-        Logger.recordOutput("position error", posError);
-        Logger.recordOutput("motor output error", desiredMotorOutput - currMotorOutput);
-        Logger.recordOutput("is going up", isGoingUp);
-        Logger.recordOutput("is going down", isGoingDown);
-        Logger.recordOutput("checking direction", directionFlag);
-        Logger.recordOutput("Feedforward", FFcalculation());
-        Logger.recordOutput("Elevator Setpoint", setpoint);
-        Logger.recordOutput("elevator is at setpoint", isAtSetpoint());
+        Logger.recordOutput("Elevator/Right Motor RPM", getSpeed());
+        Logger.recordOutput("Elevator/Left Motor Encoder", m_leftMotor.getEncoder().getPosition());
+        Logger.recordOutput("Elevator/Right Motor Encoder", m_rightMotor.getEncoder().getPosition());
+        Logger.recordOutput("Elevator/right motor degrees mod", (m_rightMotor.getEncoder().getPosition() * 360) % 360);
+        Logger.recordOutput("Elevator/right motor degrees", (m_rightMotor.getEncoder().getPosition() * 360) );
+        Logger.recordOutput("Elevator/Left Motor Speed", m_leftMotor.get());
+        Logger.recordOutput("Elevator/Right Motor Speed", m_rightMotor.get());
+        Logger.recordOutput("Elevator/Profiler/desired motor output velocity", desiredMotorOutput);
+        Logger.recordOutput("Elevator/Profiler/current motor output", currMotorOutput);
+        Logger.recordOutput("Elevator/Profiler/is ramp done", isRampDone);
+        Logger.recordOutput("Elevator/current position", currentPos);
+        Logger.recordOutput("Elevator/Profiler/position error", posError);
+        Logger.recordOutput("Elevator/Profiler/motor output error", desiredMotorOutput - currMotorOutput);
+        Logger.recordOutput("Elevator/Profiler/is going up", isGoingUp);
+        Logger.recordOutput("Elevator/Profiler/is going down", isGoingDown);
+        Logger.recordOutput("Elevator/Profiler/checking direction", directionFlag);
+        Logger.recordOutput("Elevator/Profiler/Feedforward", FFcalculation());
+        Logger.recordOutput("Elevator/Elevator Setpoint", setpoint);
+        Logger.recordOutput("Elevator/is at setpoint", isAtSetpoint());
     }
 }

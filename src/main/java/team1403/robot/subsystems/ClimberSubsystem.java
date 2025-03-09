@@ -48,7 +48,7 @@ public class ClimberSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Right Climber Speed", m_rightMotor.get());
+        Logger.recordOutput("Climber/Right Speed", m_rightMotor.get());
     }
 
 }
