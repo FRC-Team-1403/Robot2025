@@ -46,8 +46,10 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
+import team1403.robot.Robot;
 import team1403.robot.swerve.TunerConstants.TunerSwerveDrivetrain;
 import team1403.robot.swerve.util.SwerveHeadingCorrector;
+import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.LimelightWrapper;
 import team1403.robot.vision.VisionSimUtil;
@@ -166,6 +168,11 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
             () -> getRotation3d()));
+        //test camera for simulation
+        if(Robot.isSimulation())
+            m_cameras.add(new AprilTagCamera("simlimelight", 
+                () -> Constants.Vision.kLimelightTransform, 
+                () -> getPose()));
 
         SmartDashboard.putData("Gyro", super.getPigeon2());
 
@@ -312,6 +319,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         }
 
         m_gyroDisconnected.set(!super.getPigeon2().isConnected());
+        VisionSimUtil.update(getPose());
 
         SmartDashboard.putNumber("Velocity", CougarUtil.norm(getState().Speeds));
 
