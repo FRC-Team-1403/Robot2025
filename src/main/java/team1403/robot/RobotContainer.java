@@ -353,7 +353,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     NamedCommands.registerCommand("CoralL4", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
     NamedCommands.registerCommand("WaitForCoral", 
-      Commands.waitUntil(() -> m_coralIntake.hasPiece()).withTimeout(Seconds.of(2)));
+      Commands.waitUntil(() -> Blackbox.isCoralLoaded()).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     
