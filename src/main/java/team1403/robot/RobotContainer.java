@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -39,6 +40,7 @@ import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ClimberCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
+import team1403.robot.commands.CoralMechanism;
 import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.ElevatorCommand;
@@ -193,6 +195,9 @@ public class RobotContainer {
     //new Trigger(() -> true).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
       .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator).whileTrue(m_stateMachine);
+    
+    //Logs elevator + wrist mechanism in advantage kit
+    new CoralMechanism(m_wrist, m_elevator).ignoringDisable(true).schedule();
     //RobotModeTriggers.disabled().whileFalse(m_stateMachine);
 
     
