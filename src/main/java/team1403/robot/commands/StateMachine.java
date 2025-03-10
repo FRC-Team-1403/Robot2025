@@ -18,14 +18,12 @@ public class StateMachine extends Command {
     private ElevatorSubsystem m_elevatorSubsystem;
     //only used for getting position
     private SwerveSubsystem m_swerve;
-    private CoralIntakeSubsystem m_intake;
     private XboxController m_op;
 
-    public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator, SwerveSubsystem drivetrain, CoralIntakeSubsystem intake, XboxController op){
+    public StateMachine(WristSubsystem wrist, ElevatorSubsystem elevator, SwerveSubsystem drivetrain, XboxController op){
         m_wristSubsystem = wrist;
         m_elevatorSubsystem = elevator;
         m_swerve = drivetrain;
-        m_intake = intake;
         m_op = op;
 
         addRequirements(m_wristSubsystem, m_elevatorSubsystem);
@@ -60,7 +58,7 @@ public class StateMachine extends Command {
                 m_elevatorSubsystem.moveToSetpoint(Blackbox.getElevatorSetpointLevel(Blackbox.reefLevel));
                 if(m_elevatorSubsystem.isAtSetpoint())
                     m_wristSubsystem.moveToSetpoint(Blackbox.getWristSetpointLevel(Blackbox.reefLevel));
-                if(!m_intake.hasPiece()) {
+                if(!Blackbox.isCoralLoaded()) {
                     m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Current);
                     if(m_wristSubsystem.isAtSetpoint())
                         Blackbox.robotState = State.exiting;

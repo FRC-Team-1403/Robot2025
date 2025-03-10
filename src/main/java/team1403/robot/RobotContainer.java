@@ -96,7 +96,7 @@ public class RobotContainer {
     m_elevator = new ElevatorSubsystem();
     m_wrist = new WristSubsystem();
     m_coralIntake = new CoralIntakeSubsystem();
-    m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_coralIntake, m_operatorController.getHID());
+    m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_operatorController.getHID());
     m_climber = new ClimberSubsystem();
     // m_algaeIntake = new AlgaeIntakeSubsystem();
 
