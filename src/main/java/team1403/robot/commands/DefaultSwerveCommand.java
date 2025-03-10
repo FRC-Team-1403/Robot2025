@@ -6,10 +6,13 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +36,7 @@ public class DefaultSwerveCommand extends Command {
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
   private final BooleanSupplier m_robotRelativeMode;
+  private final BooleanSupplier m_autoRotate;
   private final Debouncer m_robotRelativeDebouncer 
     = new Debouncer(0.3, DebounceType.kFalling);
   private boolean m_isFieldRelative = true;
@@ -43,6 +47,10 @@ public class DefaultSwerveCommand extends Command {
   private static final double kMaxVelocityChange = 13 * Constants.kLoopTime;
 
   private double m_speedLimiter = 0.2;
+
+  private final ProfiledPIDController m_rotationPID = new ProfiledPIDController(5, 0, 0, 
+    new TrapezoidProfile.Constraints(TunerConstants.kMaxAngularRate, 14));
+  private final TrapezoidProfile.State m_targetState = new TrapezoidProfile.State();
 
   /**
    * Creates the swerve command.
@@ -68,6 +76,7 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier rotationSupplier,
       BooleanSupplier xModeSupplier,
       BooleanSupplier robotRelativeSupplier,
+      BooleanSupplier autoRotate,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
     this.m_drivetrainSubsystem = drivetrain;
@@ -78,8 +87,11 @@ public class DefaultSwerveCommand extends Command {
     this.m_xModeSupplier = xModeSupplier;
     this.m_snipingMode = snipingMode;
     this.m_robotRelativeMode = robotRelativeSupplier;
+    this.m_autoRotate = autoRotate;
     m_isFieldRelative = true;
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
+
+    m_rotationPID.enableContinuousInput(-Math.PI, Math.PI);
 
     addRequirements(m_drivetrainSubsystem);
   }
@@ -136,6 +148,17 @@ public class DefaultSwerveCommand extends Command {
       horizontal /= 2;
       vertical /= 2;
       angular /= 2;
+    }
+
+    if(!Blackbox.isCoralLoaded() && m_autoRotate.getAsBoolean()) {
+      Pose2d target = Blackbox.getNearestSourcePose(m_drivetrainSubsystem.getPose());
+      if (target != null) {
+        m_targetState.position = target.getRotation().getRadians();
+        m_targetState.velocity = 0;
+        angular = m_rotationPID.calculate(m_drivetrainSubsystem.getRotation().getRadians(), m_targetState);
+      }
+    } else {
+      m_rotationPID.reset(m_drivetrainSubsystem.getRotation().getRadians());
     }
 
     //limit change in translation of the overall robot, based on orbit's slideshow

@@ -79,8 +79,8 @@ public class Blackbox {
         //two different source positions on each alliance
         sourcePosesBLUE = new Pose2d[2];
         sourcePosesRED = new Pose2d[2];
-        sourcePosesBLUE[0] = new Pose2d();
-        sourcePosesBLUE[1] = new Pose2d();
+        sourcePosesBLUE[0] = new Pose2d(0.851154, 0.65532, Rotation2d.fromDegrees(54).plus(Rotation2d.k180deg));
+        sourcePosesBLUE[1] = new Pose2d(0.851154,7.3964799999999995,Rotation2d.fromDegrees(-54).plus(Rotation2d.k180deg));
 
         //12 different scoring locations on reef
         reefPosesLeftBLUE = new Pose2d[6];
@@ -286,6 +286,8 @@ public class Blackbox {
         Logger.recordOutput("Blackbox/ReefPositions Blue Left", reefPosesLeftBLUE);
         Logger.recordOutput("Blackbox/ReefPositions Red Right", reefPosesRightRED);
         Logger.recordOutput("Blackbox/ReefPositions Red Left", reefPosesLeftRED);
+        Logger.recordOutput("Blackbox/SourcePositions Blue", sourcePosesBLUE);
+        Logger.recordOutput("Blackbox/SourcePositions Red", sourcePosesRED);
 
         Logger.recordOutput("Blackbox/Robot State", robotState);
         Logger.recordOutput("Blackbox/Placing State", placingState);
