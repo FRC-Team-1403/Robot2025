@@ -57,11 +57,13 @@ public class StateMachine extends Command {
             case placing:
                 m_elevatorSubsystem.moveToSetpoint(Blackbox.getElevatorSetpointLevel(Blackbox.reefLevel));
                 if(m_elevatorSubsystem.isAtSetpoint())
+                {
                     m_wristSubsystem.moveToSetpoint(Blackbox.getWristSetpointLevel(Blackbox.reefLevel));
-                if(!Blackbox.isCoralLoaded()) {
-                    m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Current);
-                    if(m_wristSubsystem.isAtSetpoint())
-                        Blackbox.robotState = State.exiting;
+                    if(!Blackbox.isCoralLoaded()) {
+                        m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
+                        if(m_wristSubsystem.isAtSetpoint())
+                            Blackbox.robotState = State.exiting;
+                    }
                 }
                 break;
                 /*
