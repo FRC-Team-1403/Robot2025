@@ -37,9 +37,11 @@ public class StateMachine extends Command {
     @Override
     public void execute() {
         switch(Blackbox.robotState){
-            case loading:
-                m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source);
+            case loading:     
                 m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
+                if (m_wristSubsystem.isAtSetpoint()) {
+                    m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source);
+                }
                 Blackbox.reefScoreLevel(ReefScoreLevel.drive);
                 if(Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 break;
@@ -185,11 +187,7 @@ public class StateMachine extends Command {
                 //m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 break;
             }
-            case ManualElevator: 
-                m_elevatorSubsystem.moveToSetpoint(m_elevatorSubsystem.getSetpoint() - 
-                    MathUtil.applyDeadband(m_op.getRightY(), 0.05) * Constants.kLoopTime * 32);
-                m_wristSubsystem.moveToSetpoint(m_wristSubsystem.getSetpoint() + 
-                    MathUtil.applyDeadband(m_op.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
+            case ManualElevator:
                 break;
         }
     }

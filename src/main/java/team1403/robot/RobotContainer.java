@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -141,14 +142,14 @@ public class RobotContainer {
         Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
         if (target == null) return Commands.none();
           
-        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)));
+        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.05);
       
         if(select == ReefSelect.LEFT) {
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case drive: default: /* do nothing */ break;
           }
         }
@@ -156,8 +157,8 @@ public class RobotContainer {
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case drive: default: /* do nothing */ break;
           }
         }
@@ -195,7 +196,14 @@ public class RobotContainer {
     //new Trigger(() -> true).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
       .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator).whileTrue(m_stateMachine);
-    
+    RobotModeTriggers.disabled().negate()
+      .and(() -> Blackbox.robotState == Blackbox.State.ManualElevator).whileTrue(
+        Commands.run(() -> {
+          m_elevator.moveToSetpoint(m_elevator.getSetpoint() - 
+            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 32);
+            m_wrist.moveToSetpoint(m_wrist.getSetpoint() + 
+            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
+        }, m_elevator, m_wrist));
     //Logs elevator + wrist mechanism in advantage kit
     new CoralMechanism(m_wrist, m_elevator).ignoringDisable(true).schedule();
     //RobotModeTriggers.disabled().whileFalse(m_stateMachine);

@@ -93,7 +93,7 @@ public class Constants {
     //top-to-bottom disp = 17.82426 inches
     //public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
     public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(0), 0, Units.degreesToRadians(0));
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396+1));
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 
@@ -122,14 +122,14 @@ public class Constants {
     public static final double kMultiplier = 2.0;
     public static final double kConversionFactorRotationstoInches = Math.PI * 1.751;
 
-    public static final double kFeedforwardG = 0.05;
+    public static final double kFeedforwardG = 0.09;
     public static final double kFeedforwardV = 0.000;
 
     public static class Command {
       public static final double movementUpGain = 6; //9.0;
       public static final double movementDownGain = 5; //6.0;
-      public static final double upMinSpeed = 5.75;
-      public static final double downMinSpeed = 5;
+      public static final double upMinSpeed = 1;
+      public static final double downMinSpeed = 1;
       public static final double upMaxSpeed = 100;
       public static final double downMaxSpeed = 100;
       public static final double setPointMargin = 0.5;

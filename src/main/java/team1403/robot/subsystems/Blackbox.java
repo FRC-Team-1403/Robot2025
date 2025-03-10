@@ -63,7 +63,7 @@ public class Blackbox {
     private static boolean aligning = false;
     private static boolean doneAligning = false;
 
-    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(35);
+    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
 
     public static State robotState = State.loading;
 
