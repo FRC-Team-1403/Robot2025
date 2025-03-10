@@ -63,6 +63,7 @@ public class StateMachine extends Command {
                     if(m_wristSubsystem.isAtSetpoint())
                         Blackbox.robotState = State.exiting;
                 }
+                break;
                 /*
                 switch(Blackbox.reefLevel) {
                     case L1:
