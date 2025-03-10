@@ -119,6 +119,8 @@ public class Telemetry {
         Logger.recordOutput("Swerve/ModuleTargets", state.ModuleTargets);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
+        Logger.recordOutput("Swerve/Speeds", state.Speeds);
+
         m_field.setRobotPose(state.Pose);
 
         /* Telemeterize the module states to a Mechanism2d */
