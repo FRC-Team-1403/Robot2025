@@ -2,11 +2,15 @@ package team1403.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,8 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
-import team1403.robot.Constants.Swerve;
+import team1403.robot.subsystems.Blackbox;
 import team1403.robot.swerve.SwerveSubsystem;
+import team1403.robot.swerve.TunerConstants;
 
 /**
  * The default command for the swerve drivetrain subsystem.
@@ -27,12 +32,14 @@ public class DefaultSwerveCommand extends Command {
   private final DoubleSupplier m_verticalTranslationSupplier;
   private final DoubleSupplier m_horizontalTranslationSupplier;
   private final DoubleSupplier m_rotationSupplier;
-  private final BooleanSupplier m_fieldRelativeSupplier;
   private final BooleanSupplier m_xModeSupplier;
   private final DoubleSupplier m_speedSupplier;
   private final DoubleSupplier m_snipingMode;
-  private final BooleanSupplier m_zeroGyroSupplier;
-  private boolean m_isFieldRelative;
+  private final BooleanSupplier m_robotRelativeMode;
+  private final BooleanSupplier m_autoRotate;
+  private final Debouncer m_robotRelativeDebouncer 
+    = new Debouncer(0.3, DebounceType.kFalling);
+  private boolean m_isFieldRelative = true;
   
   private SlewRateLimiter m_rotationRateLimiter;
   private double prev_horizontal = 0;
@@ -40,6 +47,10 @@ public class DefaultSwerveCommand extends Command {
   private static final double kMaxVelocityChange = 13 * Constants.kLoopTime;
 
   private double m_speedLimiter = 0.2;
+
+  private final ProfiledPIDController m_rotationPID = new ProfiledPIDController(5, 0, 0, 
+    new TrapezoidProfile.Constraints(TunerConstants.kMaxAngularRate, 14));
+  private final TrapezoidProfile.State m_targetState = new TrapezoidProfile.State();
 
   /**
    * Creates the swerve command.
@@ -63,22 +74,24 @@ public class DefaultSwerveCommand extends Command {
       DoubleSupplier horizontalTranslationSupplier,
       DoubleSupplier verticalTranslationSupplier,
       DoubleSupplier rotationSupplier,
-      BooleanSupplier fieldRelativeSupplier,
-      BooleanSupplier zeroGyroSupplier,
       BooleanSupplier xModeSupplier,
+      BooleanSupplier robotRelativeSupplier,
+      BooleanSupplier autoRotate,
       DoubleSupplier speedSupplier,
       DoubleSupplier snipingMode) {
     this.m_drivetrainSubsystem = drivetrain;
     this.m_verticalTranslationSupplier = verticalTranslationSupplier;
     this.m_horizontalTranslationSupplier = horizontalTranslationSupplier;
     this.m_rotationSupplier = rotationSupplier;
-    this.m_fieldRelativeSupplier = fieldRelativeSupplier;
     this.m_speedSupplier = speedSupplier;
     this.m_xModeSupplier = xModeSupplier;
-    this.m_zeroGyroSupplier = zeroGyroSupplier;
-    m_snipingMode = snipingMode;
+    this.m_snipingMode = snipingMode;
+    this.m_robotRelativeMode = robotRelativeSupplier;
+    this.m_autoRotate = autoRotate;
     m_isFieldRelative = true;
     m_rotationRateLimiter = new SlewRateLimiter(3, -3, 0);
+
+    m_rotationPID.enableContinuousInput(-Math.PI, Math.PI);
 
     addRequirements(m_drivetrainSubsystem);
   }
@@ -90,26 +103,20 @@ public class DefaultSwerveCommand extends Command {
 
   @Override
   public void execute() {
+    m_isFieldRelative = m_robotRelativeDebouncer.calculate(!m_robotRelativeMode.getAsBoolean());
+
     SmartDashboard.putBoolean("isFieldRelative", m_isFieldRelative);
     //if (Constants.DEBUG_MODE) SmartDashboard.putBoolean("Aimbot", m_aimbotSupplier.getAsBoolean());
 
-    m_speedLimiter = 0.3;// * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
+    m_speedLimiter = 0.3 * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
   
     if (DriverStation.isAutonomousEnabled()) {
-      m_drivetrainSubsystem.drive(new ChassisSpeeds(), false);
+      m_drivetrainSubsystem.drive(new ChassisSpeeds());
       return;
     }
 
-    if (m_fieldRelativeSupplier.getAsBoolean()) {
-      m_isFieldRelative = !m_isFieldRelative;
-    }
-
-    if(m_zeroGyroSupplier.getAsBoolean()) {
-      m_drivetrainSubsystem.zeroHeading();
-    }
-
     if (m_xModeSupplier.getAsBoolean()) {
-      m_drivetrainSubsystem.xMode();
+      m_drivetrainSubsystem.setControl(new SwerveRequest.SwerveDriveBrake());
       return;
     }
 
@@ -130,16 +137,30 @@ public class DefaultSwerveCommand extends Command {
       velocity = MathUtil.applyDeadband(velocity, 0.05);
       
       //scale unit vector by speed limiter and convert to speed
-      horizontal *= velocity / vel_hypot * Constants.Swerve.kMaxSpeed * m_speedLimiter;
-      vertical *= velocity / vel_hypot * Constants.Swerve.kMaxSpeed * m_speedLimiter;
+      horizontal *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
+      vertical *= velocity / vel_hypot * TunerConstants.kMaxSpeed * m_speedLimiter;
     }
-    double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
-    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * Swerve.kMaxAngularSpeed;
 
-    Pose2d curPose = m_drivetrainSubsystem.getPose();
-    Rotation2d curRotation = curPose.getRotation();
-    // double given_target_angle = Units.radiansToDegrees(Math.atan2(m_drivetrainSubsystem.getPose().getY() - m_ysupplier.getAsDouble(), m_drivetrainSubsystem.getPose().getX() - m_xsupplier.getAsDouble()));
-    
+    double ang_deadband = MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), 0.05);
+    double angular = m_rotationRateLimiter.calculate(squareNum(ang_deadband) * m_speedLimiter) * TunerConstants.kMaxAngularRate;
+
+    if(Blackbox.getCloseAlign(m_drivetrainSubsystem.getPose()) && Blackbox.isCoralLoaded()){
+      horizontal /= 2;
+      vertical /= 2;
+      angular /= 2;
+    }
+
+    if(!Blackbox.isCoralLoaded() && m_autoRotate.getAsBoolean()) {
+      Pose2d target = Blackbox.getNearestSourcePose(m_drivetrainSubsystem.getPose());
+      if (target != null) {
+        m_targetState.position = target.getRotation().getRadians();
+        m_targetState.velocity = 0;
+        angular = m_rotationPID.calculate(m_drivetrainSubsystem.getRotation().getRadians(), m_targetState);
+      }
+    } else {
+      m_rotationPID.reset(m_drivetrainSubsystem.getRotation().getRadians());
+    }
+
     //limit change in translation of the overall robot, based on orbit's slideshow
     {
       double dx = horizontal - prev_horizontal;
@@ -160,14 +181,13 @@ public class DefaultSwerveCommand extends Command {
 
     {
       if (m_isFieldRelative) {
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, curRotation);
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vertical, horizontal, angular, m_drivetrainSubsystem.getShallowRotation());
       } else {
         chassisSpeeds = new ChassisSpeeds(vertical, horizontal, angular);
       }
-      //chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     }
 
-    m_drivetrainSubsystem.drive(chassisSpeeds, true);
+    m_drivetrainSubsystem.drive(chassisSpeeds);
   }
 
   private static double squareNum(double num) {

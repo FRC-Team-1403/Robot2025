@@ -4,17 +4,14 @@
 
 package team1403.robot;
 
-import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
 import com.ctre.phoenix6.SignalLogger;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team1403.lib.elastic.Elastic;
@@ -40,6 +37,7 @@ public class Robot extends LoggedRobot {
     // autonomous chooser on the dashboard.
     String description = 
       "Debug Mode: " + Constants.DEBUG_MODE +
+      "\nVision Debug Mode: " + Constants.Vision.kExtraVisionDebugInfo +
       "\nSysID Enabled: " + Constants.ENABLE_SYSID +
       "\nLoop Time: " + (int)(Constants.kLoopTime*1000) + " ms" +
       "\nGit Commit: " + BuildConstants.GIT_SHA +
@@ -49,7 +47,7 @@ public class Robot extends LoggedRobot {
       "\nGit Dirty: " + BuildConstants.DIRTY +
       "\nBuild Date: " + BuildConstants.BUILD_DATE +
       "\n";
-    Logger.recordMetadata("2025 Robot", description);
+    Logger.recordMetadata("Domino", description);
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     }
@@ -66,6 +64,9 @@ public class Robot extends LoggedRobot {
         NotificationLevel.INFO, 
         "Robot Startup Complete!", 
         description, 4000, 350, 500));
+    
+    //set hint for garbage collector
+    System.gc();
   }
 
   /**
