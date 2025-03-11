@@ -221,6 +221,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         return Math.abs(setpoint - currentPos) <= 3;
     }
 
+    
+
     public void periodic() {
 
         // update current position with encoder

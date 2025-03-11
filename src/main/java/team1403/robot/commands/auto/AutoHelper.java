@@ -37,6 +37,8 @@ public class AutoHelper {
         });
     }
 
+    
+
     public static Command getOnePCenter(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
@@ -60,6 +62,22 @@ public class AutoHelper {
                 AutoUtil.loadPathPlannerPath("OneP NonProc", m_swerve),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("CoralScore")
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
+    public static Command getNeed1(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.waitSeconds(0.2), //wait for state machine to reach correct state
+                NamedCommands.getCommand("CoralL4"),
+                AutoUtil.loadPathPlannerPath("Need 1", m_swerve),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("ResetElevator")
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
