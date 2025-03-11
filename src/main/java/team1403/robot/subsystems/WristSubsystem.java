@@ -104,6 +104,11 @@ public class WristSubsystem extends SubsystemBase {
             < Units.degreesToRotations(5);
     }
 
+    @AutoLogOutput
+    public boolean isElevatorSafe() {
+        return getWristAngleDeg() < 0;
+    }
+
     public void stop() {
         m_wristMotor.set(0);
     }
@@ -125,5 +130,7 @@ public class WristSubsystem extends SubsystemBase {
         m_wristMotor.set(m_profiled.calculate(getWristAngle()) - m_feedForward.calculate(
                 Units.rotationsToRadians(getWristAngle()), 
                 Units.rotationsToRadians(getWristVelocity())));
+        
+        Blackbox.setElevatorSafe(isElevatorSafe());
     }
 }

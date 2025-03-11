@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
 import team1403.robot.Constants.Elevator.Setpoints;
+import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private SparkMax m_leftMotor;
@@ -99,6 +100,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void moveToSetpoint(double setPoint) {
         setpoint = setPoint;
+    }
+
+    public void safeMove(double target) {
+        if(!Blackbox.isElevatorSafe());
+            MathUtil.clamp(target, 0, Constants.Wrist.Setpoints.Drive);
     }
 
     public double getSetpoint() {

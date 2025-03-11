@@ -156,7 +156,7 @@ public class Constants {
       public static final double L2 = 17 /360.;
       public static final double L3 = 20 / 360.;
       public static final double L4 = 39 / 360.;
-      public static final double Source = -16 / 360.; //placehold
+      public static final double Source = -16 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
     }

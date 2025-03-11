@@ -62,6 +62,7 @@ public class Blackbox {
     private static boolean algaeLoaded = false;
     private static boolean aligning = false;
     private static boolean doneAligning = false;
+    private static boolean elevatorSafe = false;
 
     private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
 
@@ -191,6 +192,14 @@ public class Blackbox {
 
     public static boolean isDoneAlign() {
         return doneAligning;
+    }
+
+    public static void setElevatorSafe(boolean safe) {
+        elevatorSafe = safe;
+    }
+
+    public static boolean isElevatorSafe() {
+        return elevatorSafe;
     }
 
     public static boolean getCloseAlign(Pose2d pose) {
