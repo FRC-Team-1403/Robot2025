@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -147,7 +148,7 @@ public class RobotContainer {
         if(select == ReefSelect.LEFT) {
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case drive: default: /* do nothing */ break;
@@ -156,7 +157,7 @@ public class RobotContainer {
         else {
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case drive: default: /* do nothing */ break;
@@ -258,9 +259,11 @@ public class RobotContainer {
     //   Blackbox.setAligningCmd(false)));
 
     m_driverController.rightBumper()
-      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive).whileTrue(getAlignCommand(ReefSelect.RIGHT));
+      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive 
+            || Blackbox.robotState == State.ManualElevator).whileTrue(getAlignCommand(ReefSelect.RIGHT));
     m_driverController.leftBumper()
-      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive).whileTrue(getAlignCommand(ReefSelect.LEFT));
+      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive
+            || Blackbox.robotState == State.ManualElevator).whileTrue(getAlignCommand(ReefSelect.LEFT));
 
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     Command opVibrationCmd = new ControllerVibrationCommand(m_operatorController.getHID(), 0.28, 1);
@@ -331,7 +334,14 @@ public class RobotContainer {
       Commands.sequence(
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
-    )); 
+    ));
+    m_operatorController.povRight()
+      .and(() -> Blackbox.robotState == State.ManualElevator)
+      .onTrue(
+      Commands.sequence(
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+    ));
     /*
     m_operatorController.rightBumper()
       .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
@@ -349,9 +359,9 @@ public class RobotContainer {
       .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     );
     // release coral
-    new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5).onTrue(
+    new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.5)
+      .debounce(0.3, DebounceType.kFalling).whileTrue(
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
-      .withTimeout(.3)
     );
     m_operatorController.leftStick().onTrue(
       Commands.sequence(

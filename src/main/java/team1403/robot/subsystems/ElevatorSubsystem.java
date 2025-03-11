@@ -2,6 +2,8 @@ package team1403.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import javax.lang.model.util.ElementScanner14;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -99,12 +101,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
     public void moveToSetpoint(double setPoint) {
-        setpoint = setPoint;
+        //setpoint = setPoint;
+        safeMove(setPoint);
     }
 
     public void safeMove(double target) {
-        if(!Blackbox.isElevatorSafe());
-            MathUtil.clamp(target, 0, Constants.Wrist.Setpoints.Drive);
+        if(Blackbox.isElevatorSafe())
+            setpoint = target;
+        setpoint = Math.max(setpoint, Constants.Elevator.Setpoints.Min);
     }
 
     public double getSetpoint() {

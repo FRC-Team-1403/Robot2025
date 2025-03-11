@@ -93,7 +93,7 @@ public class Constants {
     //top-to-bottom disp = 17.82426 inches
     //public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
     public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(0), 0, Units.degreesToRadians(0));
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396+1));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396+0.5));
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 
@@ -145,8 +145,10 @@ public class Constants {
       public static final double L2 = 2;
       public static final double L3 = 18.5;
       public static final double L4 = 50;
+      public static final double L3Algae = 18.15;
       public static final double Source = 1;
       public static final double Current = 1;
+      public static final double Min = 1;
     }
 }
 

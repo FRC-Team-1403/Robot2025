@@ -40,10 +40,10 @@ public class StateMachine extends Command {
             case loading:     
                 m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
                 if (m_wristSubsystem.isAtSetpoint()) {
-                    m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source);
+                    m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source); 
+                    Blackbox.reefScoreLevel(ReefScoreLevel.drive);
+                    if (Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 }
-                Blackbox.reefScoreLevel(ReefScoreLevel.drive);
-                if(Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 break;
             case driving: 
                 //if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
