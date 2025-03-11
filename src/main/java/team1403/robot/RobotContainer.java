@@ -45,6 +45,7 @@ import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.CoralMechanism;
 import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
+import team1403.robot.commands.DriveWheelCharacterization;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
@@ -116,6 +117,8 @@ public class RobotContainer {
       m_autoChooser.addOption("Swerve SysID DF", m_swerve.sysIdDynamic(Direction.kForward));
       m_autoChooser.addOption("Swerve SysID DR", m_swerve.sysIdDynamic(Direction.kReverse));
     }
+
+    m_autoChooser.addOption("Drive Wheel", new DriveWheelCharacterization(m_swerve));
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
