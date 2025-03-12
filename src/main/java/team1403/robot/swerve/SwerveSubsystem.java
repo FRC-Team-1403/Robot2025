@@ -66,6 +66,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     private final ArrayList<ITagCamera> m_cameras = new ArrayList<>();
     private final Alert m_gyroDisconnected = new Alert("Gyroscope Disconnected!", AlertType.kError);
     private Rotation2d m_headingOffset = Rotation2d.kZero;
+    private SwerveDriveState m_state;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -150,7 +151,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
       AutoBuilder.configure(
         this::getPose,
         this::resetOdometry,
-        () -> this.getState().Speeds,
+        () -> m_state.Speeds,
         (s, ff) -> drive(s, ff),
         new PPHolonomicDriveController(
             TunerConstants.kTranslationPID,
@@ -177,6 +178,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         SmartDashboard.putData("Gyro", super.getPigeon2());
 
         m_telemetry = new Telemetry(TunerConstants.kMaxSpeed);
+        m_state = getState();
     }
 
     /**
@@ -318,10 +320,12 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
             });
         }
 
+        m_state = getState();
+
         m_gyroDisconnected.set(!super.getPigeon2().isConnected());
         VisionSimUtil.update(getPose());
 
-        SmartDashboard.putNumber("Velocity", CougarUtil.norm(getState().Speeds));
+        SmartDashboard.putNumber("Velocity", CougarUtil.norm(m_state.Speeds));
 
         for (ITagCamera c : m_cameras)
         {
@@ -333,13 +337,13 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
             }
         }
 
-        m_telemetry.telemeterize(getState());
+        m_telemetry.telemeterize(m_state);
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("SwerveDrive");
-        SwerveModuleState[] states = this.getState().ModuleStates;
+        SwerveModuleState[] states = m_state.ModuleStates;
 
         builder.addDoubleProperty("Front Left Angle", () -> states[0].angle.getRadians(), null);
         builder.addDoubleProperty("Front Left Velocity", () -> states[0].speedMetersPerSecond, null);
@@ -406,7 +410,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     }
 
     public Pose2d getPose() {
-        return super.getState().Pose;
+        return m_state.Pose;
     }
 
     public Rotation2d getRotation() {
@@ -430,7 +434,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     private boolean m_rotDriftCorrect = true;
 
     private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds speeds) {
-        ChassisSpeeds corrected = m_headingCorrector.update(speeds, super.getState().Speeds, 
+        ChassisSpeeds corrected = m_headingCorrector.update(speeds, m_state.Speeds, 
             super.getPigeon2().getRotation2d(), super.getPigeon2().getAngularVelocityZWorld().getValue().in(DegreesPerSecond));
         if (m_rotDriftCorrect && !DriverStation.isAutonomousEnabled())
         {
