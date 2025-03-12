@@ -30,6 +30,7 @@ public class DriveWheelCharacterization extends Command {
 
     @Override
     public void initialize() {
+        angleIGyro = 0;
         m_prevRot = m_swerve.getPigeon2().getRotation2d();
         SwerveModulePosition[] p = m_swerve.getState().ModulePositions;
         for(int i = 0; i < p.length; i++) {
