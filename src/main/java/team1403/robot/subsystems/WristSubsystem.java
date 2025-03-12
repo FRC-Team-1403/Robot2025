@@ -70,27 +70,27 @@ public class WristSubsystem extends SubsystemBase {
    }
 
     //in rotations!!
-    @AutoLogOutput
-    public double getWristAngle(){
+    @AutoLogOutput(key = "Wrist/wrist angle (in rotations)")
+    public double getWristAngle() {
         return MathUtil.inputModulus(m_encoder.getPosition() + Constants.Wrist.WristEncoderOffset, -0.5, 0.5);
     }
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "Wrist/wrist angle (in degrees)")
     public double getWristAngleDeg() {
         return 360 * getWristAngle();
     }
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "Wrist/wrist setpoint (in rotations)")
     public double getWristSetpoint() {
         return m_profiled.getGoal().position;
     }
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "Wrist/wrist setpoint (in degrees)")
     public double getWristSetpointDeg() {
         return m_profiled.getGoal().position * 360;
     }
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "Wrist/wrist velocity (rotations per second)")
     public double getWristVelocity() {
         return m_encoder.getVelocity() * 60;
     }
@@ -99,7 +99,7 @@ public class WristSubsystem extends SubsystemBase {
         m_profiled.setGoal(targetAngle);
     }
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "Wrist/wrist is at setpoint")
     public boolean isAtSetpoint() {
         return Math.abs(getWristAngle() - m_profiled.getGoal().position) 
             < Units.degreesToRotations(5);
