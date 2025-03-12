@@ -118,7 +118,7 @@ public class RobotContainer {
       m_autoChooser.addOption("Swerve SysID DR", m_swerve.sysIdDynamic(Direction.kReverse));
     }
 
-    m_autoChooser.addOption("Drive Wheel", new DriveWheelCharacterization(m_swerve));
+    m_autoChooser.addOption("Drive Wheel Characterization", new DriveWheelCharacterization(m_swerve));
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
