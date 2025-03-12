@@ -64,7 +64,8 @@ public class WristSubsystem extends SubsystemBase {
     private void configMotors() {
         SparkMaxConfig motorConfig = new SparkMaxConfig();
         motorConfig
-            .idleMode(IdleMode.kBrake);
+            .idleMode(IdleMode.kBrake)
+            .voltageCompensation(12);
         m_wristMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
 
