@@ -38,11 +38,11 @@ deploy {
                     jvmArgs.add("-Djava.rmi.server.hostname=10.14.03.2") // Replace TE.AM with team number
                     */
 
-                    //sets max and intial heap size to 100mb, respectively. not sure how/why this works
+                    //sets max and intial heap size to 128mb, respectively. not sure how/why this works
                     //"touches" the memory to pre-allocate it, rather than on demand
                     
                     /*
-                    final MAX_JAVA_HEAP_SIZE_MB = 100;
+                    final MAX_JAVA_HEAP_SIZE_MB = 128;
                     jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
                     jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
                     jvmArgs.add("-XX:+AlwaysPreTouch")
