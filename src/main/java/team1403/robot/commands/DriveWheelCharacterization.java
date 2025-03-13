@@ -64,7 +64,8 @@ public class DriveWheelCharacterization extends Command {
             System.out.println("Wheel " + i + " Radius: " + Units.metersToInches(angleIWheel[i]) + " in");
         }
 
-        System.out.println("Mean Wheel Radius: " + mean / p.length);
+        System.out.println("Mean Wheel Radius: " + mean / p.length + " m");
+        System.out.println("Mean Wheel Radius: " + Units.metersToInches(mean / p.length) + " in");
     }
 
     @Override
