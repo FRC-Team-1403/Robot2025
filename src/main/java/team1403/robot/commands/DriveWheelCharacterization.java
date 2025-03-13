@@ -54,13 +54,17 @@ public class DriveWheelCharacterization extends Command {
 
     @Override
     public void end(boolean interrupt) {
+        double mean = 0;
         SwerveModulePosition[] p = m_swerve.getState().ModulePositions;
         for(int i = 0; i < p.length; i++) {
             angleIWheel[i] = (p[i].distanceMeters - angleIWheel[i]) / TunerConstants.kWheelRadius.in(Meters); //radian conversion
             angleIWheel[i] = Math.abs(angleIGyro * kDriveBaseRadius / angleIWheel[i]); //store radius (c/theta = r)
+            mean += angleIWheel[i];
             System.out.println("Wheel " + i + " Radius: " + angleIWheel[i] + " m");
             System.out.println("Wheel " + i + " Radius: " + Units.metersToInches(angleIWheel[i]) + " in");
         }
+
+        System.out.println("Mean Wheel Radius: " + mean / p.length);
     }
 
     @Override
