@@ -15,6 +15,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.LocalADStar;
@@ -42,6 +43,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.lib.util.CougarUtil;
@@ -163,7 +165,11 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         this);
 
         Pathfinding.setPathfinder(new LocalADStar());
-        PathfindingCommand.warmupCommand().schedule();
+
+        Commands.sequence(
+            FollowPathCommand.warmupCommand(),
+            PathfindingCommand.warmupCommand()
+        ).schedule();
 
         VisionSimUtil.initVisionSim();
         m_cameras.add(new LimelightWrapper("limelight", 
