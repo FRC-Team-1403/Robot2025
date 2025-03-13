@@ -83,6 +83,21 @@ public class AutoHelper {
         }
     }
 
+    public static Command testAutoAlign(SwerveSubsystem m_swerve){
+        try{
+            return Commands.sequence(
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignL"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading")
+            );
+        } 
+        catch(Exception e){
+            System.err.println("Could not load");
+            return Commands.none();
+        }
+  
+    }
     public static Command getTwoPieceProc(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
