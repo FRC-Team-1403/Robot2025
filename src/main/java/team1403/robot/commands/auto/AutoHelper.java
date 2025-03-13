@@ -86,8 +86,11 @@ public class AutoHelper {
     public static Command testAutoAlign(SwerveSubsystem m_swerve){
         try{
             return Commands.sequence(
+                Commands.waitSeconds(1.0),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                Commands.waitSeconds(1),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading")
             );
