@@ -4,15 +4,15 @@
     {
       "anchor": {
         "x": 1.654,
-        "y": 0.908
+        "y": 0.9081967213114751
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9025474081154607,
-        "y": 0.9349107026865998
+        "x": 1.8826770557227979,
+        "y": 1.0092254508192364
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Proc2PPart2"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 2.5265368852459016
       },
       "prevControl": {
-        "x": 2.429675174126963,
-        "y": 2.478807876507863
+        "x": 2.530047771026628,
+        "y": 2.145555961064678
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Proc2Part3"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -130.75095543774546
+    "rotation": -125.19861849411991
   },
   "useDefaultConstraints": true
 }

@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Set;
 
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,7 +21,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -386,13 +384,16 @@ public class RobotContainer {
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
+    NamedCommands.registerCommand("Loading", new InstantCommand(() -> Blackbox.setRobotState(Blackbox.State.loading)));
+   
+
     
     /* Move forward 1 m from any position on the starting line 
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
     m_autoChooser.addOption("OneP Center", AutoHelper.getOnePCenter(m_swerve));
-    m_autoChooser.addOption("OneP Processor", AutoHelper.getOnePProc(m_swerve));
-    m_autoChooser.addOption("OneP Non Processor", AutoHelper.getOnePNonProc(m_swerve));
+    m_autoChooser.addOption("Two Piece Processor", AutoHelper.getTwoPieceProc(m_swerve));
+    m_autoChooser.addOption("Three Piece Processor", AutoHelper.getThreePieceProc(m_swerve));
   }
    
   /**

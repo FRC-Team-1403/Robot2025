@@ -52,14 +52,54 @@ public class AutoHelper {
         }
     }
 
-    public static Command getOnePNonProc(SwerveSubsystem m_swerve) {
+    public static Command getThreePieceProc(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
-                Commands.waitSeconds(0.2), //wait for state machine to reach correct state
+                Commands.waitSeconds(0.2),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve),
                 NamedCommands.getCommand("CoralL4"),
-                AutoUtil.loadPathPlannerPath("OneP NonProc", m_swerve),
                 NamedCommands.getCommand("ReefAlignR"),
-                NamedCommands.getCommand("CoralScore")
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 4", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 5", m_swerve),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading")
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            
+            return Commands.none();
+        }
+    }
+
+    public static Command getTwoPieceProc(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.waitSeconds(0.2),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading")
+           
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
@@ -67,18 +107,5 @@ public class AutoHelper {
         }
     }
 
-    public static Command getOnePProc(SwerveSubsystem m_swerve) {
-        try {
-            return Commands.sequence(
-                Commands.waitSeconds(0.2), //wait for state machine to reach correct state
-                NamedCommands.getCommand("CoralL4"),
-                AutoUtil.loadPathPlannerPath("OneP Proc", m_swerve),
-                NamedCommands.getCommand("ReefAlignR"),
-                NamedCommands.getCommand("CoralScore")
-            );
-        } catch (Exception e) {
-            System.err.println("Could not load auto: " + e.getMessage());
-            return Commands.none();
-        }
-    }
+  
 }
