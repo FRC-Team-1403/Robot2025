@@ -146,9 +146,9 @@ public class RobotContainer {
         Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
         if (target == null) return Commands.none();
           
-        target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.05);
       
         if(select == ReefSelect.LEFT) {
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.05);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
@@ -158,6 +158,7 @@ public class RobotContainer {
           }
         }
         else {
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.03);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
@@ -165,7 +166,7 @@ public class RobotContainer {
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case drive: default: /* do nothing */ break;
           }
-        }
+        } 
 
         return Commands.sequence(
           AutoUtil.pathFindToPose(target),
