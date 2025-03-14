@@ -46,8 +46,8 @@ public class StateMachine extends Command {
                 }
                 break;
             case driving: 
-                //if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
-                    //m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
+                if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
+                    m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 if(Blackbox.isAligning() && Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     Blackbox.robotState = State.aligning;
                 break;

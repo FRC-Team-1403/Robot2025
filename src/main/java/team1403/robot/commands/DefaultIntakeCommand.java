@@ -2,6 +2,7 @@ package team1403.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.Constants;
+import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 
 public class DefaultIntakeCommand extends Command {
@@ -16,7 +17,7 @@ public class DefaultIntakeCommand extends Command {
     }
 
     public void execute() {
-        if(!m_coralIntake.hasPiece())
+        if(!Blackbox.isCoralLoaded())
             m_coralIntake.setIntakeMotorSpeed(Constants.CoralIntake.intake);
         else
             m_coralIntake.setIntakeMotorSpeed(Constants.CoralIntake.neutral);

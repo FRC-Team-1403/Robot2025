@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -152,7 +153,7 @@ public class RobotContainer {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
             case drive: default: /* do nothing */ break;
           }
         }
@@ -162,7 +163,7 @@ public class RobotContainer {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
             case drive: default: /* do nothing */ break;
           }
         } 
@@ -376,7 +377,9 @@ public class RobotContainer {
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
       ), 4)));
 
-    NamedCommands.registerCommand("CoralScore", new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5));
+    NamedCommands.registerCommand("CoralScore",new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5));
+    NamedCommands.registerCommand("default coral", new DefaultIntakeCommand(m_coralIntake));
+    NamedCommands.registerCommand("StartIntakeMotor", new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
     NamedCommands.registerCommand("CoralL1", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
     NamedCommands.registerCommand("CoralL2", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
     NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
@@ -388,6 +391,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("Loading", new InstantCommand(() -> Blackbox.setRobotState(Blackbox.State.loading)));
+
    
 
     

@@ -29,8 +29,21 @@ public class AutoUtil {
     }
   }
 
+  public static Pose2d getStartingPose(String name) {
+    try {
+      PathPlannerPath path = PathPlannerPath.fromPathFile(name);
+      Pose2d startPose = CougarUtil.shouldMirrorPath() ? 
+            path.flipPath().getStartingDifferentialPose() : 
+            path.getStartingDifferentialPose();
+      return startPose;
+    } catch (Exception e) {
+      System.err.println("Failed to load pathplanner path: " + e.getMessage());
+      return null;
+    }
+  }
+
   //resets odometery
-  public static Command loadPathPlannerPath(String name, SwerveSubsystem swerve) {
+  public static Command loadPathPlannerPath(String name, SwerveSubsystem swerve, boolean reset) {
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile(name);
       Command cmd = AutoBuilder.followPath(path);
@@ -38,12 +51,17 @@ public class AutoUtil {
           Pose2d startPose = CougarUtil.shouldMirrorPath() ? 
             path.flipPath().getStartingDifferentialPose() : 
             path.getStartingDifferentialPose();
-          swerve.resetOdometry(startPose);
+          if(reset)
+            swerve.resetOdometry(startPose);
       }, swerve), cmd);
     } catch (Exception e) {
       System.err.println("Failed to load pathplanner path: " + e.getMessage());
       return null;
     }
+  }
+
+  public static Command loadPathPlannerPath(String name, SwerveSubsystem swerve) {
+    return loadPathPlannerPath(name, swerve, false);
   }
 
   public static Command pathFindToPose(Pose2d target) {
