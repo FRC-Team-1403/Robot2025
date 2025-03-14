@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.lib.util.RepeatNTimes;
+import team1403.lib.util.WaitUntilDebounced;
 // import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.AlignCommand;
 import team1403.robot.commands.ClimberCommand;
@@ -383,7 +384,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("WaitForCoral", 
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()).withTimeout(Seconds.of(2)));
     NamedCommands.registerCommand("WaitForSetpoint", 
-      Commands.waitUntil(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint()).withTimeout(5.5));
+      new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.3).withTimeout(3));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("Loading", new InstantCommand(() -> Blackbox.setRobotState(Blackbox.State.loading)));

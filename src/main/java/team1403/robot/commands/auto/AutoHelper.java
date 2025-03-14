@@ -90,7 +90,6 @@ public class AutoHelper {
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
-                Commands.waitSeconds(1),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading")
             );

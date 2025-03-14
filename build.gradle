@@ -41,12 +41,10 @@ deploy {
                     //sets max and intial heap size to 128mb, respectively. not sure how/why this works
                     //"touches" the memory to pre-allocate it, rather than on demand
                     
-                    /*
-                    final MAX_JAVA_HEAP_SIZE_MB = 128;
+                    final MAX_JAVA_HEAP_SIZE_MB = 100;
                     jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
                     jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
                     jvmArgs.add("-XX:+AlwaysPreTouch")
-                    */
                 }
 
                 // Static files artifact
