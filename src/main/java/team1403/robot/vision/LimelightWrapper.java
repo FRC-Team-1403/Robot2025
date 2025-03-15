@@ -1,5 +1,10 @@
 package team1403.robot.vision;
 
+import static edu.wpi.first.units.Units.Microseconds;
+import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -10,17 +15,23 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 
 //import frc.robot.LimelightHelpers; 
 
 public class LimelightWrapper extends SubsystemBase implements ITagCamera {
-    private String m_name;
-    private Supplier<Rotation3d> m_imuRotation;
-    private Supplier<Transform3d> m_camTransform;
+    private final String m_name;
+    private final Supplier<Rotation3d> m_imuRotation;
+    private final Supplier<Transform3d> m_camTransform;
     private LimelightHelpers.PoseEstimate m_poseEstimate;
-    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
+    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
+    private final Alert m_camDisconnected;
+    private final DoubleSubscriber m_latencySubscriber;
     
 
     public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {
@@ -28,6 +39,10 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         m_imuRotation = imuRotation;
         m_camTransform = cameraTransform;
         m_poseEstimate = null;
+
+        m_latencySubscriber = LimelightHelpers.getLimelightNTTable(m_name)
+            .getDoubleTopic("tl").subscribe(0.0);
+        m_camDisconnected = new Alert("Limelight " + m_name + " Disconnected!", AlertType.kError);
     }
     
     @Override
@@ -52,8 +67,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
 
     @Override
     public Matrix<N3, N1> getEstStdv() {
-        //TODO: change it based on the confidence
-        return kDefaultStdv.div(1.0);
+        return kDefaultStdv;
     }
 
     
@@ -78,6 +92,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         // if(getTagAreas() < 0.3) return false;
 
         if(getPose().getZ() > 1) return false;
+        if(getPose().getZ() < -0.5) return false;
 
         if(getTargets().length == 1) {
             if(getTargets()[0].ambiguity > 0.6) {
@@ -87,16 +102,30 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         
         return true;
     }
+
+    private boolean isConnected() {
+        long dt_us = RobotController.getFPGATime() - m_latencySubscriber.getLastChange();
+        double dt = Seconds.convertFrom(dt_us, Microseconds);
+        return dt < 0.25;
+    }
+
+    private final ArrayList<Pose3d> targets = new ArrayList<>();
     
     @Override
     public void periodic() {    
         LimelightHelpers.SetRobotOrientation(m_name, m_imuRotation.get());
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
+
+        m_camDisconnected.set(!isConnected());
         
+        Logger.recordOutput(m_name + "/hasPose", hasPose());
+        targets.clear();
+
         if(hasPose()) {
             Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
             Logger.recordOutput(m_name + "/tagArea", getTagAreas());
+            Logger.recordOutput(m_name + "/cameraTransform", m_camTransform.get());
 
             /* if the pose estimate is valid then getTargets() != null */
             LimelightHelpers.RawFiducial[] fiducials = getTargets();
@@ -104,13 +133,13 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
           
             if(Constants.Vision.kExtraVisionDebugInfo)
             {
-                Pose3d[] targets = new Pose3d[fiducials.length];
                 for(int i = 0; i < fiducials.length; i++)
                 {
                     LimelightHelpers.RawFiducial f = fiducials[i];
-                    targets[i] = Constants.Vision.kFieldLayout.getTagPose(f.id).orElse(Pose3d.kZero);
+                    Optional<Pose3d> pose = Constants.Vision.kFieldLayout.getTagPose(f.id);
+                    if(pose.isPresent()) targets.add(pose.get());
                 }
-                Logger.recordOutput(m_name + "/visionTargets", targets);
+                Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
             }
         }
         
