@@ -152,8 +152,13 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 Commands.waitSeconds(0.2),
-                NamedCommands.getCommand("Loading"),
-                AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
+                Commands.parallel(
+                    Commands.sequence(
+                        Commands.waitSeconds(1),
+                        NamedCommands.getCommand("Loading")
+                    ),
+                    AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve)
+                ),
                 NamedCommands.getCommand("WaitForCoral"),
                 Commands.parallel(
                     AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
@@ -164,10 +169,15 @@ public class AutoHelper {
                 ),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
-                NamedCommands.getCommand("CoralScore")
-                //Commands.waitSeconds(0.2),
-                //NamedCommands.getCommand("Loading")
-                //AutoUtil.loadPathPlannerPath("Proc2P Part 4 test", m_swerve)
+                NamedCommands.getCommand("CoralScore"),
+                Commands.waitSeconds(0.2),
+                Commands.parallel(
+                    Commands.sequence(
+                        Commands.waitSeconds(1),
+                        NamedCommands.getCommand("Loading")
+                    ),
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 4 test", m_swerve)
+                )
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
