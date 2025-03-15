@@ -38,10 +38,12 @@ public class AutoHelper {
         try {
             return Commands.sequence(
                 Commands.waitSeconds(0.2), //wait for state machine to reach correct state
-                NamedCommands.getCommand("CoralL4"),
                 AutoUtil.loadPathPlannerPath("OneP Center", m_swerve),
+                NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignR"),
-                NamedCommands.getCommand("CoralScore")
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading")
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
@@ -59,7 +61,7 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
-                new AlignCommand(m_swerve, AutoUtil.getStartingPose("Proc2P Part 2")),
+                alignToStartingPose(m_swerve, "Proc2P Part 2"),
                 AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
                 AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
@@ -68,12 +70,12 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
-                new AlignCommand(m_swerve, AutoUtil.getStartingPose("Proc2P Part 4")),
+                alignToStartingPose(m_swerve, "Proc2P Part 4"),
                 AutoUtil.loadPathPlannerPath("Proc2P Part 4", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
                 AutoUtil.loadPathPlannerPath("Proc2P Part 5", m_swerve),
                 NamedCommands.getCommand("CoralL4"),
-                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading")
