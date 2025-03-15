@@ -169,7 +169,7 @@ public class RobotContainer {
         } 
 
         return Commands.sequence(
-          AutoUtil.pathFindToPose(target),
+          AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
           new AlignCommand(m_swerve, target)
         );
       }, Set.of(m_swerve)),

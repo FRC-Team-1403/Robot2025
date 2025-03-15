@@ -204,7 +204,7 @@ public class TunerConstants {
 
     public static final PIDConstants kTranslationPID = new PIDConstants(5.6, 0, 0); 
     public static final PIDConstants kRotationPID = new PIDConstants(3, 0, 0);
-    public static final PathConstraints kPathConstraints = new PathConstraints(1.5, 1.5, 1.5, 1.5); //(0.2, 1, 2, 5);
+    public static final PathConstraints kPathConstraints = new PathConstraints(4.753, 5, 3*Math.PI, 4*Math.PI); //(0.2, 1, 2, 5);
     public static final PathConstraints kAutoAlignConstraints = new PathConstraints(1.5, 1.5, 1.5, 1.5); //(0.2, 1, 2, 5);
 
     public static final Translation2d[] kModulePositions = {
