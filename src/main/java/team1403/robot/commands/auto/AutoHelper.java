@@ -2,7 +2,6 @@ package team1403.robot.commands.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -139,5 +138,40 @@ public class AutoHelper {
         }
     }
 
-  
+
+    public static Command getTwoPieceProcTest(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.waitSeconds(0.2),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4")),
+                        Commands.waitSeconds(0.25)
+                ),
+                NamedCommands.getCommand("ReefAlignL"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore")
+                //Commands.waitSeconds(0.2),
+                //NamedCommands.getCommand("Loading")
+                //AutoUtil.loadPathPlannerPath("Proc2P Part 4 test", m_swerve)
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
 }

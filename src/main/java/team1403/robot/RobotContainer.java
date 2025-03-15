@@ -383,6 +383,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("CoralL2", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
     NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     NamedCommands.registerCommand("CoralL4", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
+    NamedCommands.registerCommand("WaitForPlace", 
+      Commands.waitUntil(() -> !Blackbox.isCoralLoaded()).withTimeout(0.1));
     NamedCommands.registerCommand("WaitForCoral", 
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
@@ -401,6 +403,7 @@ public class RobotContainer {
     m_autoChooser.addOption("Two Piece Processor", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("Three Piece Processor", AutoHelper.getThreePieceProc(m_swerve));
     m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
+    m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
   }
    
   /**
