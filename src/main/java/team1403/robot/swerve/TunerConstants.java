@@ -203,7 +203,7 @@ public class TunerConstants {
     public static final double kMaxAngularRate = RotationsPerSecond.of(2.0).in(RadiansPerSecond); // 2 rotation per second max angular velocity
 
     public static final PIDConstants kTranslationPID = new PIDConstants(5.6, 0, 0); 
-    public static final PIDConstants kRotationPID = new PIDConstants(2.8, 0, 0);
+    public static final PIDConstants kRotationPID = new PIDConstants(3, 0, 0);
     public static final PathConstraints kPathConstraints = new PathConstraints(1.5, 1.5, 1.5, 1.5); //(0.2, 1, 2, 5);
     public static final PathConstraints kAutoAlignConstraints = new PathConstraints(1.5, 1.5, 1.5, 1.5); //(0.2, 1, 2, 5);
 

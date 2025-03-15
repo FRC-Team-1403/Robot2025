@@ -1,30 +1,24 @@
 package team1403.robot.commands.auto;
 
-import static edu.wpi.first.units.Units.Rotation;
-
-import java.io.IOException;
-
-import org.json.simple.parser.ParseException;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
-import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.swerve.TunerConstants;
 
 public class AutoHelper {
+    private static Command alignToStartingPose(SwerveSubsystem swerve, String name) {
+        return swerve.defer(() -> new AlignCommand(swerve, AutoUtil.getStartingPose(name)));
+    }
     
     //can't be a pathplanner auto since we should be able to run this from anywhere on the starting line
     public static Command getMoveAuto(SwerveSubsystem m_swerve) {
@@ -117,15 +111,11 @@ public class AutoHelper {
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
-                new ParallelCommandGroup(
-                    Commands.sequence(
-                        NamedCommands.getCommand("Loading"),
-                        new AlignCommand(m_swerve, AutoUtil.getStartingPose("Proc2P Part 2")),
-                        AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
-                        NamedCommands.getCommand("WaitForCoral"),
-                        AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve)),
-                    NamedCommands.getCommand("default coral")),
-
+                NamedCommands.getCommand("Loading"),
+                alignToStartingPose(m_swerve, "Proc2P Part 2"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),

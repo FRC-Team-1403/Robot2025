@@ -1,16 +1,15 @@
 package team1403.robot.commands;
 
-import java.lang.constant.Constable;
-
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
-import team1403.robot.subsystems.Blackbox;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.swerve.TunerConstants;
 
@@ -29,8 +28,8 @@ public class AlignCommand extends Command {
 
         m_driveController = 
         new PPHolonomicDriveController(
-            TunerConstants.kTranslationPID,
-            TunerConstants.kRotationPID,
+            new PIDConstants(5, 0, 0),
+            new PIDConstants(4, 0, 0),
             Constants.kLoopTime);
         m_state = new PathPlannerTrajectoryState();
 
@@ -57,7 +56,7 @@ public class AlignCommand extends Command {
     public boolean isFinished() {
         return CougarUtil.getXDistance(m_swerve.getPose(), m_target) <= kTreshM &&
                 CougarUtil.getYDistance(m_swerve.getPose(), m_target) <= kTreshM &&
-                CougarUtil.dot(m_swerve.getRotation(), m_target.getRotation()) >= Math.cos(0.01);
+                CougarUtil.dot(m_swerve.getRotation(), m_target.getRotation()) >= Math.cos(Units.degreesToRadians(0.5));
     }
 
 }

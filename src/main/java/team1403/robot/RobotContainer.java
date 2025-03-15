@@ -377,9 +377,8 @@ public class RobotContainer {
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
       ), 4)));
 
-    NamedCommands.registerCommand("CoralScore",new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5));
-    NamedCommands.registerCommand("default coral", new DefaultIntakeCommand(m_coralIntake));
-    NamedCommands.registerCommand("StartIntakeMotor", new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.intake));
+    NamedCommands.registerCommand("CoralScore", 
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());
     NamedCommands.registerCommand("CoralL1", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
     NamedCommands.registerCommand("CoralL2", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
     NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
