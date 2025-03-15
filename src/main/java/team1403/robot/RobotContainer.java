@@ -151,9 +151,9 @@ public class RobotContainer {
           target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.05);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
-            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case drive: default: /* do nothing */ break;
           }
         }
@@ -161,8 +161,8 @@ public class RobotContainer {
           target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.03);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
-            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
-            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-1.5)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
             case drive: default: /* do nothing */ break;
           }
@@ -384,7 +384,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("CoralL3", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     NamedCommands.registerCommand("CoralL4", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L4));
     NamedCommands.registerCommand("WaitForCoral", 
-      Commands.waitUntil(() -> Blackbox.isCoralLoaded()).withTimeout(Seconds.of(2)));
+      Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.3).withTimeout(3));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));

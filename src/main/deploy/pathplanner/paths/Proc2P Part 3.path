@@ -8,32 +8,37 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.898487047655721,
-        "y": 0.960408631146198
+        "x": 1.6400256702330414,
+        "y": 0.6585875906540324
       },
       "isLocked": false,
       "linkedName": "Proc2PPart2"
     },
     {
       "anchor": {
-        "x": 3.626913534628378,
-        "y": 2.444478627797719
+        "x": 3.404508196721311,
+        "y": 2.076997950819672
       },
       "prevControl": {
-        "x": 2.2825118508544575,
-        "y": 2.6462936135664537
+        "x": 3.2506518814491763,
+        "y": 1.7501948443713582
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Proc2Part3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6609356257497002,
+      "rotationDegrees": 42.138
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 4.752,
     "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -41,8 +46,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 59.99999999999999
+    "velocity": 0.0,
+    "rotation": 60.25511870305775
   },
   "reversed": false,
   "folder": null,

@@ -92,7 +92,7 @@ public class AutoHelper {
             return Commands.sequence(
                 Commands.waitSeconds(1.0),
                 NamedCommands.getCommand("CoralL4"),
-                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading")
@@ -107,9 +107,12 @@ public class AutoHelper {
     public static Command getTwoPieceProc(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
-                Commands.waitSeconds(1),
-                AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true),
-                NamedCommands.getCommand("CoralL4"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
@@ -117,12 +120,17 @@ public class AutoHelper {
                 alignToStartingPose(m_swerve, "Proc2P Part 2"),
                 AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
-                NamedCommands.getCommand("CoralL4"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 3", m_swerve),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4")),
+                        Commands.waitSeconds(0.25)
+                ),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
-                NamedCommands.getCommand("CoralScore"),
-                NamedCommands.getCommand("Loading")
+                NamedCommands.getCommand("CoralScore")
+                // NamedCommands.getCommand("Loading")
            
             );
         } catch (Exception e) {

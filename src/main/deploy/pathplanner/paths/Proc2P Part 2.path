@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.442418032786885,
-        "y": 2.4546106557377048
+        "x": 5.730122950819672,
+        "y": 2.292776639344262
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.646244867853152,
-        "y": 1.9679062270307015
+        "x": 4.993283348415611,
+        "y": 1.9623858494624056
       },
       "isLocked": false,
       "linkedName": "Proc2P"
@@ -20,8 +20,8 @@
         "y": 0.9081967213114751
       },
       "prevControl": {
-        "x": 2.1574260662318663,
-        "y": 1.3302549372550099
+        "x": 2.4019486138736825,
+        "y": 1.4376771410903524
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 4.752,
     "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -47,7 +47,7 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 119.89890183861452
   },
   "useDefaultConstraints": true

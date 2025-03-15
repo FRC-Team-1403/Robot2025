@@ -144,7 +144,7 @@ public class Constants {
       public static final double L1 = 1;
       public static final double L2 = 2;
       public static final double L3 = 18.5;
-      public static final double L4 = 50;
+      public static final double L4 = 51;
       public static final double L3Algae = 18.15;
       public static final double Source = 1;
       public static final double Current = 1;
@@ -157,7 +157,7 @@ public class Constants {
       public static final double L1 = 39 / 360.; // same as L4 for now
       public static final double L2 = 17 / 360.;
       public static final double L3 = 20 / 360.;
-      public static final double L4 = 39 / 360.;
+      public static final double L4 = 41 / 360.;
       public static final double Source = -16 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
