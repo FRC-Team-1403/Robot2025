@@ -178,7 +178,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         //test camera for simulation
         if(Robot.isSimulation())
             m_cameras.add(new AprilTagCamera("simlimelight", 
-                () -> Constants.Vision.kLimelightTransform, 
+                () -> Constants.Vision.kLimelightTransform,
+                () -> m_state.Timestamp,
                 () -> getPose()));
 
         SmartDashboard.putData("Gyro", super.getPigeon2());

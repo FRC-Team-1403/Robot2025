@@ -3,6 +3,7 @@ package team1403.robot.vision;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -27,7 +28,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
@@ -39,10 +39,11 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
   private final Supplier<Pose2d> m_referencePose;
+  private final DoubleSupplier m_poseTimestamp;
   private final Alert m_cameraAlert;
   private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
 
-  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
+  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, DoubleSupplier poseTimestamp, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
     // PortForwarder.add(5800, 
     // "photonvision.local", 5800);
@@ -73,6 +74,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     m_estPos = null;
     m_referencePose = referenceSupplier;
     m_cameraTransform = cameraTransform;
+    m_poseTimestamp = poseTimestamp;
 
     m_cameraAlert = new Alert("Photon Camera " + cameraName + " Disconnected!", AlertType.kError);
   }
@@ -147,6 +149,8 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   public void periodic() {
 
     m_poseEstimator.setReferencePose(m_referencePose.get());
+    //think about if we want to use the trig solver or constrained solve pnp
+    m_poseEstimator.addHeadingData(m_poseTimestamp.getAsDouble(), m_referencePose.get().getRotation());
     m_poseEstimator.setRobotToCameraTransform(m_cameraTransform.get());
 
     if(m_cameraSim != null) {
