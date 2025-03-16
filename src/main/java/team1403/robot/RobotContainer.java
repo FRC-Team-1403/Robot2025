@@ -168,10 +168,13 @@ public class RobotContainer {
           }
         } 
 
-        return Commands.sequence(
-          AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
-          new AlignCommand(m_swerve, target)
-        );
+        if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
+          return Commands.sequence(
+            AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
+            new AlignCommand(m_swerve, target)
+          );
+        else
+          return new AlignCommand(m_swerve, target);
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
     ).finallyDo((interrupted) -> {
