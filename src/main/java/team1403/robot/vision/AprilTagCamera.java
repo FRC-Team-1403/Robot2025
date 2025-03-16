@@ -34,8 +34,8 @@ import team1403.robot.Robot;
 
 public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final PhotonCamera m_camera;
-  private PhotonCameraSim m_cameraSim;
-  private PhotonPoseEstimator m_poseEstimator;
+  private final PhotonCameraSim m_cameraSim;
+  private final PhotonPoseEstimator m_poseEstimator;
   private final Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
   private final Supplier<Pose2d> m_referencePose;
@@ -65,6 +65,8 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
       m_cameraSim = new PhotonCameraSim(m_camera, cameraProp);
 
       VisionSimUtil.addCamera(m_cameraSim, cameraTransform.get());
+    } else {
+      m_cameraSim = null;
     }
     m_camera.setPipelineIndex(0);
 
