@@ -29,7 +29,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private final Supplier<Rotation3d> m_imuRotation;
     private final Supplier<Transform3d> m_camTransform;
     private LimelightHelpers.PoseEstimate m_poseEstimate;
-    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
+    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3); //TODO: adjust this
     private final Alert m_camDisconnected;
     private final DoubleSubscriber m_latencySubscriber;
     
@@ -67,9 +67,8 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
 
     @Override
     public Matrix<N3, N1> getEstStdv() {
-        return kDefaultStdv;
+        return kDefaultStdv.div(getTagAreas());
     }
-
     
     private double getTagAreas() {
         if(!hasPose()) return 0;
