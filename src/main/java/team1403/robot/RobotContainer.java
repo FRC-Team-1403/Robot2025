@@ -39,6 +39,7 @@ import team1403.lib.util.RepeatNTimes;
 import team1403.lib.util.WaitUntilDebounced;
 // import team1403.robot.commands.AlgaeIntakeCommand;
 import team1403.robot.commands.AlignCommand;
+import team1403.robot.commands.AlignCommandProfiled;
 import team1403.robot.commands.ClimberCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
@@ -267,10 +268,12 @@ public class RobotContainer {
 
     m_driverController.rightBumper()
       .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive 
-            || Blackbox.robotState == State.ManualElevator).whileTrue(getAlignCommand(ReefSelect.RIGHT));
+            || Blackbox.robotState == State.ManualElevator)
+            .whileTrue(getAlignCommand(ReefSelect.RIGHT));
     m_driverController.leftBumper()
       .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive
-            || Blackbox.robotState == State.ManualElevator).whileTrue(getAlignCommand(ReefSelect.LEFT));
+            || Blackbox.robotState == State.ManualElevator)
+            .whileTrue(getAlignCommand(ReefSelect.LEFT));
 
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     Command opVibrationCmd = new ControllerVibrationCommand(m_operatorController.getHID(), 0.28, 1);
