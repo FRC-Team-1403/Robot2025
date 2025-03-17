@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -284,7 +285,8 @@ public class RobotContainer {
 
     m_driverController.b().debounce(2.0).onTrue(Commands.sequence(
       m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
-      m_swerve.runOnce(() -> m_swerve.resetRotation(Rotation2d.kZero)),
+      m_swerve.runOnce(() -> m_swerve.resetRotation(
+        CougarUtil.getAlliance() == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg)),
       new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
     ));
 
