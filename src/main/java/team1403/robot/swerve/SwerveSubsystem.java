@@ -55,6 +55,7 @@ import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.LimelightWrapper;
 import team1403.robot.vision.VisionSimUtil;
+import team1403.robot.vision.ITagCamera.VisionData;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -336,12 +337,11 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
 
         for (ITagCamera c : m_cameras)
         {
-            if (c.hasPose() && c.checkVisionResult())
-            {
-                Pose3d p = c.getPose();
-                if (p != null)
-                    addVisionMeasurement(p.toPose2d(), c.getTimestamp(), c.getEstStdv());
-            }
+            //todo: pass this consumer into the contructor in the future
+            c.refreshEstimate((VisionData data) -> {
+                if(data.pose != null) //last minute safety check!
+                    addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdv);
+            });
         }
 
         m_telemetry.telemeterize(m_state);

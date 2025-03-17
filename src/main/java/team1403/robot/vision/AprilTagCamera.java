@@ -3,6 +3,7 @@ package team1403.robot.vision;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -42,6 +43,8 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final DoubleSupplier m_poseTimestamp;
   private final Alert m_cameraAlert;
   private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
+  
+  private final VisionData m_returnedData = new VisionData();
 
   public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, DoubleSupplier poseTimestamp, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
@@ -141,6 +144,19 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     }
 
     return true;
+  }
+
+  private void copyVisionData() {
+    m_returnedData.pose = getPose();
+    m_returnedData.stdv = getEstStdv();
+    m_returnedData.timestamp = getTimestamp();
+  }
+
+  public void refreshEstimate(Consumer<VisionData> data) {
+    if(checkVisionResult()) {
+      copyVisionData();
+      data.accept(m_returnedData);
+    }
   }
 
   private final ArrayList<Pose3d> m_visionTargets = new ArrayList<>();
