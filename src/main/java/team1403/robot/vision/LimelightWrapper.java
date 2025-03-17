@@ -32,7 +32,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private LimelightHelpers.PoseEstimate m_poseEstimateMT1;
     private LimelightHelpers.PoseEstimate m_poseEstimateMT2;
     private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3); //TODO: adjust this
-    private final static Matrix<N3, N1> kDefaultStdvMT2 = VecBuilder.fill(2, 2, 9999999);
+    private final static Matrix<N3, N1> kDefaultStdvMT2 = VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY);
     private final Alert m_camDisconnected;
     private final DoubleSubscriber m_latencySubscriber;
 
