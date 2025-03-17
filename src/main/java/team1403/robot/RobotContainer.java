@@ -394,7 +394,7 @@ public class RobotContainer {
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.3).withTimeout(3));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
-    NamedCommands.registerCommand("Loading", new InstantCommand(() -> Blackbox.setRobotState(Blackbox.State.loading)));
+    NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
 
    
 
