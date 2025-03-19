@@ -433,7 +433,10 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
     }
 
     public void resetShallowHeading() {
-        resetShallowHeading(getRotation());
+        if(CougarUtil.getAlliance() == Alliance.Red)
+            resetShallowHeading(getRotation().plus(Rotation2d.k180deg));
+        else
+            resetShallowHeading(getRotation());
     }
 
     private SwerveRequest.ApplyRobotSpeeds req = new SwerveRequest.ApplyRobotSpeeds();
