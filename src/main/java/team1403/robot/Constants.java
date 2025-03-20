@@ -192,6 +192,7 @@ public class Constants {
     public static final double intakeSpeed = 0.1;
     public static final double expelSpeed = -0.1;
 
+    public static final double debounceTime = 0.3;
   }
 
   public static class AlgaeWrist {

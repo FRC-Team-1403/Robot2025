@@ -26,17 +26,17 @@ public class AlgaeWristSubsystem extends SubsystemBase {
         m_pid.setGoal(targetAngle);
     }
 
-    @AutoLogOutput(key = "AlgaeIntake/Wrist Setpoint")
+    @AutoLogOutput (key = "AlgaeIntake/Wrist Setpoint")
     public double getWristSetpoint() {
         return m_pid.getGoal().position;
     }
 
-    @AutoLogOutput(key = "AlgaeIntake/Wrist Angle")
+    @AutoLogOutput (key = "AlgaeIntake/Wrist Angle")
     public double getWristAngle() {
         return m_algaeWristMotor.getEncoder().getPosition() * 360.0;
     }
 
-    @AutoLogOutput(key = "AlgaeIntake/Wrist is at Setpoint")
+    @AutoLogOutput (key = "AlgaeIntake/Wrist is at Setpoint")
     public boolean isAtSetpoint() {
       return Math.abs(getWristAngle() - m_pid.getGoal().position) 
           < Units.degreesToRotations(5);

@@ -12,6 +12,8 @@ public class AlgaeWristCommand extends Command {
     public AlgaeWristCommand(AlgaeWristSubsystem algaeWristSubsystem, double setpoint) {
         m_algaeWrist = algaeWristSubsystem;
         target = setpoint;
+        
+        addRequirements(m_algaeWrist);
     }
     
     @Override

@@ -3,7 +3,6 @@ package team1403.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.Constants;
 import team1403.robot.subsystems.AlgaeIntakeSubsystem;
-import team1403.robot.subsystems.AlgaeWristSubsystem;
 import team1403.robot.subsystems.Blackbox;
 
 public class DefaultAlgaeIntakeCommand extends Command {
@@ -11,6 +10,8 @@ public class DefaultAlgaeIntakeCommand extends Command {
 
     public DefaultAlgaeIntakeCommand(AlgaeIntakeSubsystem algaeIntakeSubsystem) {
         m_algaeIntake = algaeIntakeSubsystem;
+
+        addRequirements(m_algaeIntake);
     }
 
     public void initialize(){
@@ -18,8 +19,10 @@ public class DefaultAlgaeIntakeCommand extends Command {
     }
 
     public void execute() {
-        if(Blackbox.isAlgaeIntaking())
+        if(Blackbox.isAlgaeIntaking()) {
+            
             m_algaeIntake.setIntakeSpeed(Constants.AlgaeIntake.intakeSpeed);
+        }
 
     }
 

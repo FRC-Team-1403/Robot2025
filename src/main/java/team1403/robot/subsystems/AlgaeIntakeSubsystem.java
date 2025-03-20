@@ -1,5 +1,8 @@
 package team1403.robot.subsystems;
 
+import java.nio.file.DirectoryStream.Filter;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
@@ -12,6 +15,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -21,12 +26,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import team1403.robot.Constants;
 
 public class AlgaeIntakeSubsystem extends SubsystemBase {
-    private final SparkMax m_algaeIntakeMotor;
-    private final DigitalInput m_algaeIntakePhotogate;
+    private SparkMax m_algaeIntakeMotor;
+    private DigitalInput m_algaeIntakePhotogate;
+    private Debouncer m_debounce;
 
     public AlgaeIntakeSubsystem() {
         m_algaeIntakeMotor = new SparkMax(Constants.CanBus.algaeIntakeMotorID, MotorType.kBrushed);
         m_algaeIntakePhotogate = new DigitalInput(Constants.RioPorts.kAlgaeIntakePhotogateID);
+        m_debounce = new Debouncer(Constants.AlgaeIntake.debounceTime, DebounceType.kBoth);
         configMotors();
     }
 
@@ -50,19 +57,23 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
         m_algaeIntakeMotor.set(speed);
     }
 
+    @AutoLogOutput (key = "AlgaeIntake/Intake Speed")
     public double getIntakeSpeed() {
         return m_algaeIntakeMotor.get();
     }
 
-    public boolean hasAlgae() {
+    @AutoLogOutput (key = "AlgaeIntake/photogate triggered")
+    private boolean photoGateTriggered() {
         return !m_algaeIntakePhotogate.get();
+    }
+
+    @AutoLogOutput (key = "AlgaeIntake/debounced photogate triggered")
+    public boolean algaeIntaked() {
+        return m_debounce.calculate(photoGateTriggered());
     }
 
     @Override
     public void periodic() {
-
         Logger.recordOutput("Algae Intake Motor Temp", m_algaeIntakeMotor.getMotorTemperature());
-        Logger.recordOutput("Has algae", hasAlgae());
-        Logger.recordOutput("Algae Intake Speed", getIntakeSpeed());
     }
 }
