@@ -55,18 +55,18 @@ public class Blackbox {
     private static Pose2d[] reefPosesRightRED;
     private static Pose2d[] sourcePosesBLUE;
     private static Pose2d[] sourcePosesRED;
-    public static ReefSelect reefSide = ReefSelect.LEFT;
-    public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
-    public static pState placingState = pState.drive;
+    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
     private static boolean coralLoaded = false;
     private static boolean algaeLoaded = false;
     private static boolean aligning = false;
     private static boolean doneAligning = false;
     private static boolean elevatorSafe = false;
-
-    private static final double kHalfBumperLengthMeters = Units.inchesToMeters(28);
+    private static boolean algaeIntaking = false;
 
     public static State robotState = State.loading;
+    public static ReefSelect reefSide = ReefSelect.LEFT;
+    public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
+    public static pState placingState = pState.drive;
 
     //meters
     private static final double kMaxAlignDist = 2.5;
@@ -200,6 +200,14 @@ public class Blackbox {
 
     public static boolean isElevatorSafe() {
         return elevatorSafe;
+    }
+
+    public static void setAlgaeIntaking(boolean intake) {
+        algaeIntaking = intake;
+    }
+
+    public static boolean isAlgaeIntaking() {
+        return algaeIntaking;
     }
 
     public static boolean getCloseAlign(Pose2d pose) {

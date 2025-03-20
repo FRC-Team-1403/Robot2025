@@ -191,5 +191,15 @@ public class Constants {
 
     public static final double intakeSpeed = 0.1;
     public static final double expelSpeed = -0.1;
+
+  }
+
+  public static class AlgaeWrist {
+    public static final double intakingPosition = 0.0;
+    public static final double inPosition = 0.0;
+
+    public static final double Kp = 0.0;
+    public static final double Ki = 0.0;
+    public static final double Kd = 0.0;
   }
 }

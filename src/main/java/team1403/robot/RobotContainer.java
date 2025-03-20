@@ -45,6 +45,7 @@ import team1403.robot.commands.ClimberCommand;
 import team1403.robot.commands.ControllerVibrationCommand;
 import team1403.robot.commands.CoralIntakeSpeed;
 import team1403.robot.commands.CoralMechanism;
+import team1403.robot.commands.DefaultAlgaeIntakeCommand;
 import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.DriveWheelCharacterization;
@@ -52,7 +53,8 @@ import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
-// import team1403.robot.subsystems.AlgaeIntakeSubsystem;
+import team1403.robot.subsystems.AlgaeWristSubsystem;
+import team1403.robot.subsystems.AlgaeIntakeSubsystem;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
@@ -77,7 +79,8 @@ public class RobotContainer {
   private final CoralIntakeSubsystem m_coralIntake;
   private final StateMachine m_stateMachine;
   private final ClimberSubsystem m_climber;
-  // private final AlgaeIntakeSubsystem m_algaeIntake;
+  private final AlgaeIntakeSubsystem m_algaeIntake;
+  private final AlgaeWristSubsystem m_algaeWrist;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -103,7 +106,8 @@ public class RobotContainer {
     m_coralIntake = new CoralIntakeSubsystem();
     m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_operatorController.getHID());
     m_climber = new ClimberSubsystem();
-    // m_algaeIntake = new AlgaeIntakeSubsystem();
+    m_algaeIntake = new AlgaeIntakeSubsystem();
+    m_algaeWrist = new AlgaeWristSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     else
@@ -231,42 +235,6 @@ public class RobotContainer {
         () -> m_driverController.getLeftTriggerAxis()));
 
 
-    // m_driverController.leftBumper().whileTrue(Commands.sequence(
-    //   Blackbox.setAligningCmd(true),
-    //   new DeferredCommand(() -> {
-    //   Blackbox.reefSelect(ReefSelect.LEFT);
-    //   Pose2d currentPose = m_swerve.getPose();
-    //   Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-    //   if (target == null) return Commands.none();
-    //   target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2)));
-    //   //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
-    //   return Commands.sequence(
-    //     AutoUtil.pathFindToPose(target),
-    //     new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-    //       if(!interrupted) vibrationCmd.schedule();
-    //     })
-    //   );
-    //   }, Set.of(m_swerve)), 
-    //   Blackbox.setAligningCmd(false)));
-
-    // m_driverController.rightBumper().whileTrue(Commands.sequence(
-    //   Blackbox.setAligningCmd(true),
-    //   new DeferredCommand(() -> {
-    //   Blackbox.reefSelect(ReefSelect.RIGHT);
-    //   Pose2d currentPose = m_swerve.getPose();
-    //   Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-    //   if (target == null) return Commands.none();
-    //   target = CougarUtil.addDistanceToPoseLeft(target, ((m_coralIntake.getDistance() - 0.201) - Units.inchesToMeters(2))); 
-    //   //target = CougarUtil.addDistanceToPoseLeft(target, (Units.inchesToMeters(2.75)));
-    //   return Commands.sequence(
-    //     AutoUtil.pathFindToPose(target),
-    //     new AlignCommand(m_swerve, target).finallyDo((interrupted) -> {
-    //       if(!interrupted) vibrationCmd.schedule();
-    //     })
-    //   );
-    //   }, Set.of(m_swerve)), 
-    //   Blackbox.setAligningCmd(false)));
-
     m_driverController.rightBumper()
       .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive 
             || Blackbox.robotState == State.ManualElevator)
@@ -363,6 +331,7 @@ public class RobotContainer {
     ).withTimeout(2)); */
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
+    m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake
     // stop intake
