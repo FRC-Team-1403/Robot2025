@@ -58,8 +58,7 @@ public class Constants {
     public static final int algaeIntakeMotorID = 4;
     public static final int algaeWristMotorID = kTBD; //tbd
     
-    public static final int leftClimberMotor = 18;  
-    public static final int rightClimberMotor = 5; 
+    public static final int ClimberMotor = 5; 
   }
 
   /**

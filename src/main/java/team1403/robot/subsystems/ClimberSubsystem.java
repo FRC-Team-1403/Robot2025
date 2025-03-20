@@ -16,39 +16,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 
 public class ClimberSubsystem extends SubsystemBase{
-    // private SparkMax m_leftMotor;
-    private SparkMax m_rightMotor;
+    private SparkMax m_motor;
 
     public ClimberSubsystem(){
-        // m_leftMotor = new SparkMax(Constants.CanBus.leftClimberMotor, MotorType.kBrushless);
-        m_rightMotor = new SparkMax(Constants.CanBus.rightClimberMotor, MotorType.kBrushless);
+        m_motor = new SparkMax(Constants.CanBus.ClimberMotor, MotorType.kBrushless);
         configMotors();
     }
 
     public void configMotors(){
-        // SparkMaxConfig leftConfig = new SparkMaxConfig();
-        // leftConfig 
-        //     .idleMode(IdleMode.kBrake)
-        //     .follow(m_rightMotor, true);
         SparkMaxConfig rightConfig = new SparkMaxConfig();
         rightConfig 
             .idleMode(IdleMode.kBrake);
-        
         rightConfig.smartCurrentLimit(50);
-        m_rightMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_motor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void setMotorSpeed(double speed) {
-        m_rightMotor.set(speed);
+        m_motor.set(speed);
     }
 
     public void stopMotors() {
-        m_rightMotor.set(0);
+        m_motor.set(0);
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Climber/Right Speed", m_rightMotor.get());
+        Logger.recordOutput("Climber/Right Speed", m_motor.get());
     }
 
 }
