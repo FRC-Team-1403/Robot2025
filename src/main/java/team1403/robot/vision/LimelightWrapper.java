@@ -1,5 +1,11 @@
 package team1403.robot.vision;
 
+import static edu.wpi.first.units.Units.Microseconds;
+import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -10,93 +16,139 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 
 //import frc.robot.LimelightHelpers; 
 
 public class LimelightWrapper extends SubsystemBase implements ITagCamera {
-    private String m_name;
-    private Supplier<Rotation3d> m_imuRotation;
-    private Supplier<Transform3d> m_camTransform;
-    private LimelightHelpers.PoseEstimate m_poseEstimate;
-    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 999999);
-    
+    private final String m_name;
+    private final Supplier<Rotation3d> m_imuRotation;
+    private final Supplier<Transform3d> m_camTransform;
+    private LimelightHelpers.PoseEstimate m_poseEstimateMT1;
+    private LimelightHelpers.PoseEstimate m_poseEstimateMT2;
+    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3); //TODO: adjust this
+    private final static Matrix<N3, N1> kDefaultStdvMT2 = VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY);
+    private final Alert m_camDisconnected;
+    private final DoubleSubscriber m_latencySubscriber;
+
+    private final VisionData m_dataReturned = new VisionData(); //data we return to swerve subsystem
 
     public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {
         m_name = name.toLowerCase(); //hostname must be lowercase
         m_imuRotation = imuRotation;
         m_camTransform = cameraTransform;
-        m_poseEstimate = null;
+        m_poseEstimateMT1 = null;
+        m_poseEstimateMT2 = null;
+
+        m_latencySubscriber = LimelightHelpers.getLimelightNTTable(m_name)
+            .getDoubleTopic("tl").subscribe(0.0);
+        m_camDisconnected = new Alert("Limelight " + m_name + " Disconnected!", AlertType.kError);
+    }
+
+    @Override
+    public String getName() {
+        return m_name;
     }
     
-    @Override
-    public boolean hasPose() {
-        return LimelightHelpers.validPoseEstimate(m_poseEstimate);
+    private boolean hasPose(LimelightHelpers.PoseEstimate estimate) {
+        return LimelightHelpers.validPoseEstimate(estimate);
     }
 
-    @Override
-    public Pose3d getPose() {
-        if (hasPose()){
-            return m_poseEstimate.pose;
-        } else {
-            return null;
-        }
+    private Matrix<N3, N1> getEstStdv(LimelightHelpers.PoseEstimate estimate) {
+        if(!estimate.isMegaTag2)
+            return kDefaultStdv.div(getTagAreas(estimate));
+        else
+            return kDefaultStdvMT2.div(getTagAreas(estimate));
     }
-
-    @Override
-    public double getTimestamp() {
-        if (!hasPose()) return -1;
-        return m_poseEstimate.timestampSeconds;
-    }
-
-    @Override
-    public Matrix<N3, N1> getEstStdv() {
-        //TODO: change it based on the confidence
-        return kDefaultStdv.div(1.0);
-    }
-
     
-    private double getTagAreas() {
-        if(!hasPose()) return 0;
-        return m_poseEstimate.avgTagArea * m_poseEstimate.tagCount;
+    private double getTagAreas(LimelightHelpers.PoseEstimate estimate) {
+        if(!hasPose(estimate)) return 0;
+        return estimate.avgTagArea * estimate.tagCount;
     }
 
     private LimelightHelpers.RawFiducial[] getTargets() {
-        if(hasPose())
+        if(hasPose(m_poseEstimateMT1))
         {
-            return m_poseEstimate.rawFiducials;
+            return m_poseEstimateMT1.rawFiducials;
         }
         return null;
     }
 
-    @Override
-    public boolean checkVisionResult() {
-        if(!hasPose()) return false;
+    public boolean checkVisionResult(LimelightHelpers.PoseEstimate estimate) {
+        if(!hasPose(estimate)) return false;
 
-        // area units are a bit different, so disable this check
+        // fixme: area units are a bit different, so disable this check
         // if(getTagAreas() < 0.3) return false;
 
-        if(getPose().getZ() > 1) return false;
+        if(Math.abs(estimate.pose.getZ()) > 0.5) return false;
 
-        if(getTargets().length == 1) {
-            if(getTargets()[0].ambiguity > 0.6) {
-                return false;
+        //the constrained PNP should have no ambiguity
+        if(!estimate.isMegaTag2)
+        {
+            if(getTargets().length == 1) {
+                if(getTargets()[0].ambiguity > 0.6) {
+                    return false;
+                }
             }
         }
         
         return true;
     }
+
+    private boolean isConnected() {
+        long dt_us = RobotController.getFPGATime() - m_latencySubscriber.getLastChange();
+        double dt = Seconds.convertFrom(dt_us, Microseconds);
+        return dt < 0.25;
+    }
+
+    private void copyEstimateData(LimelightHelpers.PoseEstimate estimate) {
+        m_dataReturned.pose = estimate.pose;
+        m_dataReturned.timestamp = estimate.timestampSeconds;
+        m_dataReturned.stdv = getEstStdv(estimate);
+    }
+
+    public void refreshEstimate(Consumer<VisionData> data) {
+        /*
+         * MT2 estimates have high rotation stdv so that MT1 can correct it.
+         * MT1 estimates have a higher position stdv 
+         * since MT2 is more accurate once rotation is correct!
+         */
+        if (checkVisionResult(m_poseEstimateMT1)) {
+            copyEstimateData(m_poseEstimateMT1);
+            data.accept(m_dataReturned);
+        }
+        if (checkVisionResult(m_poseEstimateMT2)) {
+            copyEstimateData(m_poseEstimateMT2);
+            data.accept(m_dataReturned);
+        }
+    }
+
+    private final ArrayList<Pose3d> targets = new ArrayList<>();
     
     @Override
     public void periodic() {    
         LimelightHelpers.SetRobotOrientation(m_name, m_imuRotation.get());
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
-        m_poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
+        m_poseEstimateMT1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
+        m_poseEstimateMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+
+        m_camDisconnected.set(!isConnected());
         
-        if(hasPose()) {
-            Logger.recordOutput(m_name + "/pose3d", m_poseEstimate.pose);
-            Logger.recordOutput(m_name + "/tagArea", getTagAreas());
+        Logger.recordOutput(m_name + "/hasPose", hasPose(m_poseEstimateMT1) && hasPose(m_poseEstimateMT2));
+        targets.clear();
+
+        if(hasPose(m_poseEstimateMT1) && hasPose(m_poseEstimateMT2)) {
+            Logger.recordOutput(m_name + "/pose3dMT1", m_poseEstimateMT1.pose);
+            Logger.recordOutput(m_name + "/pose3dMT2", m_poseEstimateMT2.pose);
+            Logger.recordOutput(m_name + "/cameraTransform", m_camTransform.get());
+
+            /* should be same for both from here and below */
+            Logger.recordOutput(m_name + "/tagArea", getTagAreas(m_poseEstimateMT1));
 
             /* if the pose estimate is valid then getTargets() != null */
             LimelightHelpers.RawFiducial[] fiducials = getTargets();
@@ -104,13 +156,13 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
           
             if(Constants.Vision.kExtraVisionDebugInfo)
             {
-                Pose3d[] targets = new Pose3d[fiducials.length];
                 for(int i = 0; i < fiducials.length; i++)
                 {
                     LimelightHelpers.RawFiducial f = fiducials[i];
-                    targets[i] = Constants.Vision.kFieldLayout.getTagPose(f.id).orElse(Pose3d.kZero);
+                    Optional<Pose3d> pose = Constants.Vision.kFieldLayout.getTagPose(f.id);
+                    if(pose.isPresent()) targets.add(pose.get());
                 }
-                Logger.recordOutput(m_name + "/visionTargets", targets);
+                Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
             }
         }
         

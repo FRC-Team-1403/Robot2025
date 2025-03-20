@@ -3,6 +3,8 @@ package team1403.robot.vision;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -27,22 +29,24 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 import team1403.robot.Robot;
 
 public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final PhotonCamera m_camera;
-  private PhotonCameraSim m_cameraSim;
-  private PhotonPoseEstimator m_poseEstimator;
+  private final PhotonCameraSim m_cameraSim;
+  private final PhotonPoseEstimator m_poseEstimator;
   private final Supplier<Transform3d> m_cameraTransform;
   private EstimatedRobotPose m_estPos;
   private final Supplier<Pose2d> m_referencePose;
+  private final DoubleSupplier m_poseTimestamp;
   private final Alert m_cameraAlert;
-  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 10);
+  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
+  
+  private final VisionData m_returnedData = new VisionData();
 
-  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, Supplier<Pose2d> referenceSupplier) {
+  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, DoubleSupplier poseTimestamp, Supplier<Pose2d> referenceSupplier) {
     // Photonvision
     // PortForwarder.add(5800, 
     // "photonvision.local", 5800);
@@ -64,12 +68,9 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
       m_cameraSim = new PhotonCameraSim(m_camera, cameraProp);
 
       VisionSimUtil.addCamera(m_cameraSim, cameraTransform.get());
+    } else {
+      m_cameraSim = null;
     }
-
-    // 0: April Tags
-
-
-    // 1: Reflective Tape
     m_camera.setPipelineIndex(0);
 
     m_poseEstimator = new PhotonPoseEstimator(Constants.Vision.kFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraTransform.get());
@@ -78,6 +79,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     m_estPos = null;
     m_referencePose = referenceSupplier;
     m_cameraTransform = cameraTransform;
+    m_poseTimestamp = poseTimestamp;
 
     m_cameraAlert = new Alert("Photon Camera " + cameraName + " Disconnected!", AlertType.kError);
   }
@@ -144,6 +146,19 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
     return true;
   }
 
+  private void copyVisionData() {
+    m_returnedData.pose = getPose();
+    m_returnedData.stdv = getEstStdv();
+    m_returnedData.timestamp = getTimestamp();
+  }
+
+  public void refreshEstimate(Consumer<VisionData> data) {
+    if(checkVisionResult()) {
+      copyVisionData();
+      data.accept(m_returnedData);
+    }
+  }
+
   private final ArrayList<Pose3d> m_visionTargets = new ArrayList<>();
   private final ArrayList<Translation2d> m_corners = new ArrayList<>();
   private static final Transform3d kZeroTransform = new Transform3d();
@@ -152,6 +167,8 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   public void periodic() {
 
     m_poseEstimator.setReferencePose(m_referencePose.get());
+    //think about if we want to use the trig solver or constrained solve pnp
+    m_poseEstimator.addHeadingData(m_poseTimestamp.getAsDouble(), m_referencePose.get().getRotation());
     m_poseEstimator.setRobotToCameraTransform(m_cameraTransform.get());
 
     if(m_cameraSim != null) {
@@ -174,7 +191,7 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
         {
           Pose3d robot_pose3d = new Pose3d(m_referencePose.get());
           Pose3d robot_pose_transformed = robot_pose3d.transformBy(m_cameraTransform.get());
-          double[] ambiguities = new double[getTargets().size()];
+          double ambiguity = 0;
 
           Logger.recordOutput(m_camera.getName() + "/Camera Transform", robot_pose_transformed);
 
@@ -187,14 +204,15 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
             if(trf.equals(kZeroTransform)) continue;
 
             m_visionTargets.add(robot_pose_transformed.transformBy(trf));
-            ambiguities[i] = t.getPoseAmbiguity();
             for(TargetCorner c : t.getDetectedCorners())
               m_corners.add(new Translation2d(c.x, c.y));
           }
 
+          if(getTargets().size() == 1) ambiguity = getTargets().get(0).poseAmbiguity;
+
           Logger.recordOutput(m_camera.getName() + "/Vision Targets", m_visionTargets.toArray(new Pose3d[m_visionTargets.size()]));
           Logger.recordOutput(m_camera.getName() + "/Corners", m_corners.toArray(new Translation2d[m_corners.size()]));
-          Logger.recordOutput(m_camera.getName() + "/PoseAmbiguity", ambiguities.clone());
+          Logger.recordOutput(m_camera.getName() + "/PoseAmbiguity", ambiguity);
         }
 
         Logger.recordOutput(m_camera.getName() + "/hasPose", hasPose());

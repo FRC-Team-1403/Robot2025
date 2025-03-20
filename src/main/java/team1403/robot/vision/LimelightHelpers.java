@@ -1542,6 +1542,10 @@ public class LimelightHelpers {
         setLimelightNTDoubleArray(limelightName, "camerapose_robotspace_set", entries);
     }
 
+    public static double[] getStandardDeviations(String limelightName) {
+        return getLimelightNTDoubleArray(limelightName, "stddevs");
+    }
+
     /////
     /////
 
