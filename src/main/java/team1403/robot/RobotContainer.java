@@ -51,7 +51,6 @@ import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.DriveWheelCharacterization;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
-import team1403.robot.commands.Warmup;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 import team1403.robot.subsystems.AlgaeWristSubsystem;
@@ -81,9 +80,8 @@ public class RobotContainer {
   private final CoralIntakeSubsystem m_coralIntake;
   private final StateMachine m_stateMachine;
   private final ClimberSubsystem m_climber;
-  private final AlgaeIntakeSubsystem m_algaeIntake;
-  private final AlgaeWristSubsystem m_algaeWrist;
-  private final LEDSubsystem m_LED;
+  // private final AlgaeIntakeSubsystem m_algaeIntake;
+  // private final AlgaeWristSubsystem m_algaeWrist;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -109,9 +107,8 @@ public class RobotContainer {
     m_coralIntake = new CoralIntakeSubsystem();
     m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_operatorController.getHID());
     m_climber = new ClimberSubsystem();
-    m_algaeIntake = new AlgaeIntakeSubsystem();
-    m_algaeWrist = new AlgaeWristSubsystem();
-    m_LED = new LEDSubsystem();
+    // m_algaeIntake = new AlgaeIntakeSubsystem();
+    // m_algaeWrist = new AlgaeWristSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     else
@@ -335,7 +332,7 @@ public class RobotContainer {
     ).withTimeout(2)); */
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
-    m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
+    // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake
     // stop intake
