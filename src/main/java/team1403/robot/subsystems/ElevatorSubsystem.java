@@ -266,5 +266,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         Logger.recordOutput("Elevator/Profiler/Feedforward", FFcalculation());
         Logger.recordOutput("Elevator/Elevator Setpoint", setpoint);
         Logger.recordOutput("Elevator/is at setpoint", isAtSetpoint());
+        Logger.recordOutput("Elevator/right motor current", m_rightMotor.getOutputCurrent());
+        Logger.recordOutput("Elevator/left motor current", m_leftMotor.getOutputCurrent());
     }
 }
