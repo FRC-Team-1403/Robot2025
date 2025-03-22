@@ -5,7 +5,9 @@ import team1403.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorCommand extends Command {
     
+    //Variable for local copy of Elevator subsystem
     private final ElevatorSubsystem m_elevator;
+    //Variable for local copy of Elevator position
     private final double m_pos;
 
     public ElevatorCommand(ElevatorSubsystem elevator, double position) {
@@ -17,11 +19,13 @@ public class ElevatorCommand extends Command {
 
     @Override
     public void initialize() {
+        //Move the elevator
         m_elevator.moveToSetpoint(m_pos);
     }
 
     @Override
     public boolean isFinished() {
+        //Ends command when the elevator reaches the setpoint
         return m_elevator.isAtSetpoint();
     } 
 

@@ -51,6 +51,7 @@ import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.DriveWheelCharacterization;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
+import team1403.robot.commands.Warmup;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 import team1403.robot.subsystems.AlgaeWristSubsystem;
@@ -62,6 +63,7 @@ import team1403.robot.subsystems.Blackbox.State;
 import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 import team1403.robot.subsystems.ElevatorSubsystem;
+import team1403.robot.subsystems.LEDSubsystem;
 import team1403.robot.subsystems.WristSubsystem;
 import team1403.robot.swerve.SwerveSubsystem;
 import team1403.robot.swerve.TunerConstants;
@@ -81,6 +83,7 @@ public class RobotContainer {
   private final ClimberSubsystem m_climber;
   private final AlgaeIntakeSubsystem m_algaeIntake;
   private final AlgaeWristSubsystem m_algaeWrist;
+  private final LEDSubsystem m_LED;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -108,6 +111,7 @@ public class RobotContainer {
     m_climber = new ClimberSubsystem();
     m_algaeIntake = new AlgaeIntakeSubsystem();
     m_algaeWrist = new AlgaeWristSubsystem();
+    m_LED = new LEDSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     else
