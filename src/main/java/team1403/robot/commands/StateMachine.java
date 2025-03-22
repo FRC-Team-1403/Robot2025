@@ -32,6 +32,7 @@ public class StateMachine extends Command {
     @Override
     public void initialize() {
         Blackbox.robotState = Blackbox.State.loading;
+        Blackbox.reefScoreLevel(ReefScoreLevel.drive);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class StateMachine extends Command {
                 m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Source);
                 if (m_wristSubsystem.isAtSetpoint()) {
                     m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Source); 
-                    Blackbox.reefScoreLevel(ReefScoreLevel.drive);
+                    // Blackbox.reefScoreLevel(ReefScoreLevel.drive);
                     if (Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 }
                 break;
@@ -70,9 +71,10 @@ public class StateMachine extends Command {
                 }
                 break;
             case exiting: {
-                System.out.println("HI");
+                //System.out.println("HI");
                 // Blackbox.placingState = Blackbox.pState.drive;
                 m_elevatorSubsystem.moveToSetpoint(Constants.Elevator.Setpoints.Current);
+                Blackbox.reefScoreLevel(ReefScoreLevel.drive);
                 //m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 break;
             }

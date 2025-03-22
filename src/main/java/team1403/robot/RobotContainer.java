@@ -50,6 +50,7 @@ import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.DriveWheelCharacterization;
 import team1403.robot.commands.ElevatorCommand;
+import team1403.robot.commands.LightCommand;
 import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
@@ -80,6 +81,7 @@ public class RobotContainer {
   private final CoralIntakeSubsystem m_coralIntake;
   private final StateMachine m_stateMachine;
   private final ClimberSubsystem m_climber;
+  private final LEDSubsystem m_led;
   // private final AlgaeIntakeSubsystem m_algaeIntake;
   // private final AlgaeWristSubsystem m_algaeWrist;
 
@@ -107,6 +109,7 @@ public class RobotContainer {
     m_coralIntake = new CoralIntakeSubsystem();
     m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_operatorController.getHID());
     m_climber = new ClimberSubsystem();
+    m_led = new LEDSubsystem();
     // m_algaeIntake = new AlgaeIntakeSubsystem();
     // m_algaeWrist = new AlgaeWristSubsystem();
 
@@ -145,6 +148,7 @@ public class RobotContainer {
 
   private Command getAlignCommand(ReefSelect select) {
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    Command opVibrationCmd = new ControllerVibrationCommand(m_operatorController.getHID(), 0.28, 1);
     return Commands.sequence(
       Blackbox.setAligningCmd(true),
       new DeferredCommand(() -> {
@@ -155,17 +159,17 @@ public class RobotContainer {
           
       
         if(select == ReefSelect.LEFT) {
-          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.05);
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.05);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
             case drive: default: /* do nothing */ break;
           }
         }
         else {
-          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.03);
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.03);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
@@ -185,7 +189,10 @@ public class RobotContainer {
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
     ).finallyDo((interrupted) -> {
-      if(!interrupted) vibrationCmd.schedule();
+      if(!interrupted){
+        vibrationCmd.schedule();
+        opVibrationCmd.schedule();
+      }
       //just in case
       Blackbox.setAligning(false);
     });
@@ -332,6 +339,7 @@ public class RobotContainer {
     ).withTimeout(2)); */
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
+    m_led.setDefaultCommand(new LightCommand(m_led));
     // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake

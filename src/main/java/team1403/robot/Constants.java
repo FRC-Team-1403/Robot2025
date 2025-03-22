@@ -145,7 +145,7 @@ public class Constants {
       public static final double L3 = 18.5;
       public static final double L4 = 51;
       public static final double L3Algae = 18.15;
-      public static final double Source = 1;
+      public static final double Source = 0.5;
       public static final double Current = 1;
       public static final double Min = 1;
     }
@@ -157,7 +157,7 @@ public class Constants {
       public static final double L2 = 17 / 360.;
       public static final double L3 = 20 / 360.;
       public static final double L4 = 41 / 360.;
-      public static final double Source = -16 / 360.; 
+      public static final double Source = - 12 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
     }
@@ -166,7 +166,7 @@ public class Constants {
     public static final double WristKG = 0.51 / 12;
     public static final double WristKV = 0;
 
-    public static final double WristKP = 3.2;//2.7079; //keep testing
+    public static final double WristKP = 3.4;//2.7079; //keep testing
     public static final double WristKI = 0;
     public static final double WristKD = 0.005;//0.69018;
 

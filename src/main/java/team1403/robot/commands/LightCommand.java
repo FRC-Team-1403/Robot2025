@@ -36,7 +36,7 @@ public class LightCommand extends Command{
                 m_LED.setLEDcolor(LEDSubsystem.Color.Blue);
             break;
             case placing:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Grey);
+                m_LED.setLEDcolor(LEDSubsystem.Color.Yellow);
             break;
             case exiting:
                 m_LED.setLEDcolor(LEDSubsystem.Color.Pink);
