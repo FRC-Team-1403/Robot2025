@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
@@ -27,13 +26,6 @@ public class Blackbox {
         placing,
         exiting,
         ManualElevator
-    }
-
-    public enum pState {
-        drive,
-        elevator,
-        wrist,
-        intake
     }
 
     public enum ReefSelect {
@@ -66,7 +58,6 @@ public class Blackbox {
     public static State robotState = State.loading;
     public static ReefSelect reefSide = ReefSelect.LEFT;
     public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
-    public static pState placingState = pState.drive;
 
     //meters
     private static final double kMaxAlignDist = 2.5;
@@ -297,6 +288,13 @@ public class Blackbox {
         }
     }
 
+    public static boolean isReefScoreLevelDrive() {
+        if (reefLevel == ReefScoreLevel.drive) {
+            return true;
+        }
+        return false;
+    }
+
     public static void periodic() {
         //compute target position and other data here
         Logger.recordOutput("Blackbox/ReefPositions Blue Right", reefPosesRightBLUE);
@@ -305,9 +303,7 @@ public class Blackbox {
         Logger.recordOutput("Blackbox/ReefPositions Red Left", reefPosesLeftRED);
         Logger.recordOutput("Blackbox/SourcePositions Blue", sourcePosesBLUE);
         Logger.recordOutput("Blackbox/SourcePositions Red", sourcePosesRED);
-
         Logger.recordOutput("Blackbox/Robot State", robotState);
-        Logger.recordOutput("Blackbox/Placing State", placingState);
         Logger.recordOutput("Blackbox/Reef Level", reefLevel);
         Logger.recordOutput("Blackbox/Reef Side", reefSide);
 

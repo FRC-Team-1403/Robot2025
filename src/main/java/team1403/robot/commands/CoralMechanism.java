@@ -16,14 +16,25 @@ import team1403.robot.subsystems.WristSubsystem;
 
 public class CoralMechanism extends Command {
     
+    //Variable for local copy of Wrist subsystem
     private final WristSubsystem m_wrist;
+    //Variable for local copy of Elevator subsystem
     private final ElevatorSubsystem m_elevator;
-
+    //Variable for local copy of the mechanism object
     private final LoggedMechanism2d m_mechanism;
+    //Variable for local copy of the mechanism root object
     private final LoggedMechanismRoot2d m_root;
+    //Variable for the mechanism ligament elevator object
     private final LoggedMechanismLigament2d m_elevatorMech;
+    //Variable for the mechanism ligament wrist object
     private final LoggedMechanismLigament2d m_wristMech;
 
+    /**
+     * Shows the mechanisms on Advantage Scope
+     * 
+     * @param wrist Wrist subsystem
+     * @param elevator Elevator subsystem
+     */
     public CoralMechanism(WristSubsystem wrist, ElevatorSubsystem elevator) {
         m_wrist = wrist;
         m_elevator = elevator;
@@ -39,10 +50,11 @@ public class CoralMechanism extends Command {
 
     @Override
     public void execute() {
-
+        //Updates the elevator height in advantage scope by increasing its length
         m_elevatorMech.setLength(0.2 + m_elevator.getPosition() / 20.0);
+        //Updates the wrist angle in advantage scope by rotating the mechanism
         m_wristMech.setAngle(Rotation2d.fromRotations(m_wrist.getWristAngle() + 0.25));
-
+        //Logs the mechanism
         Logger.recordOutput("CoralMechanism", m_mechanism);
     }
 
