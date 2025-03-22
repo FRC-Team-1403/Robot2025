@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2606557377049183,
-        "y": 2.220850409836065
+        "x": 3.1168032786885242,
+        "y": 2.1069672131147548
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9110773317294147,
-        "y": 1.673517673053559
+        "x": 2.7672248727130206,
+        "y": 1.5596344763322487
       },
       "isLocked": false,
       "linkedName": "Proc2Part3"
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 60.25511870305775
+    "rotation": 50.44033203100542
   },
   "useDefaultConstraints": true
 }

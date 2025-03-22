@@ -178,12 +178,8 @@ public class AutoHelper {
     public static Command getTwoPieceProcTest(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
-                Commands.parallel(
-                    AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true), //SCORES PIECE 1
-                    Commands.sequence(
-                        Commands.waitSeconds(0.75),
-                        NamedCommands.getCommand("CoralL4"))
-                ),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true), //SCORES PIECE 1                       
+                NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
