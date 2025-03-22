@@ -148,7 +148,6 @@ public class RobotContainer {
 
   private Command getAlignCommand(ReefSelect select) {
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
-    Command opVibrationCmd = new ControllerVibrationCommand(m_operatorController.getHID(), 0.28, 1);
     return Commands.sequence(
       Blackbox.setAligningCmd(true),
       new DeferredCommand(() -> {
@@ -191,7 +190,6 @@ public class RobotContainer {
     ).finallyDo((interrupted) -> {
       if(!interrupted){
         vibrationCmd.schedule();
-        opVibrationCmd.schedule();
       }
       //just in case
       Blackbox.setAligning(false);
@@ -362,6 +360,12 @@ public class RobotContainer {
           new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
       ), 4)));
+
+    new Trigger(() -> Blackbox.robotState == State.placing
+      && m_wrist.isAtSetpoint()
+      && m_elevator.isAtSetpoint()
+      && Blackbox.getCloseAlign(m_swerve.getPose()))
+      .debounce(0.1).onTrue(opVibrationCmd.asProxy());
 
     NamedCommands.registerCommand("CoralScore", 
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());
