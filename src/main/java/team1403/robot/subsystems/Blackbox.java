@@ -29,13 +29,6 @@ public class Blackbox {
         ManualElevator
     }
 
-    public enum pState {
-        drive,
-        elevator,
-        wrist,
-        intake
-    }
-
     public enum ReefSelect {
         LEFT,
         RIGHT
@@ -66,7 +59,6 @@ public class Blackbox {
     public static State robotState = State.loading;
     public static ReefSelect reefSide = ReefSelect.LEFT;
     public static ReefScoreLevel reefLevel = ReefScoreLevel.drive;
-    public static pState placingState = pState.drive;
 
     //meters
     private static final double kMaxAlignDist = 2.5;
@@ -305,9 +297,7 @@ public class Blackbox {
         Logger.recordOutput("Blackbox/ReefPositions Red Left", reefPosesLeftRED);
         Logger.recordOutput("Blackbox/SourcePositions Blue", sourcePosesBLUE);
         Logger.recordOutput("Blackbox/SourcePositions Red", sourcePosesRED);
-
         Logger.recordOutput("Blackbox/Robot State", robotState);
-        Logger.recordOutput("Blackbox/Placing State", placingState);
         Logger.recordOutput("Blackbox/Reef Level", reefLevel);
         Logger.recordOutput("Blackbox/Reef Side", reefSide);
 
