@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.Constants;
@@ -287,6 +286,13 @@ public class Blackbox {
             default:
                 return Constants.Elevator.Setpoints.Current;
         }
+    }
+
+    public static boolean isReefScoreLevelDrive() {
+        if (reefLevel == ReefScoreLevel.drive) {
+            return true;
+        }
+        return false;
     }
 
     public static void periodic() {
