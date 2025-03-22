@@ -50,7 +50,7 @@ public class Constants {
     public static final int CANRangeID = 27;
     public static final int wristMotorID = 3;
 
-    public static final int kCandleID = kTBD;
+    public static final int kCandleID = 60;
 
 
     public static final int leftElevatorMotorID = 11;
