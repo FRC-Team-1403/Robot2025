@@ -27,6 +27,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -175,7 +176,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         VisionSimUtil.initVisionSim();
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
-            () -> getRotation3d()));
+            () -> new Rotation3d(getRotation())));
         //test camera for simulation
         if(Robot.isSimulation())
             m_cameras.add(new AprilTagCamera("simlimelight", 
