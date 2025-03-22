@@ -185,5 +185,41 @@ public class AutoHelper {
         }
     }
 
+    public static Command getTwoPieceProc_algaeRemoval(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                alignToStartingPose(m_swerve, "Proc2P Part 2"),
+                AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P +Algae Part 3", m_swerve),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4")),
+                        Commands.waitSeconds(0.25)
+                ),
+                NamedCommands.getCommand("ReefAlignL"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading")
+                //Align to Center Command
+                //Take out algae
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
     
 }
