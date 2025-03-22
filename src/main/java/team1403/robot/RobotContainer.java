@@ -387,9 +387,10 @@ public class RobotContainer {
     m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
     m_autoChooser.addOption("OneP Center", AutoHelper.getOnePCenter(m_swerve));
     m_autoChooser.addOption("Two Piece Processor", AutoHelper.getTwoPieceProc(m_swerve));
-    m_autoChooser.addOption("Three Piece Processor", AutoHelper.getThreePieceProc(m_swerve));
+    m_autoChooser.addOption("Three Piece Processor", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
+    m_autoChooser.addOption("Test 2 Piece Back + Algae Removal", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
   }
    
   /**

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.92387295081967,
-        "y": 7.669262295081967
+        "x": 1.379,
+        "y": 0.5545594262295083
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.785040983606557,
-        "y": 7.6093237704918035
+        "x": 2.0268691583143346,
+        "y": 1.2544596543789326
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Proc2Part4"
     },
     {
       "anchor": {
-        "x": 4.111782786885246,
-        "y": 5.427561475409837
+        "x": 2.697233606557377,
+        "y": 3.9950307377049183
       },
       "prevControl": {
-        "x": 4.579303278688525,
-        "y": 7.68125
+        "x": 2.6616755077287473,
+        "y": 3.3096250281700614
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 1.5074357587749696
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -126.34002826914755
   },
   "useDefaultConstraints": true
 }
