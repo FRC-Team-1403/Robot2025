@@ -261,7 +261,7 @@ public class RobotContainer {
       m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
       m_swerve.runOnce(() -> m_swerve.resetRotation(
         CougarUtil.getAlliance() == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg)),
-      new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
+      vibrationCmd.asProxy()
     ));
 
     //there's really no other good buttons unfortunately
@@ -289,7 +289,7 @@ public class RobotContainer {
     m_operatorController.povUp().debounce(0.5).onTrue(
       Commands.sequence(
         Blackbox.robotStateCmd(State.ManualElevator),
-        opVibrationCmd)
+        opVibrationCmd.asProxy())
     );
 
     
@@ -366,7 +366,7 @@ public class RobotContainer {
       && m_elevator.isAtSetpoint()
       && Blackbox.getCloseAlign(m_swerve.getPose())
       && !Blackbox.isAligning())
-      .debounce(0.1).onTrue(opVibrationCmd.asProxy());
+      .debounce(0.1).onTrue(opVibrationCmd);
 
     NamedCommands.registerCommand("CoralScore", 
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());
