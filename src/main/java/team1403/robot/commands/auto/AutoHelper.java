@@ -86,6 +86,8 @@ public class AutoHelper {
         }
     }
 
+    
+
     public static Command getThreePieceBackProc(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
@@ -96,8 +98,9 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
-                alignToStartingPose(m_swerve, "Proc2P Part 2"),
-                AutoUtil.loadPathPlannerPath("Proc2P Part 2", m_swerve),
+                Commands.waitSeconds(0.1),
+                // alignToStartingPose(m_swerve, "Proc2P Part 2"),
+                AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
                 AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
                 NamedCommands.getCommand("CoralL4"),
@@ -105,10 +108,11 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
-                alignToStartingPose(m_swerve, "3p Part 4"),
+                Commands.waitSeconds(0.1),
+                //alignToStartingPose(m_swerve, "3p Part 4"),
                 AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc2P Part 5 Back", m_swerve),
+                AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
@@ -117,7 +121,6 @@ public class AutoHelper {
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
-            
             return Commands.none();
         }
     }

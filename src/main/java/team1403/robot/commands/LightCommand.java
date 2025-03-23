@@ -27,19 +27,19 @@ public class LightCommand extends Command{
     public void execute() {
         switch(Blackbox.robotState){
             case loading:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Green);
+                m_LED.setLEDcolor(LEDSubsystem.Color.Yellow);
             break;
             case driving:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Red);
+                m_LED.setLEDcolor(LEDSubsystem.Color.Green);
             break;
             case aligning:
                 m_LED.setLEDcolor(LEDSubsystem.Color.Blue);
             break;
             case placing:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Yellow);
+                m_LED.setLEDcolor(LEDSubsystem.Color.Pink);
             break;
             case exiting:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Pink);
+                m_LED.setLEDcolor(LEDSubsystem.Color.Red);
             break;
             case ManualElevator:
                 m_LED.setLEDcolor(LEDSubsystem.Color.White);
