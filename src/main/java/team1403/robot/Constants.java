@@ -145,7 +145,7 @@ public class Constants {
       public static final double L3 = 18.5;
       public static final double L4 = 51;
       public static final double L3Algae = 18.15;
-      public static final double Source = 1;
+      public static final double Source = 0.5;
       public static final double Current = 1;
       public static final double Min = 1;
     }
