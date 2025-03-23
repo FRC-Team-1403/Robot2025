@@ -91,14 +91,17 @@ public class AutoHelper {
     public static Command getThreePieceBackProc(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
-                Commands.waitSeconds(1),
-                AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true),
-                NamedCommands.getCommand("CoralL4"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc2P Part 1", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
-                Commands.waitSeconds(0.1),
+                //Commands.waitSeconds(0.05),
                 // alignToStartingPose(m_swerve, "Proc2P Part 2"),
                 AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
@@ -108,7 +111,7 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
-                Commands.waitSeconds(0.1),
+               // Commands.waitSeconds(0.05),
                 //alignToStartingPose(m_swerve, "3p Part 4"),
                 AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
