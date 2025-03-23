@@ -364,8 +364,7 @@ public class RobotContainer {
     new Trigger(() -> Blackbox.robotState == State.placing
       && m_wrist.isAtSetpoint()
       && m_elevator.isAtSetpoint()
-      && Blackbox.getCloseAlign(m_swerve.getPose())
-      && !Blackbox.isAligning())
+      && Blackbox.getCloseAlign(m_swerve.getPose()))
       .debounce(0.1).onTrue(opVibrationCmd.asProxy());
 
     NamedCommands.registerCommand("CoralScore", 
