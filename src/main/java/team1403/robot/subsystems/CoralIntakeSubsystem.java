@@ -75,7 +75,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         return m_filter.calculate(m_intakeMotor.getOutputCurrent());
     }
 
-    private boolean pieceIn() {
+    public boolean pieceIn() {
         return getDistance() < 0.37;// * 100 * 2.54;
     }
 
