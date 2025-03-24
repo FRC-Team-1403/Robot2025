@@ -311,12 +311,6 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
 
     @Override
     public void periodic() {
-        // logs velocities
-        Logger.recordOutput("normalized linear velocity m/s", Math.hypot(m_state.Speeds.vxMetersPerSecond, m_state.Speeds.vyMetersPerSecond));
-        Logger.recordOutput("forwards linear velocity m/s", m_state.Speeds.vxMetersPerSecond);
-        Logger.recordOutput("sideways linear velocity m/s", m_state.Speeds.vyMetersPerSecond);
-        Logger.recordOutput("angular velocity rad/sec", m_state.Speeds.omegaRadiansPerSecond);
-
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
