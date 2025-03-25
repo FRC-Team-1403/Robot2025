@@ -51,7 +51,6 @@ import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.DriveWheelCharacterization;
 import team1403.robot.commands.ElevatorCommand;
 import team1403.robot.commands.StateMachine;
-import team1403.robot.commands.Warmup;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
 import team1403.robot.subsystems.AlgaeWristSubsystem;
