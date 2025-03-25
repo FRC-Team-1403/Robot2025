@@ -391,6 +391,7 @@ public class RobotContainer {
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
     m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
+    m_autoChooser.addOption("THREE PIECE BACK FINAL NON PROCESSOR SIDE UNTESTED", AutoHelper.getThreePieceBackNonProc(m_swerve));
     m_autoChooser.addOption("ONE PIECE CENTER UNTESTED", AutoHelper.getOnePCenter(m_swerve));
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
