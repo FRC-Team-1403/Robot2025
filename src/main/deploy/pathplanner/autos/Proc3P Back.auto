@@ -33,6 +33,12 @@
           "data": {
             "pathName": "Proc Part 5 Back"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc part 6 back"
+          }
         }
       ]
     }

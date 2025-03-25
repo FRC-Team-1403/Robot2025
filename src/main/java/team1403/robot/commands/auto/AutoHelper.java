@@ -101,26 +101,33 @@ public class AutoHelper {
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
+                Commands.waitSeconds(0.1),
+                AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
                 //Commands.waitSeconds(0.05),
                 // alignToStartingPose(m_swerve, "Proc2P Part 2"),
-                AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
                 AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
-                NamedCommands.getCommand("CoralL4"),
-                NamedCommands.getCommand("ReefAlignR"),
-                NamedCommands.getCommand("WaitForSetpoint"),
-                NamedCommands.getCommand("CoralScore"),
-                NamedCommands.getCommand("Loading"),
-               // Commands.waitSeconds(0.05),
-                //alignToStartingPose(m_swerve, "3p Part 4"),
-                AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve),
-                NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
-                NamedCommands.getCommand("Loading")
+                Commands.parallel(
+                    NamedCommands.getCommand("Loading"),
+                // Commands.waitSeconds(0.05),
+                //alignToStartingPose(m_swerve, "3p Part 4"),
+                    AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve)
+                ),
+                NamedCommands.getCommand("WaitForCoral"),
+                AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.parallel(
+                    NamedCommands.getCommand("Loading"),
+                    AutoUtil.loadPathPlannerPath("Proc part 6 back", m_swerve)
+                )
+                
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());

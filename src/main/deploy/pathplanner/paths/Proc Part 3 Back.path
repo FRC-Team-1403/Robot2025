@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.51,
-        "y": 0.5545594262295083
+        "x": 1.331,
+        "y": 0.603
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1980673805973048,
-        "y": 1.2443660083609778
+        "x": 2.0190673805973045,
+        "y": 1.2928065821314694
       },
       "isLocked": false,
-      "linkedName": "Proc2Part4"
+      "linkedName": null
     },
     {
       "anchor": {

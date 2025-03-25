@@ -163,7 +163,7 @@ public class RobotContainer {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
         }
@@ -173,7 +173,7 @@ public class RobotContainer {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
         } 
@@ -380,8 +380,8 @@ public class RobotContainer {
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
-    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
-    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
 
    
