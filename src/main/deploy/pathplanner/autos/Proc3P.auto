@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc2P Part 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc2P Part 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc2P Part 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc2P Part 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc2P Part 5"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

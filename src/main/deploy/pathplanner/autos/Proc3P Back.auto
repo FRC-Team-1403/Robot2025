@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc2P Part 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc Two Piece Part 2 test"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc Part 3 Back"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3p Part 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc Part 5 Back"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Proc part 6 back"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

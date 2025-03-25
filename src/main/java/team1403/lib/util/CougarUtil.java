@@ -1,20 +1,18 @@
 package team1403.lib.util;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Pounds;
-
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import team1403.robot.Constants;
+import static edu.wpi.first.units.Units.Meters;
+
 
 public class CougarUtil {
     
@@ -38,24 +36,39 @@ public class CougarUtil {
 
     public static Pose2d getInitialRobotPose() {
         if(getAlliance() == Alliance.Red)
-            //FIXME: put a valid red alliance position
-            return new Pose2d(new Translation2d(1 ,1), Rotation2d.k180deg);
+            return new Pose2d(new Translation2d(10 ,2), Rotation2d.kZero);
         
-        return new Pose2d(new Translation2d(1, 1), Rotation2d.kZero);
+        return new Pose2d(new Translation2d(7.6, 2), Rotation2d.k180deg);
     }
 
     public static double getDistance(Pose2d a, Pose2d b) {
         return a.getTranslation().getDistance(b.getTranslation());
     }
 
+    public static double getXDistance(Pose2d a, Pose2d b) {
+        return Math.abs(a.getMeasureX().in(Meters) - b.getMeasureX().in(Meters));
+    }
+
+    public static double getYDistance(Pose2d a, Pose2d b) {
+        return Math.abs(a.getMeasureY().in(Meters) - b.getMeasureY().in(Meters));
+    }
+
     public static double dot(Rotation2d a, Rotation2d b) {
         return a.getCos() * b.getCos() + a.getSin() * b.getSin(); // 2d dot product: a_x * b_x + a_y * b_y
     }
 
-    public static Pose2d addDistanceToPose(Pose2d pose, double distance) {
+    public static double norm(ChassisSpeeds s) {
+        return Math.hypot(s.vxMetersPerSecond, s.vyMetersPerSecond);
+    }
+
+    public static Pose2d addDistanceToPoseRot(Pose2d pose, Rotation2d rot, double distance) {
         return new Pose2d(pose.getTranslation().plus(
-            new Translation2d(distance, pose.getRotation())), 
+            new Translation2d(distance, rot)),
             pose.getRotation());
+    }
+
+    public static Pose2d addDistanceToPose(Pose2d pose, double distance) {
+        return addDistanceToPoseRot(pose, pose.getRotation(), distance);
     }
 
     public static Pose2d addDistanceToPoseLeft(Pose2d pose, double distance) {
@@ -79,36 +92,12 @@ public class CougarUtil {
         return min;
     }
 
-    private static final double kDotWeight = -0.5;
-    public static Pose2d getNearestHeuristic(Pose2d a, Pose2d[] list) {
-        if (list.length == 0) return null;
-        Pose2d min = list[0];
-        double min_dist = getDistance(a, list[0]) + kDotWeight * dot(a.getRotation(), list[0].getRotation());
-        for(Pose2d b : list) {
-            double dist = getDistance(a, b) + kDotWeight * dot(a.getRotation(), b.getRotation());
-            if(dist < min_dist) {
-                min_dist = dist;
-                min = b;
-            }
-        }
-        return min;
-    }
-
-    //TODO: update when we get robot
-    private static RobotConfig config = new RobotConfig(
-        Pounds.of(120), 
-        KilogramSquareMeters.of(1),
-        new ModuleConfig(
-            Constants.Swerve.kWheelDiameterMeters / 2., 
-            Constants.Swerve.kMaxSpeed, 
-            1.4, 
-            DCMotor.getNEO(1).withReduction(1.0/Constants.Swerve.kDriveReduction), 
-            Constants.Swerve.kDriveCurrentLimit, 
-            1), 
-        Constants.Swerve.kModulePositions);
-
     public static RobotConfig loadRobotConfig() {
-        return config;
+        try {
+            return RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static DCMotorSim createDCMotorSim(DCMotor motor, double gearing, double MOI) {
