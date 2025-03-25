@@ -389,14 +389,16 @@ public class RobotContainer {
     
     /* Move forward 1 m from any position on the starting line 
       (make sure robot is facing a tag to seed the position) */
-    m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
-    m_autoChooser.addOption("OneP Center", AutoHelper.getOnePCenter(m_swerve));
-    m_autoChooser.addOption("Two Piece Processor", AutoHelper.getTwoPieceProc(m_swerve));
-    m_autoChooser.addOption("Three Piece Processor", AutoHelper.getThreePieceSideProc(m_swerve));
-    m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
-    m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
-    m_autoChooser.addOption("Three Piece Back ", AutoHelper.getThreePieceBackProc(m_swerve));
-    m_autoChooser.addOption("Test 2 Piece Back + Algae Removal", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
+    m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
+    m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
+    m_autoChooser.addOption("ONE PIECE CENTER UNTESTED", AutoHelper.getOnePCenter(m_swerve));
+    m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
+    m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
+    m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
+    //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
+    //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
+    
+    
   }
    
   /**

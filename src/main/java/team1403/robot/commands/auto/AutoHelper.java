@@ -36,9 +36,12 @@ public class AutoHelper {
     public static Command getOnePCenter(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
-                Commands.waitSeconds(1), //wait for state machine to reach correct state
-                AutoUtil.loadPathPlannerPath("OneP Center", m_swerve),
-                NamedCommands.getCommand("CoralL4"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
