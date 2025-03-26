@@ -337,7 +337,7 @@ public class RobotContainer {
     ).withTimeout(2)); */
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
-    m_led.setDefaultCommand(new LightCommand(m_led));
+    m_led.setDefaultCommand(new LightCommand(m_led, m_elevator).ignoringDisable(true));
     // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake

@@ -26,15 +26,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkMax m_leftMotor;
   private SparkMax m_rightMotor;
   private ElevatorFeedforward m_ElevatorFeedforward;
-  private static double currentPos;
+  private double currentPos;
     private double currMotorOutput;
     private double desiredMotorOutput;
     private boolean isRampDone;
-    public static boolean isGoingUp;
+    public boolean isGoingUp;
     private boolean isGoingDown;
     private boolean directionFlag;
     private double posError;
-    private static double setpoint;
+    private double setpoint;
         private double minSpeed;
         private double maxSpeed;
       
@@ -218,7 +218,7 @@ public class ElevatorSubsystem extends SubsystemBase {
               }
           }
       
-          public static boolean isAtSetpoint() {
+          public boolean isAtSetpoint() {
               return Math.abs(setpoint - currentPos) <= 3;
     }
 
