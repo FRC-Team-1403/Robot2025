@@ -31,6 +31,7 @@ public class Constants {
 
   public static class RioPorts {
     private static final int kTBD = 0;
+    public static final int kServoPort = kTBD;
 
     public static final int kAlgaeIntakePhotogateID = kTBD;
   }
@@ -178,8 +179,14 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upSpeed = 1;
-    public static final double downSpeed = -1;
+    public static final double upSpeed = 0.5;
+    public static final double downSpeed = -0.5;
+
+    public static final double upPosition = 0;
+    public static final double downPosition = 0;
+
+    public static final double clutchEngage = 0;
+    public static final double clutchDisengage = 0;
   }
 
   public static class AlgaeIntake {

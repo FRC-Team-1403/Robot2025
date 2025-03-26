@@ -266,8 +266,8 @@ public class RobotContainer {
     ));
 
     //there's really no other good buttons unfortunately
-    m_driverController.leftStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    m_driverController.rightStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_driverController.leftStick().onTrue(new ClimberCommand(m_climber, false));
+    m_driverController.rightStick().onTrue(new ClimberCommand(m_climber, true));
 
     m_operatorController.b()
       .and(() -> Blackbox.robotState != State.ManualElevator)
