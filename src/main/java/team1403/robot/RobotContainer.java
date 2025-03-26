@@ -60,6 +60,7 @@ import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
+import team1403.robot.subsystems.LEDSubsystem.LEDConfig;
 import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 import team1403.robot.subsystems.ElevatorSubsystem;
@@ -366,7 +367,11 @@ public class RobotContainer {
       && m_elevator.isAtSetpoint()
       && Blackbox.getCloseAlign(m_swerve.getPose())
       && !Blackbox.isAligning())
-      .debounce(0.1).onTrue(opVibrationCmd);
+      .debounce(0.1).onTrue(
+        Commands.parallel(
+        opVibrationCmd, 
+        m_led.requestState(LEDConfig.Style.Strobe, LEDConfig.Color.Green).repeatedly()
+        .until(() -> !Blackbox.isCoralLoaded())));
 
     NamedCommands.registerCommand("CoralScore", 
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());

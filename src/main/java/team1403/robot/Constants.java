@@ -203,4 +203,9 @@ public class Constants {
     public static final double Ki = 0.0;
     public static final double Kd = 0.0;
   }
+
+  public static class LED {
+    public static final double speed = 0.7;
+    public static final int kLedCount = -1; //Placeholder
+  }
 }
