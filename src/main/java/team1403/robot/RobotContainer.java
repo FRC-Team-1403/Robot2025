@@ -369,7 +369,7 @@ public class RobotContainer {
       && !Blackbox.isAligning())
       .debounce(0.1).onTrue(
         Commands.parallel(
-        opVibrationCmd, 
+        opVibrationCmd.asProxy(), 
         m_led.requestState(LEDConfig.Style.Strobe, LEDConfig.Color.Green).repeatedly()
         .until(() -> !Blackbox.isCoralLoaded())));
 
