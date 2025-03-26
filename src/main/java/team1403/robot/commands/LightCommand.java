@@ -2,6 +2,7 @@ package team1403.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.subsystems.Blackbox;
+import team1403.robot.subsystems.ElevatorSubsystem;
 import team1403.robot.subsystems.LEDSubsystem;
 import team1403.robot.subsystems.LEDSubsystem.LEDConfig;
 
@@ -28,25 +29,32 @@ public class LightCommand extends Command{
     public void execute() {
         switch(Blackbox.robotState){
             case loading:
-                m_LED.setLEDcolor(LEDConfig.Style.Solid, LEDConfig.Color.Yellow);
+                m_LED.setLEDcolor(LEDConfig.Color.Yellow);
             break;
             case driving:
-                m_LED.setLEDcolor(LEDConfig.Style.Solid, LEDConfig.Color.Green);
+                m_LED.setLEDcolor(LEDConfig.Color.Green);
             break;
             case aligning:
-                m_LED.setLEDcolor(LEDConfig.Style.Solid, LEDConfig.Color.Blue);
+                m_LED.setLEDcolor(LEDConfig.Color.Blue);
             break;
             case placing:
-                m_LED.setLEDcolor(LEDConfig.Style.Solid, LEDConfig.Color.Pink);
+                m_LED.setLEDcolor(LEDConfig.Color.Pink);
             break;
             case exiting:
-                m_LED.setLEDcolor(LEDConfig.Style.Solid, LEDConfig.Color.Red);
+                m_LED.setLEDcolor(LEDConfig.Color.Red);
             break;
             case ManualElevator:
-                m_LED.setLEDcolor(LEDConfig.Style.Solid, LEDConfig.Color.White);
+                m_LED.setLEDcolor(LEDConfig.Color.White);
             break;
         }
-
+        if(!ElevatorSubsystem.isAtSetpoint()) {
+            if(ElevatorSubsystem.isGoingUp){
+                m_LED.setLEDcolor(LEDConfig.Style.Upwards, LEDConfig.Color.Green);
+            }
+            else if(!ElevatorSubsystem.isGoingUp) {
+                m_LED.setLEDcolor(LEDConfig.Style.Downwards, LEDConfig.Color.Grey);
+            }
+        }   
     }
 
     @Override

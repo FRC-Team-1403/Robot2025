@@ -4,21 +4,19 @@ import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import team1403.lib.util.StripedAnimation;
 import team1403.robot.Constants;
 
 public class LEDSubsystem extends SubsystemBase {
     private final CANdle m_candle;
     private final int m_ledCount = Constants.LED.kLedCount;
     private final double m_animSpeed = Constants.LED.speed;
-    private StripedAnimation m_stripedAnimation;
     
     public enum LEDConfig {
         ; //It just works don't question it
         public enum Style {
             Solid,
             Rainbow,
-            Striped,
+            Strobe,
             Upwards,
             Downwards
         }
@@ -61,35 +59,25 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public LEDSubsystem() {
-        m_stripedAnimation = null;
         m_candle = new CANdle(Constants.CanBus.kCandleID);
         CANdleConfiguration config = new CANdleConfiguration();
-        config.stripType = LEDStripType.RGB; // Or GRB depending on your LED strip
-        config.brightnessScalar = 0.8; // 80% brightness by default
+        config.stripType = LEDStripType.RGB;
+        config.brightnessScalar = 1;
         m_candle.configAllSettings(config);
-        m_candle.setLEDs(0, 0, 0); // Start with LEDs off
+        m_candle.setLEDs(0, 0, 0);
     }
 
-    public void setLEDcolor(LEDConfig.Style style) {
-        setLEDcolor(style, LEDConfig.Color.Red, null); // Default color if none provided
+    public void setLEDcolor(LEDConfig.Color color) {
+        setLEDcolor(LEDConfig.Style.Solid, color);
     }
 
-    public void setLEDcolor(LEDConfig.Style style, LEDConfig.Color color) {
-        setLEDcolor(style, color, null);
-    }
 
-    public void setLEDcolor(LEDConfig.Style style, LEDConfig.Color primary, LEDConfig.Color secondary) {
+    public void setLEDcolor(LEDConfig.Style style, LEDConfig.Color primary) {
         if (primary == null) primary = LEDConfig.Color.Off;
-        if (secondary == null) secondary = LEDConfig.Color.Off;
         
-        // Fixed color channel assignments (you had green/blue swapped)
         int P_red = primary.getRed();
         int P_green = primary.getGreen();
         int P_blue = primary.getBlue();
-
-        int S_red = secondary.getRed();
-        int S_green = secondary.getGreen();
-        int S_blue = secondary.getBlue();
 
         switch(style) {
             case Solid:
@@ -100,13 +88,11 @@ public class LEDSubsystem extends SubsystemBase {
                 m_candle.animate(new RainbowAnimation(1.0, m_animSpeed, m_ledCount));
                 break;
                 
-            case Striped:
-                m_candle.setLEDs(0, 0, 0);
-                m_stripedAnimation = new StripedAnimation(m_candle, m_ledCount,
-                                                          P_red, P_green, P_blue,
-                                                          S_red, S_green, S_blue,
-                                                          Constants.LED.speed);
-                m_stripedAnimation.start();
+            case Strobe:
+                m_candle.animate(new LarsonAnimation(P_red, P_green, P_blue, 0,
+                                                    m_animSpeed, 
+                                                    m_ledCount, 
+                                                    LarsonAnimation.BounceMode.Center, 7));
                 break;
                 
             case Upwards:
@@ -124,7 +110,7 @@ public class LEDSubsystem extends SubsystemBase {
                 break;
                 
             default:
-                m_candle.setLEDs(0, 0, 0); // Turn off if unknown style
+                m_candle.setLEDs(0, 0, 0);
                 break;
         }
     }
@@ -134,7 +120,5 @@ public class LEDSubsystem extends SubsystemBase {
     }
     
     @Override
-    public void periodic() {
-        // Animation updates happen automatically
-    }
+    public void periodic() {}
 }
