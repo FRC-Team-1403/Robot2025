@@ -1,11 +1,15 @@
 package team1403.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -19,6 +23,10 @@ public class AlgaeWristSubsystem extends SubsystemBase {
     public AlgaeWristSubsystem() {
         m_algaeWristMotor = new SparkMax(Constants.CanBus.algaeWristMotorID, MotorType.kBrushless);
         m_pid = new ProfiledPIDController(Constants.AlgaeWrist.Kp, Constants.AlgaeWrist.Ki, Constants.AlgaeWrist.Kd, new TrapezoidProfile.Constraints(Constants.AlgaeIntake.maxVelo, Constants.AlgaeIntake.maxAccel));
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.smartCurrentLimit(40);
+        m_algaeWristMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     }
     

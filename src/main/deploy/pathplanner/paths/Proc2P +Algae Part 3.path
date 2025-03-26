@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.971823770491803,
-        "y": 0.32079918032786847
+        "x": 1.3785860655737705,
+        "y": 0.5545594262295083
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.79702868852459,
-        "y": 0.3447745901639361
+        "x": 2.051945679569937,
+        "y": 1.2141556064827757
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Proc2PPart2"
     },
     {
       "anchor": {
-        "x": 4.627254098360655,
-        "y": 2.970081967213115
+        "x": 2.6013319672131145,
+        "y": 3.977049180327869
       },
       "prevControl": {
-        "x": 4.95092213114754,
-        "y": 0.5845286885245913
+        "x": 2.6647226748141613,
+        "y": 3.7352194505801837
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -124.59228868750992
   },
   "useDefaultConstraints": true
 }

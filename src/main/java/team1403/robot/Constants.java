@@ -50,7 +50,7 @@ public class Constants {
     public static final int CANRangeID = 27;
     public static final int wristMotorID = 3;
 
-    public static final int kCandleID = kTBD;
+    public static final int kCandleID = 60;
 
 
     public static final int leftElevatorMotorID = 11;
@@ -96,7 +96,7 @@ public class Constants {
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 
-    public static final double closeAlignDistance = 0.75;
+    public static final double closeAlignDistance = 1.25;
   }
 
   public static class CoralIntake {
@@ -157,7 +157,7 @@ public class Constants {
       public static final double L2 = 17 / 360.;
       public static final double L3 = 20 / 360.;
       public static final double L4 = 41 / 360.;
-      public static final double Source = -16 / 360.; 
+      public static final double Source = - 12 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
     }
@@ -166,7 +166,7 @@ public class Constants {
     public static final double WristKG = 0.51 / 12;
     public static final double WristKV = 0;
 
-    public static final double WristKP = 3.2;//2.7079; //keep testing
+    public static final double WristKP = 3.4;//2.7079; //keep testing
     public static final double WristKI = 0;
     public static final double WristKD = 0.005;//0.69018;
 

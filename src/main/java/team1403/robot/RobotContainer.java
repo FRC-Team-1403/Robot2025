@@ -50,6 +50,7 @@ import team1403.robot.commands.DefaultIntakeCommand;
 import team1403.robot.commands.DefaultSwerveCommand;
 import team1403.robot.commands.DriveWheelCharacterization;
 import team1403.robot.commands.ElevatorCommand;
+import team1403.robot.commands.LightCommand;
 import team1403.robot.commands.StateMachine;
 import team1403.robot.commands.WristCommand;
 import team1403.robot.commands.auto.AutoHelper;
@@ -80,9 +81,9 @@ public class RobotContainer {
   private final CoralIntakeSubsystem m_coralIntake;
   private final StateMachine m_stateMachine;
   private final ClimberSubsystem m_climber;
-  private final AlgaeIntakeSubsystem m_algaeIntake;
-  private final AlgaeWristSubsystem m_algaeWrist;
-  private final LEDSubsystem m_LED;
+  private final LEDSubsystem m_led;
+  // private final AlgaeIntakeSubsystem m_algaeIntake;
+  // private final AlgaeWristSubsystem m_algaeWrist;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController;
@@ -108,9 +109,9 @@ public class RobotContainer {
     m_coralIntake = new CoralIntakeSubsystem();
     m_stateMachine = new StateMachine(m_wrist, m_elevator, m_swerve, m_operatorController.getHID());
     m_climber = new ClimberSubsystem();
-    m_algaeIntake = new AlgaeIntakeSubsystem();
-    m_algaeWrist = new AlgaeWristSubsystem();
-    m_LED = new LEDSubsystem();
+    m_led = new LEDSubsystem();
+    // m_algaeIntake = new AlgaeIntakeSubsystem();
+    // m_algaeWrist = new AlgaeWristSubsystem();
 
     if (AutoBuilder.isConfigured()) m_autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
     else
@@ -157,22 +158,22 @@ public class RobotContainer {
           
       
         if(select == ReefSelect.LEFT) {
-          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.05);
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.05);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
         }
         else {
-          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getDistance() - 0.201)) + 0.03);
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.03);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
             case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
             case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
-            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(1)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
         } 
@@ -187,7 +188,9 @@ public class RobotContainer {
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
     ).finallyDo((interrupted) -> {
-      if(!interrupted) vibrationCmd.schedule();
+      if(!interrupted){
+        vibrationCmd.schedule();
+      }
       //just in case
       Blackbox.setAligning(false);
     });
@@ -258,7 +261,7 @@ public class RobotContainer {
       m_swerve.runOnce(() -> m_swerve.resetShallowHeading(Rotation2d.kZero)),
       m_swerve.runOnce(() -> m_swerve.resetRotation(
         CougarUtil.getAlliance() == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg)),
-      new DeferredCommand(() -> vibrationCmd, Set.of()) //empty set, no requirements
+      vibrationCmd.asProxy()
     ));
 
     //there's really no other good buttons unfortunately
@@ -286,7 +289,7 @@ public class RobotContainer {
     m_operatorController.povUp().debounce(0.5).onTrue(
       Commands.sequence(
         Blackbox.robotStateCmd(State.ManualElevator),
-        opVibrationCmd)
+        opVibrationCmd.asProxy())
     );
 
     
@@ -334,7 +337,8 @@ public class RobotContainer {
     ).withTimeout(2)); */
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
-    m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
+    m_led.setDefaultCommand(new LightCommand(m_led));
+    // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake
     // stop intake
@@ -357,6 +361,13 @@ public class RobotContainer {
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
       ), 4)));
 
+    new Trigger(() -> Blackbox.robotState == State.placing
+      && m_wrist.isAtSetpoint()
+      && m_elevator.isAtSetpoint()
+      && Blackbox.getCloseAlign(m_swerve.getPose())
+      && !Blackbox.isAligning())
+      .debounce(0.1).onTrue(opVibrationCmd);
+
     NamedCommands.registerCommand("CoralScore", 
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());
     NamedCommands.registerCommand("CoralL1", Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L1));
@@ -368,9 +379,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("WaitForCoral", 
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
-      new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.3).withTimeout(3));
-    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
-    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
+      new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
 
    
@@ -378,12 +389,17 @@ public class RobotContainer {
     
     /* Move forward 1 m from any position on the starting line 
       (make sure robot is facing a tag to seed the position) */
-    m_autoChooser.addOption("Move Auto", AutoHelper.getMoveAuto(m_swerve));
-    m_autoChooser.addOption("OneP Center", AutoHelper.getOnePCenter(m_swerve));
-    m_autoChooser.addOption("Two Piece Processor", AutoHelper.getTwoPieceProc(m_swerve));
-    m_autoChooser.addOption("Three Piece Processor", AutoHelper.getThreePieceProc(m_swerve));
-    m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
-    m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
+    m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
+    m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
+    m_autoChooser.addOption("THREE PIECE BACK FINAL NON PROCESSOR SIDE UNTESTED", AutoHelper.getThreePieceBackNonProc(m_swerve));
+    m_autoChooser.addOption("ONE PIECE CENTER UNTESTED", AutoHelper.getOnePCenter(m_swerve));
+    m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
+    m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
+    m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
+    //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
+    //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
+    
+    
   }
    
   /**

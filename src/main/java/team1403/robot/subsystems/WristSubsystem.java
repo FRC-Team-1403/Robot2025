@@ -65,7 +65,8 @@ public class WristSubsystem extends SubsystemBase {
         SparkMaxConfig motorConfig = new SparkMaxConfig();
         motorConfig
             .idleMode(IdleMode.kBrake)
-            .voltageCompensation(12);
+            .voltageCompensation(12)
+            .smartCurrentLimit(40);
         m_wristMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    }
 
@@ -95,8 +96,9 @@ public class WristSubsystem extends SubsystemBase {
         return m_encoder.getVelocity() * 60;
     }
 
+
     public void moveToSetpoint(double targetAngle) {
-        m_profiled.setGoal(targetAngle);
+        m_profiled.setGoal(MathUtil.clamp(targetAngle, -0.23, 0.25));
     }
 
     @AutoLogOutput(key = "Wrist/wrist is at setpoint")
