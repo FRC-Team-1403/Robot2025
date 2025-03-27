@@ -31,7 +31,7 @@ public class Constants {
 
   public static class RioPorts {
     private static final int kTBD = 0;
-    public static final int kServoPort = kTBD;
+    public static final int kServoPort = 0;
 
     public static final int kAlgaeIntakePhotogateID = kTBD;
   }
@@ -93,7 +93,7 @@ public class Constants {
     //top-to-bottom disp = 17.82426 inches
     //public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
     public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(0), 0, Units.degreesToRadians(0));
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396+0.5));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396));
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 
@@ -179,14 +179,14 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upSpeed = 0.5;
-    public static final double downSpeed = -0.5;
+    public static final double upSpeed = 1;
+    public static final double downSpeed = -1;
 
-    public static final double upPosition = 0;
-    public static final double downPosition = 0;
+    public static final double upPosition = 15;
+    public static final double downPosition = -77;
 
-    public static final double clutchEngage = 0;
-    public static final double clutchDisengage = 0;
+    public static final double ratchetDisengage = 0.125;
+    public static final double ratchetEngage = 0;
   }
 
   public static class AlgaeIntake {

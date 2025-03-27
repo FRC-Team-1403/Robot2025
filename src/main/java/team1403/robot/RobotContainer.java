@@ -266,8 +266,19 @@ public class RobotContainer {
     ));
 
     //there's really no other good buttons unfortunately
-    m_driverController.leftStick().onTrue(new ClimberCommand(m_climber, false));
-    m_driverController.rightStick().onTrue(new ClimberCommand(m_climber, true));
+    m_driverController.povDown().whileTrue(
+      Commands.sequence(
+        new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)),
+        Commands.waitSeconds(.2),
+        new ClimberCommand(m_climber, true)
+      )
+    );
+    m_driverController.povUp().whileTrue(new ClimberCommand(m_climber, false));
+    // m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, true));
+
+    // m_driverController.povUp().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetEngage)));
+    // // m_driverController.x().whileTrue(new InstantCommand(() -> m_climber.setServo(.5)));
+    // m_driverController.povDown().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)));
 
     m_operatorController.b()
       .and(() -> Blackbox.robotState != State.ManualElevator)
@@ -339,6 +350,7 @@ public class RobotContainer {
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
     m_led.setDefaultCommand(new LightCommand(m_led));
+    // m_climber.setDefaultCommand(new Command(() -> m_climber.setServo(0)));
     // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake
