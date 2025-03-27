@@ -22,8 +22,7 @@ public class ClimberSubsystem extends SubsystemBase{
     private Servo m_servo;
 
     public ClimberSubsystem(){
-        m_motor = new SparkMax(Constants.CanBus.ClimberMotor, MotorType.kBrushless);
-        m_servo = new Servo(Constants.RioPorts.kServoPort);
+        m_motor = new SparkMax(Constants.CanBus.ClimberMotor, MotorType.kBrushless);        m_servo = new Servo(Constants.RioPorts.kServoPort);
         configMotors();
     }
 
