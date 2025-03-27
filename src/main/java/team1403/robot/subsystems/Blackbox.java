@@ -25,7 +25,8 @@ public class Blackbox {
         aligning,
         placing,
         exiting,
-        ManualElevator
+        ManualElevator,
+        MoveElevator
     }
 
     public enum ReefSelect {

@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Non Proc 3P Part 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Non Proc 3P Part 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Non Proc 3P Part 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Non Proc 3P Part 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Non Proc 3P Part 5 "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Non Proc 3P Part 6"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

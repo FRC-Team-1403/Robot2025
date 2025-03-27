@@ -112,6 +112,11 @@ public class WristSubsystem extends SubsystemBase {
         return getWristAngleDeg() < 0;
     }
 
+    @AutoLogOutput
+    public double wristInaccuracy() {
+        return getWristAngleDeg() - getWristSetpointDeg();
+    }
+
     public void stop() {
         m_wristMotor.set(0);
     }

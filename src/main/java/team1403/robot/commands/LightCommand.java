@@ -3,6 +3,7 @@ package team1403.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.LEDSubsystem;
+import team1403.robot.subsystems.LEDSubsystem.LEDConfig;
 
 public class LightCommand extends Command{
     
@@ -27,22 +28,23 @@ public class LightCommand extends Command{
     public void execute() {
         switch(Blackbox.robotState){
             case loading:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Yellow);
+                m_LED.setLEDcolor(LEDConfig.Color.Yellow);
             break;
             case driving:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Green);
+                m_LED.setLEDcolor(LEDConfig.Color.Green);
             break;
             case aligning:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Blue);
+                m_LED.setLEDcolor(LEDConfig.Color.Blue);
             break;
             case placing:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Pink);
+                m_LED.setLEDcolor(LEDConfig.Color.Pink);
             break;
             case exiting:
-                m_LED.setLEDcolor(LEDSubsystem.Color.Red);
+                m_LED.setLEDcolor(LEDConfig.Color.Red);
             break;
             case ManualElevator:
-                m_LED.setLEDcolor(LEDSubsystem.Color.White);
+            case MoveElevator:
+                m_LED.setLEDcolor(LEDConfig.Color.White);
             break;
         }
 
