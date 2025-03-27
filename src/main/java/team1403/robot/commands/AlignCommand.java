@@ -23,7 +23,7 @@ public class AlignCommand extends Command {
     //Variable for local copy of Pathplanner state
     private PathPlannerTrajectoryState m_state;
     //Variable for local copy of the maximum faliure treshold
-    private static final double kTreshM = 0.01;
+    private static final double kTreshM = 0.015;
 
     /**
      *  Aligns to a certain target
