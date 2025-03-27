@@ -89,6 +89,7 @@ public class StateMachine extends Command {
                 break;
             }
             case ManualElevator:
+            case MoveElevator:
                 break;
         }
     }

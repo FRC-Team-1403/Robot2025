@@ -216,7 +216,8 @@ public class RobotContainer {
 
     //new Trigger(() -> true).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
-      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator).whileTrue(m_stateMachine);
+      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator
+      && Blackbox.robotState != Blackbox.State.MoveElevator).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
       .and(() -> Blackbox.robotState == Blackbox.State.ManualElevator).whileTrue(
         Commands.run(() -> {
@@ -275,7 +276,7 @@ public class RobotContainer {
     m_operatorController.a()
       .and(() -> Blackbox.robotState != State.ManualElevator)
       .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
-    m_operatorController.x()
+    m_operatorController.x() 
       .and(() -> Blackbox.robotState != State.ManualElevator)
       .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     m_operatorController.y()
@@ -298,34 +299,43 @@ public class RobotContainer {
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.a()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.x()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.y()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4),
+        Blackbox.robotStateCmd(State.ManualElevator)
     ));
     m_operatorController.povRight()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
     ));
