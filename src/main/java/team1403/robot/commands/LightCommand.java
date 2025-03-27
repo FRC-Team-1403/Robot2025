@@ -43,6 +43,7 @@ public class LightCommand extends Command{
                 m_LED.setLEDcolor(LEDConfig.Color.Red);
             break;
             case ManualElevator:
+            case MoveElevator:
                 m_LED.setLEDcolor(LEDConfig.Color.White);
             break;
         }
