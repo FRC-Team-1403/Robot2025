@@ -349,6 +349,7 @@ public class RobotContainer {
         Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+        //switch back to manual elevator intentionally omitted
     ));
     /*
     m_operatorController.rightBumper()
