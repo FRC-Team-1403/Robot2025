@@ -352,7 +352,7 @@ public class RobotContainer {
         //switch back to manual elevator intentionally omitted
     ));
     m_operatorController.povDown()
-        //`.and(() -> Blackbox.robotState == State.ManualElevator)
+        //.and(() -> Blackbox.robotState == State.ManualElevator)
         .onTrue(
           Commands.sequence(Blackbox.robotStateCmd(State.MoveElevator),
           new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
