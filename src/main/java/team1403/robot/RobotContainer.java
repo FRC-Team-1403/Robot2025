@@ -236,8 +236,8 @@ public class RobotContainer {
         () -> -m_driverController.getLeftX(),
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getYButton(),
+        () -> m_driverController.getHID().getPOV() == 180,
+        () -> m_driverController.getHID().getPOV() == 0,
         () -> m_driverController.getHID().getAButton(),
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
@@ -267,14 +267,14 @@ public class RobotContainer {
     ));
 
     //there's really no other good buttons unfortunately
-    m_driverController.povDown().whileTrue(
+    m_driverController.x().whileTrue(
       Commands.sequence(
         new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)),
         Commands.waitSeconds(.2),
         new ClimberCommand(m_climber, true)
       )
     );
-    m_driverController.povUp().whileTrue(new ClimberCommand(m_climber, false));
+    m_driverController.y().whileTrue(new ClimberCommand(m_climber, false));
     // m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, true));
 
     // m_driverController.povUp().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetEngage)));
