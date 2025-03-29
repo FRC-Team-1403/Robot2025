@@ -222,9 +222,9 @@ public class RobotContainer {
       .and(() -> Blackbox.robotState == Blackbox.State.ManualElevator).whileTrue(
         Commands.run(() -> {
           m_elevator.moveToSetpoint(m_elevator.getSetpoint() - 
-            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 32);
+            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 50);
             m_wrist.moveToSetpoint(m_wrist.getSetpoint() + 
-            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
+            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 5.0);
         }, m_elevator, m_wrist));
     //Logs elevator + wrist mechanism in advantage kit
     new CoralMechanism(m_wrist, m_elevator).ignoringDisable(true).schedule();
@@ -343,13 +343,21 @@ public class RobotContainer {
         Blackbox.robotStateCmd(State.ManualElevator)
     ));
     m_operatorController.povRight()
-      .and(() -> Blackbox.robotState == State.ManualElevator)
+      //.and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
         Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
         //switch back to manual elevator intentionally omitted
+    ));
+    m_operatorController.povDown()
+        //`.and(() -> Blackbox.robotState == State.ManualElevator)
+        .onTrue(
+          Commands.sequence(Blackbox.robotStateCmd(State.MoveElevator),
+          new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
+          new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)
+          //Blackbox.robotStateCmd(State.ManualElevator)
     ));
     /*
     m_operatorController.rightBumper()

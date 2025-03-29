@@ -149,6 +149,8 @@ public class Constants {
       public static final double Source = 1;
       public static final double Current = 1;
       public static final double Min = 1;
+      public static final double Max = 61;
+      public static final double Barge = 60;
     }
 }
 
@@ -161,6 +163,7 @@ public class Constants {
       public static final double Source = - 12 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
+      public static final double Barge = -75 / 360;
     }
 
     public static final double WristKS = 0;
