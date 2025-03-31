@@ -177,15 +177,18 @@ public class RobotContainer {
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
-        } 
+        }
+
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(1.5);
 
         if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
           return Commands.sequence(
             AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
-            new AlignCommand(m_swerve, target)
+            finalAlign
           );
         else
-          return new AlignCommand(m_swerve, target);
+          return finalAlign;
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
     ).finallyDo((interrupted) -> {
@@ -297,6 +300,7 @@ public class RobotContainer {
     m_operatorController.rightBumper().onTrue(
       Commands.sequence(
         Blackbox.robotStateCmd(State.loading),
+        Blackbox.reefScoreLevelCmd(ReefScoreLevel.drive),
         Blackbox.setAligningCmd(false)));
 
     m_operatorController.povUp().debounce(0.5).onTrue(
@@ -420,6 +424,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2.7));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2.7));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
+    NamedCommands.registerCommand("AutoWiggle", Commands.sequence(
+      //initially run inward
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
+      //then wiggle
+      new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4).asProxy() //runs inward for longer to avoid piece falling out
+    ), 2))); //wiggle twice, 0.3 + 0.7 * 2 = 1.7 s total ... not good (tune the timing)
 
    
 
