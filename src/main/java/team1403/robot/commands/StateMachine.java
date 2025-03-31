@@ -47,7 +47,7 @@ public class StateMachine extends Command {
                 }
                 break;
             case driving: 
-                if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
+                if(Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 if(Blackbox.isAligning() && Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     Blackbox.robotState = State.aligning;
@@ -55,7 +55,7 @@ public class StateMachine extends Command {
             case aligning:
                 if(Blackbox.isAligning() && Blackbox.getCloseAlign(m_swerve.getPose()) && Blackbox.reefLevel == Blackbox.ReefScoreLevel.L4)
                     Blackbox.robotState = State.placing;
-                if(!Blackbox.isAligning())
+                if(!Blackbox.isAligning() && Blackbox.reefLevel != Blackbox.ReefScoreLevel.L4) //l4 goes really high, so let's wait until we are close
                     Blackbox.robotState = State.placing;
                 break;
             case placing:
