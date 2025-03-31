@@ -177,15 +177,18 @@ public class RobotContainer {
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
-        } 
+        }
+
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(1.5);
 
         if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
           return Commands.sequence(
             AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
-            new AlignCommand(m_swerve, target)
+            finalAlign
           );
         else
-          return new AlignCommand(m_swerve, target);
+          return finalAlign;
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
     ).finallyDo((interrupted) -> {
@@ -416,8 +419,8 @@ public class RobotContainer {
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
-    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2));
-    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
 
    
