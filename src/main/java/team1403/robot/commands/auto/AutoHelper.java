@@ -109,7 +109,10 @@ public class AutoHelper {
                 //Commands.waitSeconds(0.05),
                 // alignToStartingPose(m_swerve, "Proc2P Part 2"),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
@@ -121,7 +124,10 @@ public class AutoHelper {
                     AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve)
                 ),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),

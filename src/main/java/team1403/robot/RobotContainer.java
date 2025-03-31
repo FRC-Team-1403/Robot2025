@@ -422,6 +422,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
+    NamedCommands.registerCommand("AutoWiggle", Commands.sequence(
+      //initially run inward
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
+      //then wiggle
+      new RepeatNTimes(Commands.sequence(
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4).asProxy() //runs inward for longer to avoid piece falling out
+    ), 2))); //wiggle twice, 0.3 + 0.7 * 2 = 1.7 s total ... not good (tune the timing)
 
    
 
