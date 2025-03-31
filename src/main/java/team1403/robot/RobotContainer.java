@@ -300,6 +300,7 @@ public class RobotContainer {
     m_operatorController.rightBumper().onTrue(
       Commands.sequence(
         Blackbox.robotStateCmd(State.loading),
+        Blackbox.reefScoreLevelCmd(ReefScoreLevel.drive),
         Blackbox.setAligningCmd(false)));
 
     m_operatorController.povUp().debounce(0.5).onTrue(
