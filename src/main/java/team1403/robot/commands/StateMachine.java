@@ -46,8 +46,8 @@ public class StateMachine extends Command {
                     if (Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 }
                 break;
-            case driving: 
-                if(Blackbox.reefLevel != Blackbox.reefLevel.drive)
+            case driving:
+                if(Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 if(Blackbox.isAligning() && Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     Blackbox.robotState = State.aligning;
@@ -92,6 +92,11 @@ public class StateMachine extends Command {
             case MoveElevator:
                 break;
         }
+
+        /*
+        if(!Blackbox.isCoralLoaded()) {
+            Blackbox.robotState = State.loading;
+        } */
     }
 
     @Override

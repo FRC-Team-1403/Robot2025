@@ -185,7 +185,7 @@ public class Constants {
     public static final double upSpeed = 1;
     public static final double downSpeed = -1;
 
-    public static final double upPosition = 15;
+    public static final double upPosition = 13;
     public static final double downPosition = -77;
 
     public static final double ratchetDisengage = 0.125;

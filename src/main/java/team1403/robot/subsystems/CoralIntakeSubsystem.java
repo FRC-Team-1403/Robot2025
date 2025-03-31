@@ -25,7 +25,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
     private LinearFilter m_filter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 10, Constants.kLoopTime);
-    private Debouncer m_debouncer = new Debouncer(0.4, DebounceType.kRising);
+    private Debouncer m_debouncer = new Debouncer(0.15, DebounceType.kRising);
 
     public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);

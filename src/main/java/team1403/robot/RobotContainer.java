@@ -391,7 +391,7 @@ public class RobotContainer {
         new RepeatNTimes(Commands.sequence(
           new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
-      ), 4)));
+      ), 1)));
 
     new Trigger(() -> Blackbox.robotState == State.placing
       && m_wrist.isAtSetpoint()
@@ -413,11 +413,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("WaitForPlace", 
       Commands.waitUntil(() -> !Blackbox.isCoralLoaded()).withTimeout(0.1));
     NamedCommands.registerCommand("WaitForCoral", 
+
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
-    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2));
-    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2.7));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2.7));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
 
    
