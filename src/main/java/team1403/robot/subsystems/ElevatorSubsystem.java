@@ -109,7 +109,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void safeMove(double target) {
         if(Blackbox.isElevatorSafe())
             setpoint = target;
-        setpoint = Math.max(setpoint, Constants.Elevator.Setpoints.Min);
+        setpoint = MathUtil.clamp(setpoint,
+            Constants.Elevator.Setpoints.Min, 
+            Constants.Elevator.Setpoints.Max);
     }
 
     public double getSetpoint() {

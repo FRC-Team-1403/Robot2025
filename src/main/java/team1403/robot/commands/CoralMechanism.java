@@ -55,7 +55,8 @@ public class CoralMechanism extends Command {
         //Updates the wrist angle in advantage scope by rotating the mechanism
         m_wristMech.setAngle(Rotation2d.fromRotations(m_wrist.getWristAngle() + 0.25));
         //Logs the mechanism
-        Logger.recordOutput("CoralMechanism", m_mechanism);
+        if (Constants.DEBUG_MODE)
+            Logger.recordOutput("CoralMechanism", m_mechanism);
     }
 
     @Override

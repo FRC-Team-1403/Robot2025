@@ -60,6 +60,7 @@ import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
+import team1403.robot.subsystems.LEDSubsystem.LEDConfig;
 import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 import team1403.robot.subsystems.ElevatorSubsystem;
@@ -215,14 +216,15 @@ public class RobotContainer {
 
     //new Trigger(() -> true).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
-      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator).whileTrue(m_stateMachine);
+      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator
+      && Blackbox.robotState != Blackbox.State.MoveElevator).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
       .and(() -> Blackbox.robotState == Blackbox.State.ManualElevator).whileTrue(
         Commands.run(() -> {
           m_elevator.moveToSetpoint(m_elevator.getSetpoint() - 
-            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 32);
+            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 50);
             m_wrist.moveToSetpoint(m_wrist.getSetpoint() + 
-            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
+            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 5.0);
         }, m_elevator, m_wrist));
     //Logs elevator + wrist mechanism in advantage kit
     new CoralMechanism(m_wrist, m_elevator).ignoringDisable(true).schedule();
@@ -234,8 +236,8 @@ public class RobotContainer {
         () -> -m_driverController.getLeftX(),
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getYButton(),
+        () -> m_driverController.getHID().getPOV() == 180,
+        () -> m_driverController.getHID().getPOV() == 0,
         () -> m_driverController.getHID().getAButton(),
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
@@ -265,8 +267,19 @@ public class RobotContainer {
     ));
 
     //there's really no other good buttons unfortunately
-    m_driverController.leftStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    m_driverController.rightStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_driverController.x().whileTrue(
+      Commands.sequence(
+        new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)),
+        Commands.waitSeconds(.2),
+        new ClimberCommand(m_climber, true)
+      )
+    );
+    m_driverController.y().whileTrue(new ClimberCommand(m_climber, false));
+    // m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, true));
+
+    // m_driverController.povUp().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetEngage)));
+    // // m_driverController.x().whileTrue(new InstantCommand(() -> m_climber.setServo(.5)));
+    // m_driverController.povDown().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)));
 
     m_operatorController.b()
       .and(() -> Blackbox.robotState != State.ManualElevator)
@@ -274,7 +287,7 @@ public class RobotContainer {
     m_operatorController.a()
       .and(() -> Blackbox.robotState != State.ManualElevator)
       .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
-    m_operatorController.x()
+    m_operatorController.x() 
       .and(() -> Blackbox.robotState != State.ManualElevator)
       .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     m_operatorController.y()
@@ -297,36 +310,54 @@ public class RobotContainer {
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.a()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.x()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.y()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4),
+        Blackbox.robotStateCmd(State.ManualElevator)
     ));
     m_operatorController.povRight()
-      .and(() -> Blackbox.robotState == State.ManualElevator)
+      //.and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+        //switch back to manual elevator intentionally omitted
+    ));
+    m_operatorController.povDown()
+        //.and(() -> Blackbox.robotState == State.ManualElevator)
+        .onTrue(
+          Commands.sequence(Blackbox.robotStateCmd(State.MoveElevator),
+          new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
+          new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)
+          //Blackbox.robotStateCmd(State.ManualElevator)
     ));
     /*
     m_operatorController.rightBumper()
@@ -338,6 +369,7 @@ public class RobotContainer {
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
     m_led.setDefaultCommand(new LightCommand(m_led));
+    // m_climber.setDefaultCommand(new Command(() -> m_climber.setServo(0)));
     // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake
@@ -359,14 +391,18 @@ public class RobotContainer {
         new RepeatNTimes(Commands.sequence(
           new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
-      ), 4)));
+      ), 1)));
 
     new Trigger(() -> Blackbox.robotState == State.placing
       && m_wrist.isAtSetpoint()
       && m_elevator.isAtSetpoint()
       && Blackbox.getCloseAlign(m_swerve.getPose())
       && !Blackbox.isAligning())
-      .debounce(0.1).onTrue(opVibrationCmd);
+      .debounce(0.1).onTrue(
+        Commands.parallel(
+        opVibrationCmd.asProxy(), 
+        m_led.requestState(LEDConfig.Style.Strobe, LEDConfig.Color.Green).repeatedly()
+        .until(() -> !Blackbox.isCoralLoaded())));
 
     NamedCommands.registerCommand("CoralScore", 
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());
@@ -377,11 +413,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("WaitForPlace", 
       Commands.waitUntil(() -> !Blackbox.isCoralLoaded()).withTimeout(0.1));
     NamedCommands.registerCommand("WaitForCoral", 
+
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
-    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2));
-    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2.7));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2.7));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
 
    
@@ -391,6 +428,7 @@ public class RobotContainer {
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
     m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
+    m_autoChooser.addOption("THREE PIECE BACK FINAL NON PROCESSOR SIDE UNTESTED", AutoHelper.getThreePieceBackNonProc(m_swerve));
     m_autoChooser.addOption("ONE PIECE CENTER UNTESTED", AutoHelper.getOnePCenter(m_swerve));
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
