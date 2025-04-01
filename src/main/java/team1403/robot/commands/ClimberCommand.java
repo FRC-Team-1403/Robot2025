@@ -30,10 +30,8 @@ public class ClimberCommand extends Command {
 
     @Override
     public void initialize() {
-        if(isGoingDown){
             m_climber.setServo(Constants.Climber.ratchetDisengage);
             Commands.waitSeconds(2);
-        }
         // m_timer.reset();
     }
 
