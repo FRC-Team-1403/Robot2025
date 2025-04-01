@@ -36,6 +36,24 @@ public class Constants {
     public static final int kAlgaeIntakePhotogateID = kTBD;
   }
 
+  public static class Swerve {
+    public static final double KpDrive = 0.14923;
+    public static final double KiDrive = 0;
+    public static final double KdDrive = 0;
+
+    public static final double KsDrive = 0.13382;
+    public static final double KvDrive = 0.11367;
+    public static final double KaDrive = 0.0074265;
+
+    public static final double KpSteer = 65;
+    public static final double KiSteer = 0;
+    public static final double KdSteer = 0;
+
+    public static final double KsSteer = 0.01;
+    public static final double KvSteer = 2.62;
+    public static final double KaSteer = 0;
+  }
+
   /**
    * Configures the CAN bus. These are grouped together
    * rather than by subsystem to more easily detect conflict
