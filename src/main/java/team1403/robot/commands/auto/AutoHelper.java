@@ -37,7 +37,7 @@ public class AutoHelper {
         try {
             return Commands.sequence(
                 Commands.parallel(
-                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve),
+                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve, true),
                     Commands.sequence(
                         Commands.waitSeconds(0.75),
                         NamedCommands.getCommand("CoralL4"))
@@ -45,6 +45,7 @@ public class AutoHelper {
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
+                Commands.waitSeconds(1),
                 NamedCommands.getCommand("Loading")
             );
         } catch (Exception e) {
@@ -106,8 +107,6 @@ public class AutoHelper {
                 NamedCommands.getCommand("Loading"),
                 Commands.waitSeconds(0.1),
                 AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
-                //Commands.waitSeconds(0.05),
-                // alignToStartingPose(m_swerve, "Proc2P Part 2"),
                 NamedCommands.getCommand("WaitForCoral"),
                 Commands.parallel(
                     AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
@@ -119,8 +118,6 @@ public class AutoHelper {
                 NamedCommands.getCommand("CoralScore"),
                 Commands.parallel(
                     NamedCommands.getCommand("Loading"),
-                // Commands.waitSeconds(0.05),
-                //alignToStartingPose(m_swerve, "3p Part 4"),
                     AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve)
                 ),
                 NamedCommands.getCommand("WaitForCoral"),
@@ -151,16 +148,20 @@ public class AutoHelper {
                     AutoUtil.loadPathPlannerPath("Non Proc 3P Part 1", m_swerve, true),
                     Commands.sequence(
                         Commands.waitSeconds(0.75),
-                        NamedCommands.getCommand("CoralL4"))
+                        NamedCommands.getCommand("CoralL4")
+                    )
                 ),
-                NamedCommands.getCommand("ReefAlignL"),
+                NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
                 Commands.waitSeconds(0.1),
                 AutoUtil.loadPathPlannerPath("Non Proc 3P Part 2", m_swerve),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Non Proc 3P Part 3", m_swerve),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 3", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
@@ -170,7 +171,10 @@ public class AutoHelper {
                     AutoUtil.loadPathPlannerPath("Non Proc 3P Part 4", m_swerve)
                 ),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Non Proc 3P Part 5", m_swerve),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 5", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
@@ -178,14 +182,14 @@ public class AutoHelper {
                 Commands.parallel(
                     NamedCommands.getCommand("Loading"),
                     AutoUtil.loadPathPlannerPath("Non Proc 3P Part 6", m_swerve)
-                )
-                
+                )      
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
             return Commands.none();
         }
     }
+    
 
     public static Command testAutoAlign(SwerveSubsystem m_swerve){
         try{

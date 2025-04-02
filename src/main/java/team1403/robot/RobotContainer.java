@@ -394,7 +394,7 @@ public class RobotContainer {
         new RepeatNTimes(Commands.sequence(
           new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
-      ), 1)));
+      ), 2)));
 
     new Trigger(() -> Blackbox.robotState == State.placing
       && m_wrist.isAtSetpoint()
@@ -424,13 +424,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2.7));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
     NamedCommands.registerCommand("AutoWiggle", Commands.sequence(
+      Commands.waitSeconds(0.2),
       //initially run inward
-      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.1).asProxy(),
       //then wiggle
       new RepeatNTimes(Commands.sequence(
         new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4).asProxy() //runs inward for longer to avoid piece falling out
-    ), 2))); //wiggle twice, 0.3 + 0.7 * 2 = 1.7 s total ... not good (tune the timing)
+    ), 2))); //wiggle twice, 0.1 + 0.7 * 2 + 0.2 = 1.7 s total ... not good (tune the timing)
 
    
 
