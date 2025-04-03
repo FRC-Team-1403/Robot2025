@@ -444,6 +444,8 @@ public class RobotContainer {
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
+    m_autoChooser.addOption("auto wiggle", AutoHelper.autoWiggle(m_swerve));
+    
     //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
     

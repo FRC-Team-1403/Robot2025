@@ -190,6 +190,16 @@ public class AutoHelper {
         }
     }
     
+    public static Command autoWiggle(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                NamedCommands.getCommand("AutoWiggle")
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
 
     public static Command testAutoAlign(SwerveSubsystem m_swerve){
         try{
