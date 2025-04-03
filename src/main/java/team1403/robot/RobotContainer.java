@@ -422,19 +422,19 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
-    NamedCommands.registerCommand("AutoWiggle", Commands.sequence(
-      Commands.waitSeconds(0.2),
-      //initially run inward
-      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.1).asProxy(),
-      //then wiggle
-      new RepeatNTimes(Commands.sequence(
-        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.2).asProxy(),
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy() //runs inward for longer to avoid piece falling out
-    ), 2))); //wiggle twice, 0.1 + 0.5 * 2 + 0.2 = 1.3 s total ... not good (tune the timing)
-
-   
-
     
+    NamedCommands.registerCommand("AutoWiggle", 
+      Commands.sequence(
+        //initially run inward
+        Commands.waitSeconds(0.1),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.1).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.25).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.15).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.25).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.15).asProxy()
+        
+      )); //wiggle twice, 0.1 + 0.5 * 2 + 0.2 = 1.3 s total ... not good (tune the timing)
+   
     /* Move forward 1 m from any position on the starting line 
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
@@ -444,6 +444,7 @@ public class RobotContainer {
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
+    m_autoChooser.addOption("wiggle test", AutoHelper.wiggle(m_swerve));
     //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
     

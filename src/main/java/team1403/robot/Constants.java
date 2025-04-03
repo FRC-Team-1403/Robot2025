@@ -115,7 +115,7 @@ public class Constants {
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 
-    public static final Transform3d kLimelight2Transform = new Transform3d(kCameraOffset, new Rotation3d(0, 0, Math.PI)); //TODO: TUNE!
+    //public static final Transform3d kLimelight2Transform = new Transform3d(kCameraOffset, new Rotation3d(0, 0, Math.PI)); //TODO: TUNE!
 
     public static final double closeAlignDistance = 1.25;
   }
@@ -202,10 +202,10 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upSpeed = 1;
-    public static final double downSpeed = -1;
+    public static final double upSpeed = 0.8;
+    public static final double downSpeed = -0.8;
 
-    public static final double upPosition = 13;
+    public static final double upPosition = 18;
     public static final double downPosition = -77;
 
     public static final double ratchetDisengage = 0.125;

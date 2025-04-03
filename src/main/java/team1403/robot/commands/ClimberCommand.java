@@ -49,7 +49,7 @@ public class ClimberCommand extends Command {
             if(m_climber.getMotorPosition() > Constants.Climber.downPosition)
                 m_climber.setMotorSpeed(Constants.Climber.downSpeed);
         } else {
-            m_climber.setServo(Constants.Climber.ratchetEngage);
+            m_climber.setServo(Constants.Climber.ratchetDisengage);
             if(m_climber.getMotorPosition() < Constants.Climber.upPosition)
                 m_climber.setMotorSpeed(Constants.Climber.upSpeed);
         }
