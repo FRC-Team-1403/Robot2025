@@ -416,7 +416,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("WaitForPlace", 
       Commands.waitUntil(() -> !Blackbox.isCoralLoaded()).withTimeout(0.1));
     NamedCommands.registerCommand("WaitForCoral", 
-
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
@@ -429,9 +428,9 @@ public class RobotContainer {
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.1).asProxy(),
       //then wiggle
       new RepeatNTimes(Commands.sequence(
-        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy(),
-        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4).asProxy() //runs inward for longer to avoid piece falling out
-    ), 2))); //wiggle twice, 0.1 + 0.7 * 2 + 0.2 = 1.7 s total ... not good (tune the timing)
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.2).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3).asProxy() //runs inward for longer to avoid piece falling out
+    ), 2))); //wiggle twice, 0.1 + 0.5 * 2 + 0.2 = 1.3 s total ... not good (tune the timing)
 
    
 
