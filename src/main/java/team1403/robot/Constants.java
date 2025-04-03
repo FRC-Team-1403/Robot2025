@@ -203,7 +203,8 @@ public class Constants {
 
   public static class Climber {
     public static final double upSpeed = 0.8;
-    public static final double downSpeed = -0.8;
+    public static final double downSpeed = -1;
+    
 
     public static final double upPosition = 18;
     public static final double downPosition = -77;
