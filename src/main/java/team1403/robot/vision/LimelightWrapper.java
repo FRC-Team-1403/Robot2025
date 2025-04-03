@@ -162,10 +162,9 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
                     Optional<Pose3d> pose = Constants.Vision.kFieldLayout.getTagPose(f.id);
                     if(pose.isPresent()) targets.add(pose.get());
                 }
-                Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
             }
         }
-        
+        Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
         
     }
 }
