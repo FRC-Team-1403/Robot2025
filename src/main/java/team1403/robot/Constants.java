@@ -115,7 +115,7 @@ public class Constants {
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
 
-    
+    public static final Transform3d kLimelight2Transform = new Transform3d(kCameraOffset, new Rotation3d(0, 0, Math.PI)); //TODO: TUNE!
 
     public static final double closeAlignDistance = 1.25;
   }
