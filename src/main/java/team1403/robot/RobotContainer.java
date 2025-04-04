@@ -147,7 +147,7 @@ public class RobotContainer {
   }
 
   private Command getAlignCommand(ReefSelect select) {
-    double timeout = 1.8;
+    double timeout = 1.7;
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     return Commands.sequence(
       Blackbox.setAligningCmd(true),
