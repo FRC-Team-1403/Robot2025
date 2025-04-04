@@ -119,7 +119,7 @@ public class Constants {
         new Translation3d(
           Units.inchesToMeters(3.123) - 0.08,
           Units.inchesToMeters(-0.495) + 0.02,
-          Units.inchesToMeters(17.936)
+          Units.inchesToMeters(17.936) - 0.05
         ), new Rotation3d(Math.PI, 0, Math.PI)); //TODO: TUNE!
 
     public static final double closeAlignDistance = 1.25;
@@ -185,7 +185,7 @@ public class Constants {
       public static final double L2 = 17 / 360.;
       public static final double L3 = 20 / 360.;
       public static final double L4 = 41 / 360.;
-      public static final double Source = -12 / 360.; 
+      public static final double Source = -17.5 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
       public static final double Barge = -75. / 360.;
@@ -212,7 +212,7 @@ public class Constants {
     public static final double downSpeed = -1;
     
 
-    public static final double upPosition = 18;
+    public static final double upPosition = 30;
     public static final double downPosition = -77;
 
     public static final double ratchetDisengage = 0.125;
