@@ -440,7 +440,7 @@ public class RobotContainer {
       .debounce(0.3, DebounceType.kFalling).whileTrue(
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
     );
-    m_operatorController.leftStick().onTrue(
+    m_operatorController.leftTrigger().onTrue(
       Commands.sequence(
         //initially run inward
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3),
