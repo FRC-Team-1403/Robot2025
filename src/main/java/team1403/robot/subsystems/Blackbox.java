@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -231,7 +232,7 @@ public class Blackbox {
     
     public static Pose2d getNearestAlignPositionReef(Pose2d currentPose) {
         Pose2d nearest = null;
-        if (isCoralLoaded()) nearest = getNearestHeuristic(currentPose, getReefPoses());
+        if (isCoralLoaded() || DriverStation.isAutonomous()) nearest = getNearestHeuristic(currentPose, getReefPoses());
         if (nearest == null) return null;
         if (CougarUtil.getDistance(currentPose, nearest) > kMaxAlignDist) return null;
 
