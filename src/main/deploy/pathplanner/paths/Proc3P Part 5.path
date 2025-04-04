@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6034983160009455,
-        "y": 3.0165137528820867
+        "x": 4.06001084483205,
+        "y": 2.7843665031316966
       },
       "isLocked": false,
       "linkedName": "Proc2Part4"
     },
     {
       "anchor": {
-        "x": 3.380532786885246,
-        "y": 2.3527151639344277
+        "x": 3.4164959016393444,
+        "y": 2.34672131147541
       },
       "prevControl": {
-        "x": 2.623180716336763,
-        "y": 1.9062829579977385
+        "x": 2.9064023128329173,
+        "y": 2.138533048038979
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.24946695095948712,
+      "rotationDegrees": 37.756118012436026
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 58.324531261890805
+    "rotation": 59.53445508054019
   },
   "reversed": false,
   "folder": null,
