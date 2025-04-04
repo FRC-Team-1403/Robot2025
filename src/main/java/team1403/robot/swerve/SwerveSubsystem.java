@@ -177,9 +177,9 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         m_cameras.add(new LimelightWrapper("limelight", 
             () -> Constants.Vision.kLimelightTransform,
             () -> new Rotation3d(getRotation())));
-        /*m_cameras.add(new LimelightWrapper("limelight-twoplus", 
+        m_cameras.add(new LimelightWrapper("limelight-twoplus", 
             () -> Constants.Vision.kLimelight2Transform,
-            () -> new Rotation3d(getRotation())));*/
+            () -> new Rotation3d(getRotation())));
         //test camera for simulation
         if(Robot.isSimulation())
             m_cameras.add(new AprilTagCamera("simlimelight", 
@@ -343,8 +343,10 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         {
             //todo: pass this consumer into the contructor in the future
             c.refreshEstimate((VisionData data) -> {
-                if(data.pose != null) //last minute safety check!
-                    addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdv);
+                if(data.pose != null){ //last minute safety check!
+                    if(!(c.getName().equals("limelight-twoplus") && DriverStation.isAutonomous())) //ignore back limelight in auto
+                        addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdv);
+                }
             });
         }
 
