@@ -179,7 +179,7 @@ public class RobotContainer {
         }
 
         Command finalAlign = new AlignCommand(m_swerve, target);
-        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(1.5);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(1.8);
 
         if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
           return Commands.sequence(
