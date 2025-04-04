@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
@@ -42,11 +43,51 @@ public class AutoHelper {
                         Commands.waitSeconds(0.75),
                         NamedCommands.getCommand("CoralL4"))
                 ),
+                Commands.waitSeconds(1),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 Commands.waitSeconds(1),
-                NamedCommands.getCommand("Loading")
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
+                NamedCommands.getCommand("Barge L3"),
+                NamedCommands.getCommand("ReefAlignCenter"),
+                Commands.race(
+                    NamedCommands.getCommand("Algae Harvest"),
+                    Commands.sequence(
+                        Commands.waitSeconds(3.0),
+                        AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
+                        NamedCommands.getCommand("AutoBarge")
+                    )
+                ),
+                AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
+
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
+    public static Command getOnePCenterAlgae(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.waitSeconds(1),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
+                NamedCommands.getCommand("Barge L3")
+                // NamedCommands.getCommand("ReefAlignCenter"),
+                // NamedCommands.getCommand("Algae Harvest"),
+                // Commands.waitSeconds(4)      
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());

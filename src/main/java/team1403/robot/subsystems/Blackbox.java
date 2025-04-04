@@ -32,7 +32,8 @@ public class Blackbox {
 
     public enum ReefSelect {
         LEFT,
-        RIGHT
+        RIGHT,
+        CENTER
     }
 
     public enum ReefScoreLevel {

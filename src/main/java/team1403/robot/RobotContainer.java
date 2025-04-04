@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -168,7 +169,7 @@ public class RobotContainer {
             case drive: default: /* do nothing */ break;
           }
         }
-        else {
+        else if(select == ReefSelect.RIGHT){
           target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.03);
           switch(Blackbox.reefLevel) {
             case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
@@ -199,6 +200,44 @@ public class RobotContainer {
       Blackbox.setAligning(false);
     });
   }
+
+  private Command getAlignCommandCenter() {
+    final double timeout = 1.4;
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    return Commands.sequence(
+      Blackbox.setAligningCmd(true),
+      new DeferredCommand(() -> {
+        
+        Pose2d currentPose = m_swerve.getPose();
+        Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+        if (target == null) return Commands.none();
+          
+        
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.13);
+          target = CougarUtil.addDistanceToPose(target, 0.15);
+        
+
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
+
+        if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
+          return Commands.sequence(
+            AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
+            finalAlign
+          );
+        else
+          return finalAlign;
+      }, Set.of(m_swerve)),
+      Blackbox.setAligningCmd(false)
+    ).finallyDo((interrupted) -> {
+      if(!interrupted){
+        vibrationCmd.schedule();
+      }
+      //just in case
+      Blackbox.setAligning(false);
+    });
+  }
+
 
   private Command getAlignCommand(ReefSelect select, double timeout) {
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
@@ -483,7 +522,16 @@ public class RobotContainer {
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
     NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
+    NamedCommands.registerCommand("ReefAlignCenter", getAlignCommandCenter());
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
+    NamedCommands.registerCommand("Barge L3", Commands.sequence(
+      Blackbox.robotStateCmd(State.MoveElevator),
+      new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae).asProxy(), 
+      new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source).asProxy()
+  ));
+
+  NamedCommands.registerCommand("Algae Harvest", 
+      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).asProxy());
     
     NamedCommands.registerCommand("AutoWiggle", 
       Commands.sequence(
@@ -509,6 +557,7 @@ public class RobotContainer {
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
     m_autoChooser.addOption("wiggle test", AutoHelper.wiggle(m_swerve));
+    m_autoChooser.addOption("One piece algae", AutoHelper.getOnePCenterAlgae(m_swerve));
     //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
     
