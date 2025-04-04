@@ -147,6 +147,7 @@ public class RobotContainer {
   }
 
   private Command getAlignCommand(ReefSelect select) {
+    double timeout = 1.8;
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     return Commands.sequence(
       Blackbox.setAligningCmd(true),
@@ -179,7 +180,60 @@ public class RobotContainer {
         }
 
         Command finalAlign = new AlignCommand(m_swerve, target);
-        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(1.8);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
+
+        if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
+          return Commands.sequence(
+            AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
+            finalAlign
+          );
+        else
+          return finalAlign;
+      }, Set.of(m_swerve)),
+      Blackbox.setAligningCmd(false)
+    ).finallyDo((interrupted) -> {
+      if(!interrupted){
+        vibrationCmd.schedule();
+      }
+      //just in case
+      Blackbox.setAligning(false);
+    });
+  }
+
+  private Command getAlignCommand(ReefSelect select, double timeout) {
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    return Commands.sequence(
+      Blackbox.setAligningCmd(true),
+      new DeferredCommand(() -> {
+        Blackbox.reefSelect(select);
+        Pose2d currentPose = m_swerve.getPose();
+        Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+        if (target == null) return Commands.none();
+          
+      
+        if(select == ReefSelect.LEFT) {
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.05);
+          switch(Blackbox.reefLevel) {
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
+            case drive: default: /* do nothing */ break;
+          }
+        }
+        else {
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.03);
+          switch(Blackbox.reefLevel) {
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
+            case drive: default: /* do nothing */ break;
+          }
+        }
+
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
 
         if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
           return Commands.sequence(
