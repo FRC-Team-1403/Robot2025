@@ -408,7 +408,7 @@ public class RobotContainer {
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
         //switch back to manual elevator intentionally omitted
     ));
-    m_operatorController.povDown()
+    m_operatorController.povLeft()
         //.and(() -> Blackbox.robotState == State.ManualElevator)
         .onTrue(
           Commands.sequence(Blackbox.robotStateCmd(State.MoveElevator),
@@ -416,6 +416,14 @@ public class RobotContainer {
           new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)
           //Blackbox.robotStateCmd(State.ManualElevator)
     ));
+    m_operatorController.povDown()
+        .onTrue(
+          Commands.sequence(
+            Blackbox.robotStateCmd(State.MoveElevator),
+            new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Min),
+            new WristCommand(m_wrist, Constants.Wrist.Setpoints.Processor),
+            Blackbox.robotStateCmd(State.ManualElevator)
+          ));
     /*
     m_operatorController.rightBumper()
       .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(

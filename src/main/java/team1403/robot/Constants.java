@@ -180,10 +180,11 @@ public class Constants {
       public static final double L2 = 17 / 360.;
       public static final double L3 = 20 / 360.;
       public static final double L4 = 41 / 360.;
-      public static final double Source = - 12 / 360.; 
+      public static final double Source = -12 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
-      public static final double Barge = -75 / 360;
+      public static final double Barge = -75. / 360.;
+      public static final double Processor = 40. / 360.;
     }
 
     public static final double WristKS = 0;
