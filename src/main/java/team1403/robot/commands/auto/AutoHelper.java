@@ -49,10 +49,13 @@ public class AutoHelper {
                 NamedCommands.getCommand("CoralScore"),
                 NamedCommands.getCommand("Loading"),
                 AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
-                NamedCommands.getCommand("Barge L3"),
-                NamedCommands.getCommand("ReefAlignCenter"),
+                //NamedCommands.getCommand("Barge L3"),
+                Commands.waitSeconds(1),
                 Commands.race(
-                    NamedCommands.getCommand("Algae Harvest"),
+                    Commands.parallel(
+                        NamedCommands.getCommand("ReefAlignCenter"),
+                        NamedCommands.getCommand("Algae Harvest")
+                    ),
                     Commands.sequence(
                         Commands.waitSeconds(3.0),
                         AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
@@ -61,10 +64,10 @@ public class AutoHelper {
                         //NamedCommands.getCommand("WaitForSetpoint"),
                         //NamedCommands.getCommand("Algae Expel") // default command will expel
                     )
-                ),
-                Commands.waitSeconds(0.5),
-                NamedCommands.getCommand("LoadingFromBarge"), //make sure we don't kill ourselves on the barge
-                AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
+                )
+                //Commands.waitSeconds(0.5),
+                //NamedCommands.getCommand("LoadingFromBarge"), //make sure we don't kill ourselves on the barge
+                //AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
