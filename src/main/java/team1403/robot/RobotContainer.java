@@ -210,7 +210,7 @@ public class RobotContainer {
         Pose2d currentPose = m_swerve.getPose();
         Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
         if (target == null) return Commands.none(); 
-          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.13);
+          target = CougarUtil.addDistanceToPoseLeft(target, 0.26);
           target = CougarUtil.addDistanceToPose(target, 0.15);
         Command finalAlign = new AlignCommand(m_swerve, target);
         if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
