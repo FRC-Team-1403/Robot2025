@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "OneP Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "One piece part 2 barge"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "One piece part 3 barge"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "One piece part 4 barge"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

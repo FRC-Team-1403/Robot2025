@@ -34,41 +34,6 @@ public class AutoHelper {
         });
     }
 
-    public static Command getOnePCenter(SwerveSubsystem m_swerve) {
-        try {
-            return Commands.sequence(
-                Commands.parallel(
-                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve, true),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.75),
-                        NamedCommands.getCommand("CoralL4"))
-                ),
-                Commands.waitSeconds(1),
-                NamedCommands.getCommand("ReefAlignR"),
-                NamedCommands.getCommand("WaitForSetpoint"),
-                NamedCommands.getCommand("CoralScore"),
-                Commands.waitSeconds(1),
-                NamedCommands.getCommand("Loading"),
-                AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
-                NamedCommands.getCommand("Barge L3"),
-                NamedCommands.getCommand("ReefAlignCenter"),
-                Commands.race(
-                    NamedCommands.getCommand("Algae Harvest"),
-                    Commands.sequence(
-                        Commands.waitSeconds(3.0),
-                        AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
-                        NamedCommands.getCommand("AutoBarge")
-                    )
-                ),
-                AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
-
-            );
-        } catch (Exception e) {
-            System.err.println("Could not load auto: " + e.getMessage());
-            return Commands.none();
-        }
-    }
-
     public static Command getOnePCenterAlgae(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
@@ -78,22 +43,34 @@ public class AutoHelper {
                         Commands.waitSeconds(0.75),
                         NamedCommands.getCommand("CoralL4"))
                 ),
+                Commands.waitSeconds(1),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
-                Commands.waitSeconds(1),
                 NamedCommands.getCommand("Loading"),
                 AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
-                NamedCommands.getCommand("Barge L3")
-                // NamedCommands.getCommand("ReefAlignCenter"),
-                // NamedCommands.getCommand("Algae Harvest"),
-                // Commands.waitSeconds(4)      
+                NamedCommands.getCommand("Barge L3"),
+                NamedCommands.getCommand("ReefAlignCenter"),
+                Commands.race(
+                    NamedCommands.getCommand("Algae Harvest"),
+                    Commands.sequence(
+                        Commands.waitSeconds(3.0),
+                        AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
+                        NamedCommands.getCommand("Net Shot"),
+                        NamedCommands.getCommand("WaitForSetpoint"),
+                        NamedCommands.getCommand("Algae Expel")
+                    )
+                ),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
             );
         } catch (Exception e) {
             System.err.println("Could not load auto: " + e.getMessage());
             return Commands.none();
         }
     }
+
+    
 
     public static Command getThreePieceSideProc(SwerveSubsystem m_swerve) {
         try {

@@ -207,19 +207,13 @@ public class RobotContainer {
     return Commands.sequence(
       Blackbox.setAligningCmd(true),
       new DeferredCommand(() -> {
-        
         Pose2d currentPose = m_swerve.getPose();
         Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
-        if (target == null) return Commands.none();
-          
-        
+        if (target == null) return Commands.none(); 
           target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.13);
           target = CougarUtil.addDistanceToPose(target, 0.15);
-        
-
         Command finalAlign = new AlignCommand(m_swerve, target);
         if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
-
         if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
           return Commands.sequence(
             AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
@@ -524,14 +518,22 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("ReefAlignCenter", getAlignCommandCenter());
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
+    
     NamedCommands.registerCommand("Barge L3", Commands.sequence(
       Blackbox.robotStateCmd(State.MoveElevator),
-      new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae).asProxy(), 
-      new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source).asProxy()
-  ));
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae).asProxy(), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source).asProxy()));
+  
+    NamedCommands.registerCommand("Net Shot", Commands.sequence(
+      Blackbox.robotStateCmd(State.MoveElevator),
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)));
 
-  NamedCommands.registerCommand("Algae Harvest", 
-      new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).asProxy());
+    NamedCommands.registerCommand("Algae Harvest", 
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).asProxy());
+    
+    NamedCommands.registerCommand("Algae Expel", 
+      new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.release).asProxy());
     
     NamedCommands.registerCommand("AutoWiggle", 
       Commands.sequence(
@@ -552,12 +554,11 @@ public class RobotContainer {
 
     m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
     m_autoChooser.addOption("THREE PIECE BACK FINAL NON PROCESSOR SIDE UNTESTED", AutoHelper.getThreePieceBackNonProc(m_swerve));
-    m_autoChooser.addOption("ONE PIECE CENTER UNTESTED", AutoHelper.getOnePCenter(m_swerve));
+    m_autoChooser.addOption("ONE PIECE CENTER ALGAE UNTESTED", AutoHelper.getOnePCenterAlgae(m_swerve));
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
     m_autoChooser.addOption("wiggle test", AutoHelper.wiggle(m_swerve));
-    m_autoChooser.addOption("One piece algae", AutoHelper.getOnePCenterAlgae(m_swerve));
     //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
     
