@@ -487,8 +487,8 @@ public class RobotContainer {
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3),
         //then wiggle
         new RepeatNTimes(Commands.sequence(
-          new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
-          new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
+          new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.25),
+          new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.1) //runs inward for longer to avoid piece falling out
       ), 2)));
 
     new Trigger(() -> Blackbox.robotState == State.placing
@@ -496,7 +496,7 @@ public class RobotContainer {
       && m_elevator.isAtSetpoint()
       && Blackbox.getCloseAlign(m_swerve.getPose())
       && !Blackbox.isAligning())
-      .debounce(0.1).onTrue(
+      .debounce(0.06).onTrue(
         Commands.parallel(
         opVibrationCmd.asProxy(), 
         m_led.requestState(LEDConfig.Style.Strobe, LEDConfig.Color.Green).repeatedly()
