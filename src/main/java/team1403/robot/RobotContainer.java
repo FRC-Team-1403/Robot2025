@@ -518,6 +518,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
     NamedCommands.registerCommand("ReefAlignCenter", getAlignCommandCenter());
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
+    NamedCommands.registerCommand("LoadingFromBarge", Commands.sequence(
+      Blackbox.robotStateCmd(State.MoveElevator),
+      new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge).asProxy(),
+      new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source).asProxy(),
+      Blackbox.robotStateCmd(State.loading)
+    ));
     
     NamedCommands.registerCommand("Barge L3", Commands.sequence(
       Blackbox.robotStateCmd(State.MoveElevator),

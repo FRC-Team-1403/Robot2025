@@ -57,11 +57,12 @@ public class AutoHelper {
                         Commands.waitSeconds(3.0),
                         AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
                         NamedCommands.getCommand("Net Shot"),
-                        NamedCommands.getCommand("WaitForSetpoint"),
-                        NamedCommands.getCommand("Algae Expel")
+                        NamedCommands.getCommand("WaitForSetpoint")
+                        //NamedCommands.getCommand("Algae Expel") // default command will expel
                     )
                 ),
-                NamedCommands.getCommand("Loading"),
+                Commands.waitSeconds(0.5),
+                NamedCommands.getCommand("LoadingFromBarge"), //make sure we don't kill ourselves on the barge
                 AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
             );
         } catch (Exception e) {
