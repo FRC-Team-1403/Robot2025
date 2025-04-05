@@ -56,8 +56,9 @@ public class AutoHelper {
                     Commands.sequence(
                         Commands.waitSeconds(3.0),
                         AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
-                        NamedCommands.getCommand("BargeSetpoint"),
-                        NamedCommands.getCommand("WaitForSetpoint")
+                        Commands.waitSeconds(0.5)
+                        //NamedCommands.getCommand("BargeSetpoint"),
+                        //NamedCommands.getCommand("WaitForSetpoint"),
                         //NamedCommands.getCommand("Algae Expel") // default command will expel
                     )
                 ),
