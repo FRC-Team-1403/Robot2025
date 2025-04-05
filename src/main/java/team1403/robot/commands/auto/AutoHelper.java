@@ -59,6 +59,7 @@ public class AutoHelper {
                         NamedCommands.getCommand("Net Shot"),
                         NamedCommands.getCommand("WaitForSetpoint")
                         //NamedCommands.getCommand("Algae Expel") // default command will expel
+
                     )
                 ),
                 Commands.waitSeconds(0.5),

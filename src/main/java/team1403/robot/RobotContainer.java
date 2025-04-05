@@ -530,7 +530,7 @@ public class RobotContainer {
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae).asProxy(), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source).asProxy()));
   
-    NamedCommands.registerCommand("Net Shot", Commands.sequence(
+    NamedCommands.registerCommand("BargeSetpoint", Commands.sequence(
       Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)));
