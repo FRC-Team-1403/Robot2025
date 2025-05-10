@@ -42,15 +42,17 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   private final Supplier<Pose2d> m_referencePose;
   private final DoubleSupplier m_poseTimestamp;
   private final Alert m_cameraAlert;
-  private static final Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3);
+  private final Matrix<N3, N1> kDefaultStdv;
+  private final Matrix<N3, N1> kDefaultStdvTrig;
+  private final boolean kTrigSolveEnabled;
   
   private final VisionData m_returnedData = new VisionData();
 
-  public AprilTagCamera(String cameraName, Supplier<Transform3d> cameraTransform, DoubleSupplier poseTimestamp, Supplier<Pose2d> referenceSupplier) {
+  public AprilTagCamera(VisionConfigurator config) {
     // Photonvision
     // PortForwarder.add(5800, 
     // "photonvision.local", 5800);
-    m_camera = new PhotonCamera(cameraName);
+    m_camera = new PhotonCamera(config.getName());
 
     if (Robot.isSimulation()) {
       SimCameraProperties cameraProp = new SimCameraProperties();
@@ -67,21 +69,24 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
 
       m_cameraSim = new PhotonCameraSim(m_camera, cameraProp);
 
-      VisionSimUtil.addCamera(m_cameraSim, cameraTransform.get());
+      VisionSimUtil.addCamera(m_cameraSim, config.getTransform3d().get());
     } else {
       m_cameraSim = null;
     }
     m_camera.setPipelineIndex(0);
 
-    m_poseEstimator = new PhotonPoseEstimator(Constants.Vision.kFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraTransform.get());
+    m_poseEstimator = new PhotonPoseEstimator(Constants.Vision.kFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, config.getTransform3d().get());
     m_poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
 
     m_estPos = null;
-    m_referencePose = referenceSupplier;
-    m_cameraTransform = cameraTransform;
-    m_poseTimestamp = poseTimestamp;
+    m_referencePose = config.getRobotPose();
+    m_cameraTransform = config.getTransform3d();
+    m_poseTimestamp = config.getPoseTimestamp();
+    kDefaultStdv = config.getDeviations();
+    kDefaultStdvTrig = config.getDeviationsTrig();
+    kTrigSolveEnabled = config.getTrigSolveEnabled();
 
-    m_cameraAlert = new Alert("Photon Camera " + cameraName + " Disconnected!", AlertType.kError);
+    m_cameraAlert = new Alert("Photon Camera " + m_camera.getName() + " Disconnected!", AlertType.kError);
   }
 
   @Override
@@ -166,9 +171,11 @@ public class AprilTagCamera extends SubsystemBase implements ITagCamera {
   @Override
   public void periodic() {
 
-    m_poseEstimator.setReferencePose(m_referencePose.get());
+    if (m_referencePose != null)
+      m_poseEstimator.setReferencePose(m_referencePose.get());
     //think about if we want to use the trig solver or constrained solve pnp
-    m_poseEstimator.addHeadingData(m_poseTimestamp.getAsDouble(), m_referencePose.get().getRotation());
+    if (kTrigSolveEnabled)
+      m_poseEstimator.addHeadingData(m_poseTimestamp.getAsDouble(), m_referencePose.get().getRotation());
     m_poseEstimator.setRobotToCameraTransform(m_cameraTransform.get());
 
     if(m_cameraSim != null) {

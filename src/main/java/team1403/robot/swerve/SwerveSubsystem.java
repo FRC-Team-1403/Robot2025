@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.*;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -21,13 +19,10 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.DriveFeedforwards;
-import com.pathplanner.lib.util.PathPlannerLogging;
-
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -41,7 +36,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -55,6 +49,7 @@ import team1403.robot.swerve.util.SwerveHeadingCorrector;
 import team1403.robot.vision.AprilTagCamera;
 import team1403.robot.vision.ITagCamera;
 import team1403.robot.vision.LimelightWrapper;
+import team1403.robot.vision.VisionConfigurator;
 import team1403.robot.vision.VisionSimUtil;
 import team1403.robot.vision.ITagCamera.VisionData;
 
@@ -174,18 +169,45 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         ).schedule();
 
         VisionSimUtil.initVisionSim();
-        m_cameras.add(new LimelightWrapper("limelight", 
-            () -> Constants.Vision.kLimelightTransform,
-            () -> new Rotation3d(getRotation())));
-        m_cameras.add(new LimelightWrapper("limelight-twoplus", 
-            () -> Constants.Vision.kLimelight2Transform,
-            () -> new Rotation3d(getRotation())));
+
+        VisionConfigurator config = new VisionConfigurator()
+            .withRobotPose(this::getPose, () -> m_state.Timestamp);
+
+        if (Robot.isReal())
+        {
+            m_cameras.add(new LimelightWrapper(config
+                .withName("limelight")
+                .withTransform(() -> Constants.Vision.kLimelightTransform)
+                .withDeviations(VecBuilder.fill(2, 2, 3))
+                .withDeviationsTrig(VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY))
+                .withTrigSolve(true)
+            ));
+            m_cameras.add(new LimelightWrapper(config
+                .withName("limelight-twoplus")
+                .withTransform(() -> Constants.Vision.kLimelight2Transform)
+                .withDeviations(VecBuilder.fill(2, 2, 3))
+                .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
+                .withTrigSolve(true)
+            ));
+        }
         //test camera for simulation
-        if(Robot.isSimulation())
-            m_cameras.add(new AprilTagCamera("simlimelight", 
-                () -> Constants.Vision.kLimelightTransform,
-                () -> m_state.Timestamp,
-                () -> getPose()));
+        else
+        {
+            m_cameras.add(new AprilTagCamera(config
+                .withName("simlimelight")
+                .withTransform(() -> Constants.Vision.kLimelightTransform)
+                .withDeviations(VecBuilder.fill(2, 2, 3))
+                .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
+                .withTrigSolve(false) // FIXME: implement it into photon code
+            ));
+            m_cameras.add(new AprilTagCamera(config
+                .withName("simlimelight-2")
+                .withTransform(() -> Constants.Vision.kLimelight2Transform)
+                .withDeviations(VecBuilder.fill(2, 2, 3))
+                .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
+                .withTrigSolve(false) // FIXME: implement it into photon code
+            ));
+        }
 
         SmartDashboard.putData("Gyro", super.getPigeon2());
 
