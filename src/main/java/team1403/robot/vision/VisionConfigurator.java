@@ -17,6 +17,8 @@ public class VisionConfigurator {
     private Supplier<Transform3d> m_cameraTransform = () -> Transform3d.kZero;
     private Supplier<Pose2d> m_robotPose = null;
     private DoubleSupplier m_poseTimestamp = null;
+
+    /* Yaw rate CCW+, rad/s */
     private DoubleSupplier m_yawRate = () -> 0.0;
 
     // Default deviations for normal april tag detection
