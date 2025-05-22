@@ -557,14 +557,14 @@ public class RobotContainer {
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
     m_autoChooser.addOption("THREE PIECE APRIL TAG 9 7 8 ALL RIGHT REEF UNTESTED", AutoHelper.getThreePieceBackRightProc978(m_swerve));
-
+    m_autoChooser.addOption("ONE PIECE CENTER", AutoHelper.getOnePCenter(m_swerve));
     m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
     m_autoChooser.addOption("THREE PIECE BACK FINAL NON PROCESSOR SIDE UNTESTED", AutoHelper.getThreePieceBackNonProc(m_swerve));
-    m_autoChooser.addOption("ONE PIECE CENTER ALGAE UNTESTED", AutoHelper.getOnePCenterAlgae(m_swerve));
+    m_autoChooser.addOption("ONE PIECE CENTER ALGAE", AutoHelper.getOnePCenterAlgae(m_swerve));
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
-    m_autoChooser.addOption("wiggle test", AutoHelper.wiggle(m_swerve));
+    //m_autoChooser.addOption("wiggle test", AutoHelper.wiggle(m_swerve));
     //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
     

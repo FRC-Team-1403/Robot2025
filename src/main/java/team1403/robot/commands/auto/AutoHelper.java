@@ -34,6 +34,27 @@ public class AutoHelper {
         });
     }
 
+    public static Command getOnePCenter(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
+                Commands.waitSeconds(1),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading")
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
     public static Command getOnePCenterAlgae(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(
@@ -51,20 +72,19 @@ public class AutoHelper {
                 AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
                 //NamedCommands.getCommand("Barge L3"),
                 Commands.waitSeconds(1),
-                Commands.race(
                     Commands.parallel(
                         NamedCommands.getCommand("ReefAlignCenter"),
-                        NamedCommands.getCommand("Algae Harvest")
+                        NamedCommands.getCommand("Algae Harvest"),
+                        Commands.waitSeconds(3.0)
                     ),
-                    Commands.sequence(
-                        Commands.waitSeconds(3.0),
+                    Commands.parallel(
+                        NamedCommands.getCommand("Algae Harvest"),
                         AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
                         Commands.waitSeconds(0.5)
                         //NamedCommands.getCommand("BargeSetpoint"),
                         //NamedCommands.getCommand("WaitForSetpoint"),
                         //NamedCommands.getCommand("Algae Expel") // default command will expel
                     )
-                )
                 //Commands.waitSeconds(0.5),
                 //NamedCommands.getCommand("LoadingFromBarge"), //make sure we don't kill ourselves on the barge
                 //AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
