@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -171,7 +172,8 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
         VisionSimUtil.initVisionSim();
 
         VisionConfigurator config = new VisionConfigurator()
-            .withRobotPose(this::getPose, () -> m_state.Timestamp);
+            .withRobotPose(this::getPose, () -> Timer.getFPGATimestamp()) /* find a way to convert m_state.Timestamp to fpga time */
+            .withYawRate(() -> getPigeon2().getAngularVelocityZWorld().getValue().in(RadiansPerSecond));
 
         if (Robot.isReal())
         {
@@ -198,14 +200,14 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
                 .withTransform(() -> Constants.Vision.kLimelightTransform)
                 .withDeviations(VecBuilder.fill(2, 2, 3))
                 .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
-                .withTrigSolve(false) // FIXME: implement it into photon code
+                .withTrigSolve(true)
             ));
             m_cameras.add(new AprilTagCamera(config
                 .withName("simlimelight-2")
                 .withTransform(() -> Constants.Vision.kLimelight2Transform)
                 .withDeviations(VecBuilder.fill(2, 2, 3))
                 .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
-                .withTrigSolve(false) // FIXME: implement it into photon code
+                .withTrigSolve(true)
             ));
         }
 

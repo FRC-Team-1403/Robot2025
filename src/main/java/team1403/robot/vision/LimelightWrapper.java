@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -30,6 +31,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private final String m_name;
     private final Supplier<Pose2d> m_robotPose;
     private final Supplier<Transform3d> m_camTransform;
+    private final DoubleSupplier m_yawRate;
     private LimelightHelpers.PoseEstimate m_poseEstimateMT1;
     private LimelightHelpers.PoseEstimate m_poseEstimateMT2;
     private final boolean kMT2Enabled;
@@ -47,6 +49,7 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
         kDefaultStdv = config.getDeviations();
         kDefaultStdvMT2 = config.getDeviationsTrig();
         kMT2Enabled = config.getTrigSolveEnabled();
+        m_yawRate = config.getYawRate();
         m_poseEstimateMT1 = null;
         m_poseEstimateMT2 = null;
 
@@ -141,8 +144,10 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
                             new Rotation3d(m_robotPose.get().getRotation()));
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimateMT1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
-        if (kMT2Enabled) m_poseEstimateMT2 = 
+        if (kMT2Enabled && Math.abs(m_yawRate.getAsDouble()) < 0.5) m_poseEstimateMT2 = 
                             LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+        else
+            m_poseEstimateMT2 = null;
 
         m_camDisconnected.set(!isConnected());
         
