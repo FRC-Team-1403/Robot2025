@@ -180,14 +180,14 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
                 .withTransform(() -> Constants.Vision.kLimelightTransform)
                 .withDeviations(VecBuilder.fill(2, 2, 3))
                 .withDeviationsTrig(VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY))
-                .withTrigSolve(true)
+                .withTrigSolve(!true)
             ));
             m_cameras.add(new LimelightWrapper(config
                 .withName("limelight-twoplus")
                 .withTransform(() -> Constants.Vision.kLimelight2Transform)
                 .withDeviations(VecBuilder.fill(2, 2, 3))
                 .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
-                .withTrigSolve(true)
+                .withTrigSolve(!true)
             ));
         }
         //test camera for simulation

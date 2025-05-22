@@ -141,7 +141,7 @@ public class Blackbox {
         return new InstantCommand(() -> setRobotState(state));
     }
 
-    private static Pose2d[] getReefPoses() {
+    public static Pose2d[] getReefPoses() {
         if(reefSide == ReefSelect.LEFT)
             return CougarUtil.getAlliance() == Alliance.Blue ? reefPosesLeftBLUE : reefPosesLeftRED;
         else
