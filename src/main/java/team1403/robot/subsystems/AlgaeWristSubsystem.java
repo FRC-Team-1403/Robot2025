@@ -13,46 +13,36 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team1403.robot.Constants;
 
+
 public class AlgaeWristSubsystem extends SubsystemBase {
-    private final SparkMax m_algaeWristMotor;
-    private final ProfiledPIDController m_pid;
+
+   private final SparkMax m_wristMotor;
+   private final ProfiledPIDController m_wristPID;
+   private double angleSetpoint;
 
     public AlgaeWristSubsystem() {
-        m_algaeWristMotor = new SparkMax(Constants.CanBus.algaeWristMotorID, MotorType.kBrushless);
-        m_pid = new ProfiledPIDController(Constants.AlgaeWrist.Kp, Constants.AlgaeWrist.Ki, Constants.AlgaeWrist.Kd, new TrapezoidProfile.Constraints(Constants.AlgaeIntake.maxVelo, Constants.AlgaeIntake.maxAccel));
+        m_wristMotor = new SparkMax(Constants.CanBus.algaeWristMotorID, MotorType.kBrushless);
+        m_wristPID = new ProfiledPIDController(Constants.AlgaeWrist.Kp, Constants.AlgaeWrist.Ki, Constants.AlgaeWrist.Kd, new TrapezoidProfile.Constraints(Constants.AlgaeIntake.maxVelo, Constants.AlgaeIntake.maxAccel));
 
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit(40);
-        m_algaeWristMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    }
-    
-    public void setWristAngle(double targetAngle) {
-        m_pid.setGoal(targetAngle);
+        SparkMaxConfig wConfig = new SparkMaxConfig();
+        wConfig.smartCurrentLimit(40);
+        m_wristMotor.configure(wConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
     }
 
-    @AutoLogOutput (key = "AlgaeIntake/Wrist Setpoint")
-    public double getWristSetpoint() {
-        return m_pid.getGoal().position;
-    }
+    public void setWristAngle(double angleSetpoint) {
+        this.angleSetpoint = angleSetpoint;
+        m_wristPID.setGoal(angleSetpoint);
+    }   
 
-    @AutoLogOutput (key = "AlgaeIntake/Wrist Angle")
-    public double getWristAngle() {
-        return m_algaeWristMotor.getEncoder().getPosition() * 360.0;
-    }
-
-    @AutoLogOutput (key = "AlgaeIntake/Wrist is at Setpoint")
-    public boolean isAtSetpoint() {
-      return Math.abs(getWristAngle() - m_pid.getGoal().position) 
-          < Units.degreesToRotations(5);
-    }
+    public void defaultWristCommand() { if (m_wristMotor.getAbsoluteEncoder().getPosition() - angleSetpoint > 0.1) { setWristAngle(angleSetpoint); } }
 
     @Override
     public void periodic() {
-        m_algaeWristMotor.set(m_pid.calculate(getWristAngle()));
+        
     }
 
 }
