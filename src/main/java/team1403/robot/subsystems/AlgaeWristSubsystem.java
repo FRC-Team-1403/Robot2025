@@ -30,8 +30,7 @@ public class AlgaeWristSubsystem extends SubsystemBase {
     public AlgaeWristSubsystem() {
         m_wristMotor = new SparkMax(Constants.CanBus.algaeWristMotorID, MotorType.kBrushless);
         m_wristPID = new ProfiledPIDController(Constants.AlgaeWrist.Kp, Constants.AlgaeWrist.Ki, Constants.AlgaeWrist.Kd, new TrapezoidProfile.Constraints(Constants.AlgaeIntake.maxVelo, Constants.AlgaeIntake.maxAccel));
-        m_Feedforward = new SimpleMotorFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKS, 0); //change later
-        positionValue = m_wristMotor.getAbsoluteEncoder().getPosition();
+        m_Feedforward = new SimpleMotorFeedforward(Constants.Wrist.WristKS, Constants.Wrist.WristKV, 0); //change later
         SparkMaxConfig wConfig = new SparkMaxConfig();
         wConfig.smartCurrentLimit(40);
         m_wristMotor.configure(wConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
@@ -42,14 +41,30 @@ public class AlgaeWristSubsystem extends SubsystemBase {
         m_wristPID.setGoal(angleSetpoint);
     }   
 
-    public void defaultWristCommand() { if (positionValue - angleSetpoint > 0.1) { setWristAngle(angleSetpoint); } }
 
-   
+    public double getWristAngle(){
+        return m_wristMotor.getAbsoluteEncoder().getPosition() * (2 * Math.PI);
+    }
+
+    public boolean isAtSetpoint() {
+        return m_wristPID.atGoal();
+    }
+
+    public double getVelocity(){
+        return m_wristPID.getSetpoint().velocity;
+    }
 
     @Override
     public void periodic() {
-        defaultWristCommand();
-        m_wristPID.calculate(angleSetpoint, m_Feedforward.getKa());
+        double pidCalc = m_wristPID.calculate(getWristAngle());
+        double feedForwardCalc = m_Feedforward.calculate(getVelocity());
+
+        m_wristMotor.setVoltage(feedForwardCalc + pidCalc);
+
+
+       
     }
+
+    
 
 }
