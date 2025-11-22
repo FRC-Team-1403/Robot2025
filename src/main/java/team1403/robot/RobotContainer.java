@@ -332,14 +332,48 @@ public class RobotContainer {
         () -> m_driverController.getLeftTriggerAxis()));
 
 
+    // m_driverController.rightBumper()
+    //   .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive 
+    //         || Blackbox.robotState == State.ManualElevator)
+    //         .whileTrue(getAlignCommand(ReefSelect.RIGHT));
+
+    // m_driverController.leftBumper()
+    //   .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive
+    //         || Blackbox.robotState == State.ManualElevator)
+    //         .whileTrue(getAlignCommand(ReefSelect.LEFT));
+
+
     m_driverController.rightBumper()
-      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive 
-            || Blackbox.robotState == State.ManualElevator)
-            .whileTrue(getAlignCommand(ReefSelect.RIGHT));
-    m_driverController.leftBumper()
-      .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive
-            || Blackbox.robotState == State.ManualElevator)
-            .whileTrue(getAlignCommand(ReefSelect.LEFT));
+    .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive 
+          || Blackbox.robotState == State.ManualElevator)
+    .whileTrue(
+        Commands.sequence(
+            getAlignCommand(ReefSelect.RIGHT),             
+            new WaitUntilDebounced(() -> 
+                m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1
+            ).withTimeout(3),                              
+            new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
+                .withTimeout(0.5),                        
+            Blackbox.robotStateCmd(State.loading)          
+        )
+    );
+
+m_driverController.leftBumper()
+    .and(() -> Blackbox.reefLevel != ReefScoreLevel.drive
+          || Blackbox.robotState == State.ManualElevator)
+    .whileTrue(
+        Commands.sequence(
+            getAlignCommand(ReefSelect.LEFT),
+            new WaitUntilDebounced(() -> 
+                m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1
+            ).withTimeout(3),
+            new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
+                .withTimeout(0.5),
+            Blackbox.robotStateCmd(State.loading)
+        )
+    );
+
+
 
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     Command opVibrationCmd = new ControllerVibrationCommand(m_operatorController.getHID(), 0.28, 1);
