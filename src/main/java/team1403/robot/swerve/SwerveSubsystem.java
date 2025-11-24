@@ -177,16 +177,24 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
 
         if (Robot.isReal())
         {
-            m_cameras.add(new LimelightWrapper(config
-                .withName("limelight")
-                .withTransform(() -> Constants.Vision.kLimelightTransform)
-                .withDeviations(VecBuilder.fill(2, 2, 3))
-                .withDeviationsTrig(VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY))
-                .withTrigSolve(!true)
-            ));
-            m_cameras.add(new LimelightWrapper(config
-                .withName("limelight-twoplus")
-                .withTransform(() -> Constants.Vision.kLimelight2Transform)
+            // m_cameras.add(new LimelightWrapper(config
+            //     .withName("limelight")
+            //     .withTransform(() -> Constants.Vision.kLimelightTransform)
+            //     .withDeviations(VecBuilder.fill(2, 2, 3))
+            //     .withDeviationsTrig(VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY))
+            //     .withTrigSolve(!true)
+            // ));
+            // m_cameras.add(new LimelightWrapper(config
+            //     .withName("limelight-twoplus")
+            //     .withTransform(() -> Constants.Vision.kLimelight2Transform)
+            //     .withDeviations(VecBuilder.fill(2, 2, 3))
+            //     .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
+            //     .withTrigSolve(!true)
+            // ));
+
+            m_cameras.add(new AprilTagCamera(config
+                .withName("ThriftyCam")
+                .withTransform(() -> Constants.Vision.kLimelightTransform)  //change later
                 .withDeviations(VecBuilder.fill(2, 2, 3))
                 .withDeviationsTrig(VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY))
                 .withTrigSolve(!true)
@@ -368,8 +376,7 @@ public class SwerveSubsystem extends TunerSwerveDrivetrain implements Subsystem,
             //todo: pass this consumer into the contructor in the future
             c.refreshEstimate((VisionData data) -> {
                 if(data.pose != null){ //last minute safety check!
-                    if(!(c.getName().equals("limelight-twoplus") && DriverStation.isAutonomous())) //ignore back limelight in auto
-                        addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdv);
+                    addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdv);
                 }
             });
         }
