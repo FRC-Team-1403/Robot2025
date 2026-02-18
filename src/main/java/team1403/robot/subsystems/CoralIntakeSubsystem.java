@@ -25,7 +25,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     private SparkMax m_intakeMotor;
     private CANrange m_CANRange;
     private LinearFilter m_filter = LinearFilter.singlePoleIIR(Constants.kLoopTime * 10, Constants.kLoopTime);
-    private Debouncer m_debouncer = new Debouncer(0.4, DebounceType.kRising);
+    private Debouncer m_debouncer = new Debouncer(0.15, DebounceType.kRising);
 
     public CoralIntakeSubsystem() {
         m_intakeMotor = new SparkMax(Constants.CanBus.intakeMotorID, MotorType.kBrushless);
@@ -70,6 +70,22 @@ public class CoralIntakeSubsystem extends SubsystemBase {
             return Constants.CoralIntake.Setpoints.pose1;
         }
     }
+    
+    public int getCoralPosition() {
+        double distance = getDistance();
+        if(distance > 0.29){
+            return 4;
+        }
+        else if(distance > 0.2){
+            return 3;
+        }
+        else if(distance > 0.12){
+            return 2;
+        }
+        else {
+            return 1;
+        }
+    }
 
     private double getFilteredCurrent() {
         return m_filter.calculate(m_intakeMotor.getOutputCurrent());
@@ -92,6 +108,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("CoralIntake/CoralDistance", getDistance());
         Logger.recordOutput("CoralIntake/Current", getFilteredCurrent());
         Logger.recordOutput("CoralIntake/Has Piece", Blackbox.isCoralLoaded());
-        Logger.recordOutput("CoralIntake/CoralPosition", getAlignOffset());
+        Logger.recordOutput("CoralIntake/CoralPositionOffset", getAlignOffset());
+        Logger.recordOutput("CoralIntake/Coral Slot Position", getCoralPosition());
     }
 }

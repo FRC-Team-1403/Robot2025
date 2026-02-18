@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -60,6 +61,7 @@ import team1403.robot.subsystems.Blackbox;
 import team1403.robot.subsystems.Blackbox.ReefScoreLevel;
 import team1403.robot.subsystems.Blackbox.ReefSelect;
 import team1403.robot.subsystems.Blackbox.State;
+import team1403.robot.subsystems.LEDSubsystem.LEDConfig;
 import team1403.robot.subsystems.ClimberSubsystem;
 import team1403.robot.subsystems.CoralIntakeSubsystem;
 import team1403.robot.subsystems.ElevatorSubsystem;
@@ -126,9 +128,8 @@ public class RobotContainer {
       m_autoChooser.addOption("Swerve SysID QR", m_swerve.sysIdQuasistatic(Direction.kReverse));
       m_autoChooser.addOption("Swerve SysID DF", m_swerve.sysIdDynamic(Direction.kForward));
       m_autoChooser.addOption("Swerve SysID DR", m_swerve.sysIdDynamic(Direction.kReverse));
+      m_autoChooser.addOption("Drive Wheel Characterization", new DriveWheelCharacterization(m_swerve));
     }
-
-    m_autoChooser.addOption("Drive Wheel Characterization", new DriveWheelCharacterization(m_swerve));
 
     // autoChooser.addOption("Choreo Auto", AutoUtil.loadChoreoAuto("test", m_swerve));
     // autoChooser.addOption("FivePieceCenter", AutoHelper.getFivePieceAuto(m_swerve));
@@ -147,6 +148,92 @@ public class RobotContainer {
   }
 
   private Command getAlignCommand(ReefSelect select) {
+    final double timeout = 1.4;
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    return Commands.sequence(
+      Blackbox.setAligningCmd(true),
+      new DeferredCommand(() -> {
+        Blackbox.reefSelect(select);
+        Pose2d currentPose = m_swerve.getPose();
+        Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+        if (target == null) return Commands.none();
+          
+      
+        if(select == ReefSelect.LEFT) {
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.05);
+          switch(Blackbox.reefLevel) {
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
+            case drive: default: /* do nothing */ break;
+          }
+        }
+        else if(select == ReefSelect.RIGHT){
+          target = CougarUtil.addDistanceToPoseLeft(target,((m_coralIntake.getAlignOffset() - 0.201)) + 0.03);
+          switch(Blackbox.reefLevel) {
+            case L1: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(0)); break;
+            case L2: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L3: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(-0.5)); break;
+            case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
+            case drive: default: /* do nothing */ break;
+          }
+        }
+
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
+
+        if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
+          return Commands.sequence(
+            AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
+            finalAlign
+          );
+        else
+          return finalAlign;
+      }, Set.of(m_swerve)),
+      Blackbox.setAligningCmd(false)
+    ).finallyDo((interrupted) -> {
+      if(!interrupted){
+        vibrationCmd.schedule();
+      }
+      //just in case
+      Blackbox.setAligning(false);
+    });
+  }
+
+  private Command getAlignCommandCenter() {
+    final double timeout = 1.4;
+    Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
+    return Commands.sequence(
+      Blackbox.setAligningCmd(true),
+      new DeferredCommand(() -> {
+        Pose2d currentPose = m_swerve.getPose();
+        Pose2d target = Blackbox.getNearestAlignPositionReef(currentPose);
+        if (target == null) return Commands.none(); 
+          target = CougarUtil.addDistanceToPoseLeft(target, 0.26);
+          target = CougarUtil.addDistanceToPose(target, 0.15);
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
+        if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
+          return Commands.sequence(
+            AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
+            finalAlign
+          );
+        else
+          return finalAlign;
+      }, Set.of(m_swerve)),
+      Blackbox.setAligningCmd(false)
+    ).finallyDo((interrupted) -> {
+      if(!interrupted){
+        vibrationCmd.schedule();
+      }
+      //just in case
+      Blackbox.setAligning(false);
+    });
+  }
+
+
+  private Command getAlignCommand(ReefSelect select, double timeout) {
     Command vibrationCmd = new ControllerVibrationCommand(m_driverController.getHID(), 0.28, 1);
     return Commands.sequence(
       Blackbox.setAligningCmd(true),
@@ -176,15 +263,18 @@ public class RobotContainer {
             case L4: target = CougarUtil.addDistanceToPose(target, Units.inchesToMeters(2)); break;
             case drive: default: /* do nothing */ break;
           }
-        } 
+        }
+
+        Command finalAlign = new AlignCommand(m_swerve, target);
+        if (DriverStation.isAutonomous()) finalAlign = finalAlign.withTimeout(timeout);
 
         if(CougarUtil.getDistance(target, m_swerve.getPose()) > 0.2)
           return Commands.sequence(
             AutoBuilder.pathfindToPose(target, TunerConstants.kAutoAlignConstraints),
-            new AlignCommand(m_swerve, target)
+            finalAlign
           );
         else
-          return new AlignCommand(m_swerve, target);
+          return finalAlign;
       }, Set.of(m_swerve)),
       Blackbox.setAligningCmd(false)
     ).finallyDo((interrupted) -> {
@@ -215,14 +305,15 @@ public class RobotContainer {
 
     //new Trigger(() -> true).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
-      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator).whileTrue(m_stateMachine);
+      .and(() -> Blackbox.robotState != Blackbox.State.ManualElevator
+      && Blackbox.robotState != Blackbox.State.MoveElevator).whileTrue(m_stateMachine);
     RobotModeTriggers.disabled().negate()
       .and(() -> Blackbox.robotState == Blackbox.State.ManualElevator).whileTrue(
         Commands.run(() -> {
           m_elevator.moveToSetpoint(m_elevator.getSetpoint() - 
-            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 32);
+            MathUtil.applyDeadband(m_operatorController.getRightY(), 0.05) * Constants.kLoopTime * 50);
             m_wrist.moveToSetpoint(m_wrist.getSetpoint() + 
-            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 7.0);
+            MathUtil.applyDeadband(m_operatorController.getLeftY(), 0.05) * Constants.kLoopTime / 5.0);
         }, m_elevator, m_wrist));
     //Logs elevator + wrist mechanism in advantage kit
     new CoralMechanism(m_wrist, m_elevator).ignoringDisable(true).schedule();
@@ -234,8 +325,8 @@ public class RobotContainer {
         () -> -m_driverController.getLeftX(),
         () -> -m_driverController.getLeftY(),
         () -> -m_driverController.getRightX(),
-        () -> m_driverController.getHID().getXButton(),
-        () -> m_driverController.getHID().getYButton(),
+        () -> m_driverController.getHID().getPOV() == 180,
+        () -> m_driverController.getHID().getPOV() == 0,
         () -> m_driverController.getHID().getAButton(),
         () -> m_driverController.getRightTriggerAxis(),
         () -> m_driverController.getLeftTriggerAxis()));
@@ -265,8 +356,19 @@ public class RobotContainer {
     ));
 
     //there's really no other good buttons unfortunately
-    m_driverController.leftStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.upSpeed));
-    m_driverController.rightStick().whileTrue(new ClimberCommand(m_climber, Constants.Climber.downSpeed));
+    m_driverController.x().whileTrue(
+      Commands.sequence(
+        new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)),
+        Commands.waitSeconds(.2),
+        new ClimberCommand(m_climber, true)
+      )
+    );
+    m_driverController.y().whileTrue(new ClimberCommand(m_climber, false));
+    // m_driverController.povDown().whileTrue(new ClimberCommand(m_climber, true));
+
+    // m_driverController.povUp().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetEngage)));
+    // // m_driverController.x().whileTrue(new InstantCommand(() -> m_climber.setServo(.5)));
+    // m_driverController.povDown().whileTrue(new InstantCommand(() -> m_climber.setServo(Constants.Climber.ratchetDisengage)));
 
     m_operatorController.b()
       .and(() -> Blackbox.robotState != State.ManualElevator)
@@ -274,7 +376,7 @@ public class RobotContainer {
     m_operatorController.a()
       .and(() -> Blackbox.robotState != State.ManualElevator)
       .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L2));
-    m_operatorController.x()
+    m_operatorController.x() 
       .and(() -> Blackbox.robotState != State.ManualElevator)
       .onTrue(Blackbox.reefScoreLevelCmd(Blackbox.ReefScoreLevel.L3));
     m_operatorController.y()
@@ -284,6 +386,7 @@ public class RobotContainer {
     m_operatorController.rightBumper().onTrue(
       Commands.sequence(
         Blackbox.robotStateCmd(State.loading),
+        Blackbox.reefScoreLevelCmd(ReefScoreLevel.drive),
         Blackbox.setAligningCmd(false)));
 
     m_operatorController.povUp().debounce(0.5).onTrue(
@@ -297,37 +400,63 @@ public class RobotContainer {
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L1), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L1),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.a()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L2), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L2),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.x()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L3),
+        Blackbox.robotStateCmd(State.ManualElevator)
     )); 
     m_operatorController.y()
       .and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L4), 
-        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4)
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.L4),
+        Blackbox.robotStateCmd(State.ManualElevator)
     ));
     m_operatorController.povRight()
-      .and(() -> Blackbox.robotState == State.ManualElevator)
+      //.and(() -> Blackbox.robotState == State.ManualElevator)
       .onTrue(
       Commands.sequence(
+        Blackbox.robotStateCmd(State.MoveElevator),
         new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae), 
         new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source)
+        //switch back to manual elevator intentionally omitted
     ));
+    m_operatorController.povLeft()
+        //.and(() -> Blackbox.robotState == State.ManualElevator)
+        .onTrue(
+          Commands.sequence(Blackbox.robotStateCmd(State.MoveElevator),
+          new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
+          new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)
+          //Blackbox.robotStateCmd(State.ManualElevator)
+    ));
+    m_operatorController.povDown()
+        .onTrue(
+          Commands.sequence(
+            Blackbox.robotStateCmd(State.MoveElevator),
+            new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Min),
+            new WristCommand(m_wrist, Constants.Wrist.Setpoints.Processor),
+            Blackbox.robotStateCmd(State.ManualElevator)
+          ));
     /*
     m_operatorController.rightBumper()
       .and(() -> Blackbox.robotState == State.ManualElevator).onTrue(
@@ -338,6 +467,7 @@ public class RobotContainer {
 
     m_coralIntake.setDefaultCommand(new DefaultIntakeCommand(m_coralIntake));
     m_led.setDefaultCommand(new LightCommand(m_led));
+    // m_climber.setDefaultCommand(new Command(() -> m_climber.setServo(0)));
     // m_algaeIntake.setDefaultCommand(new DefaultAlgaeIntakeCommand(m_algaeIntake));
 
     // coral intake
@@ -351,7 +481,7 @@ public class RobotContainer {
       .debounce(0.3, DebounceType.kFalling).whileTrue(
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release)
     );
-    m_operatorController.leftStick().onTrue(
+    m_operatorController.leftTrigger().onTrue(
       Commands.sequence(
         //initially run inward
         new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.3),
@@ -359,14 +489,18 @@ public class RobotContainer {
         new RepeatNTimes(Commands.sequence(
           new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.3),
           new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle).withTimeout(0.4) //runs inward for longer to avoid piece falling out
-      ), 4)));
+      ), 2)));
 
     new Trigger(() -> Blackbox.robotState == State.placing
       && m_wrist.isAtSetpoint()
       && m_elevator.isAtSetpoint()
       && Blackbox.getCloseAlign(m_swerve.getPose())
       && !Blackbox.isAligning())
-      .debounce(0.1).onTrue(opVibrationCmd);
+      .debounce(0.06).onTrue(
+        Commands.parallel(
+        opVibrationCmd.asProxy(), 
+        m_led.requestState(LEDConfig.Style.Strobe, LEDConfig.Color.Green).repeatedly()
+        .until(() -> !Blackbox.isCoralLoaded())));
 
     NamedCommands.registerCommand("CoralScore", 
       new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).withTimeout(0.5).asProxy());
@@ -380,21 +514,57 @@ public class RobotContainer {
       Commands.waitUntil(() -> Blackbox.isCoralLoaded()));
     NamedCommands.registerCommand("WaitForSetpoint", 
       new WaitUntilDebounced(() -> m_wrist.isAtSetpoint() && m_elevator.isAtSetpoint(), 0.1).withTimeout(3));
-    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT).withTimeout(2));
-    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT).withTimeout(2));
+    NamedCommands.registerCommand("ReefAlignL", getAlignCommand(Blackbox.ReefSelect.LEFT));
+    NamedCommands.registerCommand("ReefAlignR", getAlignCommand(Blackbox.ReefSelect.RIGHT));
+    NamedCommands.registerCommand("ReefAlignCenter", getAlignCommandCenter());
     NamedCommands.registerCommand("Loading", Blackbox.robotStateCmd(Blackbox.State.loading));
-
-   
-
+    NamedCommands.registerCommand("LoadingFromBarge", Commands.sequence(
+      Blackbox.robotStateCmd(State.MoveElevator),
+      new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge).asProxy(),
+      new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Source).asProxy(),
+      Blackbox.robotStateCmd(State.loading)
+    ));
     
+    NamedCommands.registerCommand("Barge L3", Commands.sequence(
+      Blackbox.robotStateCmd(State.MoveElevator),
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.L3Algae).asProxy(), 
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Source).asProxy()));
+  
+    NamedCommands.registerCommand("BargeSetpoint", Commands.sequence(
+      Blackbox.robotStateCmd(State.MoveElevator),
+        new ElevatorCommand(m_elevator, Constants.Elevator.Setpoints.Barge),
+        new WristCommand(m_wrist, Constants.Wrist.Setpoints.Barge)));
+
+    NamedCommands.registerCommand("Algae Harvest", 
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.release).asProxy());
+    
+    NamedCommands.registerCommand("Algae Expel", 
+      new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.release).asProxy());
+    
+    NamedCommands.registerCommand("AutoWiggle", 
+      Commands.sequence(
+        //initially run inward
+        Commands.waitSeconds(0.1),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.1).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.25).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.15).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, -Constants.CoralIntake.wiggle).withTimeout(0.25).asProxy(),
+        new CoralIntakeSpeed(m_coralIntake, Constants.CoralIntake.wiggle + 0.1).withTimeout(0.15).asProxy()
+        
+      )); //wiggle twice, 0.1 + 0.5 * 2 + 0.2 = 1.3 s total ... not good (tune the timing)
+   
     /* Move forward 1 m from any position on the starting line 
       (make sure robot is facing a tag to seed the position) */
     m_autoChooser.addOption("THREE PIECE BACK FINAL PROCESSOR SIDE", AutoHelper.getThreePieceBackProc(m_swerve));
+    m_autoChooser.addOption("THREE PIECE APRIL TAG 9 7 8 ALL RIGHT REEF UNTESTED", AutoHelper.getThreePieceBackRightProc978(m_swerve));
+    m_autoChooser.addOption("ONE PIECE CENTER", AutoHelper.getOnePCenter(m_swerve));
     m_autoChooser.addOption("MOVE AUTO ANYWHERE", AutoHelper.getMoveAuto(m_swerve));
-    m_autoChooser.addOption("ONE PIECE CENTER UNTESTED", AutoHelper.getOnePCenter(m_swerve));
+    m_autoChooser.addOption("THREE PIECE BACK FINAL NON PROCESSOR SIDE UNTESTED", AutoHelper.getThreePieceBackNonProc(m_swerve));
+    m_autoChooser.addOption("ONE PIECE CENTER ALGAE", AutoHelper.getOnePCenterAlgae(m_swerve));
     m_autoChooser.addOption("THREE PIECE SIDE PROCESSOR UNTESTED", AutoHelper.getThreePieceSideProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR UNTESTED", AutoHelper.getTwoPieceProc(m_swerve));
     m_autoChooser.addOption("TWO PIECE PROCESSOR + ALGAE REMOVAL UNTESTED", AutoHelper.getTwoPieceProc_algaeRemoval(m_swerve));
+    //m_autoChooser.addOption("wiggle test", AutoHelper.wiggle(m_swerve));
     //m_autoChooser.addOption("Testing Auto Align", AutoHelper.testAutoAlign(m_swerve));
     //m_autoChooser.addOption("Test 2 Piece", AutoHelper.getTwoPieceProcTest(m_swerve));
     

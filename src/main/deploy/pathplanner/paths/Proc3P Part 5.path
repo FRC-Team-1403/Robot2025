@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0568647540983607,
-        "y": 4.1748463114754095
+        "x": 1.127,
+        "y": 0.902
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.733196721311475,
-        "y": 3.191854508196721
+        "x": 4.06001084483205,
+        "y": 2.7843665031316966
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Proc2Part4"
     },
     {
       "anchor": {
-        "x": 1.0549180327868852,
-        "y": 0.8542520491803282
+        "x": 3.4164959016393444,
+        "y": 2.34672131147541
       },
       "prevControl": {
-        "x": 1.2082526448497288,
-        "y": 1.0517070991120465
+        "x": 2.9064023128329173,
+        "y": 2.138533048038979
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.24946695095948712,
+      "rotationDegrees": 37.756118012436026
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": -130.31410016049722
+    "velocity": 2.0,
+    "rotation": 59.53445508054019
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -126.34002826914755
   },
   "useDefaultConstraints": true
 }

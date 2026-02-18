@@ -108,7 +108,7 @@ public class DefaultSwerveCommand extends Command {
     SmartDashboard.putBoolean("isFieldRelative", m_isFieldRelative);
     //if (Constants.DEBUG_MODE) SmartDashboard.putBoolean("Aimbot", m_aimbotSupplier.getAsBoolean());
 
-    m_speedLimiter = 0.3 * (1.0 - m_snipingMode.getAsDouble() * 0.7) + (m_speedSupplier.getAsDouble() * 0.7);
+    m_speedLimiter = 0.3 * (1.0 - m_snipingMode.getAsDouble() * 0.7) + squareNum(m_speedSupplier.getAsDouble()) * 0.7;
   
     if (DriverStation.isAutonomousEnabled()) {
       m_drivetrainSubsystem.drive(new ChassisSpeeds());
@@ -151,7 +151,7 @@ public class DefaultSwerveCommand extends Command {
     }
 
     if(!Blackbox.isCoralLoaded() && m_autoRotate.getAsBoolean()) {
-      Pose2d target = Blackbox.getNearestSourcePose(m_drivetrainSubsystem.getPose());
+      Pose2d target = Blackbox.getNearestHeuristic(m_drivetrainSubsystem.getPose(), Blackbox.getReefPoses());
       if (target != null) {
         m_targetState.position = target.getRotation().getRadians();
         m_targetState.velocity = 0;

@@ -29,11 +29,11 @@ public class Telemetry {
         SignalLogger.start();
 
         PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-            Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+            Logger.recordOutput("Swerve/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
             m_field.getObject("traj").setPoses(activePath);
         });
         PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
-            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+            Logger.recordOutput("Swerve/TrajectorySetpoint", targetPose);
         });
 
         SmartDashboard.putData("Field", m_field);

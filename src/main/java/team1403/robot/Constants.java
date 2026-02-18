@@ -31,8 +31,27 @@ public class Constants {
 
   public static class RioPorts {
     private static final int kTBD = 0;
+    public static final int kServoPort = 0;
 
     public static final int kAlgaeIntakePhotogateID = kTBD;
+  }
+
+  public static class Swerve {
+    public static final double KpDrive = 0.14923;
+    public static final double KiDrive = 0;
+    public static final double KdDrive = 0;
+
+    public static final double KsDrive = 0.13382;
+    public static final double KvDrive = 0.11367;
+    public static final double KaDrive = 0.0074265;
+
+    public static final double KpSteer = 65;
+    public static final double KiSteer = 0;
+    public static final double KdSteer = 0;
+
+    public static final double KsSteer = 0.01;
+    public static final double KvSteer = 2.62;
+    public static final double KaSteer = 0;
   }
 
   /**
@@ -92,9 +111,16 @@ public class Constants {
     //top-to-bottom disp = 17.82426 inches
     //public static final Rotation3d kCameraRotation = new Rotation3d(Math.PI, Units.degreesToRadians(-25), Math.PI);
     public static final Rotation3d kLimelightRotation = new Rotation3d(Units.degreesToRadians(0), 0, Units.degreesToRadians(0));
-    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396+0.5));
+    public static final Translation3d kCameraOffset = new Translation3d(Units.inchesToMeters(3.213) - 0.08,Units.inchesToMeters(-0.495) + 0.02,Units.inchesToMeters(17.396));
     //public static final Transform3d kCameraTransfrom = new Transform3d(kCameraOffset, kCameraRotation);
     public static final Transform3d kLimelightTransform = new Transform3d(kCameraOffset, kLimelightRotation);
+
+    public static final Transform3d kLimelight2Transform = new Transform3d(
+        new Translation3d(
+          Units.inchesToMeters(3.123) - 0.08,
+          Units.inchesToMeters(-0.495) + 0.02,
+          Units.inchesToMeters(17.936) - 0.05
+        ), new Rotation3d(Math.PI, 0, Math.PI)); //TODO: TUNE!
 
     public static final double closeAlignDistance = 1.25;
   }
@@ -148,6 +174,8 @@ public class Constants {
       public static final double Source = 1;
       public static final double Current = 1;
       public static final double Min = 1;
+      public static final double Max = 61;
+      public static final double Barge = 60;
     }
 }
 
@@ -157,9 +185,11 @@ public class Constants {
       public static final double L2 = 17 / 360.;
       public static final double L3 = 20 / 360.;
       public static final double L4 = 41 / 360.;
-      public static final double Source = - 12 / 360.; 
+      public static final double Source = -16.5 / 360.; 
       public static final double Current = 0.23 * 360.;
       public static final double Drive = -64 / 360.;
+      public static final double Barge = -75. / 360.;
+      public static final double Processor = 40. / 360.;
     }
 
     public static final double WristKS = 0;
@@ -178,8 +208,15 @@ public class Constants {
   }
 
   public static class Climber {
-    public static final double upSpeed = 1;
+    public static final double upSpeed = 0.8;
     public static final double downSpeed = -1;
+    
+
+    public static final double upPosition = 30;
+    public static final double downPosition = -77;
+
+    public static final double ratchetDisengage = 0.125;
+    public static final double ratchetEngage = 0;
   }
 
   public static class AlgaeIntake {
@@ -202,5 +239,10 @@ public class Constants {
     public static final double Kp = 0.0;
     public static final double Ki = 0.0;
     public static final double Kd = 0.0;
+  }
+
+  public static class LED {
+    public static final double speed = 0.7;
+    public static final int kLedCount = -1; //Placeholder
   }
 }

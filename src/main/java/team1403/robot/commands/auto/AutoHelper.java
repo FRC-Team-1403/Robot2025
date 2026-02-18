@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import team1403.lib.util.AutoUtil;
 import team1403.lib.util.CougarUtil;
 import team1403.robot.commands.AlignCommand;
@@ -37,11 +38,12 @@ public class AutoHelper {
         try {
             return Commands.sequence(
                 Commands.parallel(
-                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve),
+                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve, true),
                     Commands.sequence(
                         Commands.waitSeconds(0.75),
                         NamedCommands.getCommand("CoralL4"))
                 ),
+                Commands.waitSeconds(1),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
@@ -52,6 +54,48 @@ public class AutoHelper {
             return Commands.none();
         }
     }
+
+    public static Command getOnePCenterAlgae(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("OneP Center", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
+                Commands.waitSeconds(1),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                AutoUtil.loadPathPlannerPath("One piece part 2 barge", m_swerve),
+                //NamedCommands.getCommand("Barge L3"),
+                Commands.waitSeconds(1),
+                    Commands.parallel(
+                        NamedCommands.getCommand("ReefAlignCenter"),
+                        NamedCommands.getCommand("Algae Harvest"),
+                        Commands.waitSeconds(3.0)
+                    ),
+                    Commands.parallel(
+                        NamedCommands.getCommand("Algae Harvest"),
+                        AutoUtil.loadPathPlannerPath("One piece part 3 barge", m_swerve),
+                        Commands.waitSeconds(0.5)
+                        //NamedCommands.getCommand("BargeSetpoint"),
+                        //NamedCommands.getCommand("WaitForSetpoint"),
+                        //NamedCommands.getCommand("Algae Expel") // default command will expel
+                    )
+                //Commands.waitSeconds(0.5),
+                //NamedCommands.getCommand("LoadingFromBarge"), //make sure we don't kill ourselves on the barge
+                //AutoUtil.loadPathPlannerPath("One piece part 4 barge", m_swerve)
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
+    
 
     public static Command getThreePieceSideProc(SwerveSubsystem m_swerve) {
         try {
@@ -106,22 +150,24 @@ public class AutoHelper {
                 NamedCommands.getCommand("Loading"),
                 Commands.waitSeconds(0.1),
                 AutoUtil.loadPathPlannerPath("Proc Two Piece Part 2 test", m_swerve),
-                //Commands.waitSeconds(0.05),
-                // alignToStartingPose(m_swerve, "Proc2P Part 2"),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc Part 3 Back", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignL"),
                 NamedCommands.getCommand("WaitForSetpoint"),
                 NamedCommands.getCommand("CoralScore"),
                 Commands.parallel(
                     NamedCommands.getCommand("Loading"),
-                // Commands.waitSeconds(0.05),
-                //alignToStartingPose(m_swerve, "3p Part 4"),
                     AutoUtil.loadPathPlannerPath("3p Part 4", m_swerve)
                 ),
                 NamedCommands.getCommand("WaitForCoral"),
-                AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc Part 5 Back", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
                 NamedCommands.getCommand("CoralL4"),
                 NamedCommands.getCommand("ReefAlignR"),
                 NamedCommands.getCommand("WaitForSetpoint"),
@@ -137,6 +183,107 @@ public class AutoHelper {
             return Commands.none();
         }
     }
+
+    public static Command getThreePieceBackRightProc978(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc3P Part 1", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4"))
+                ),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                Commands.waitSeconds(0.1),
+                AutoUtil.loadPathPlannerPath("Proc3P Part 2", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc3P Part 3", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.parallel(
+                    NamedCommands.getCommand("Loading"),
+                    AutoUtil.loadPathPlannerPath("Proc3P Part 4", m_swerve)
+                ),
+                NamedCommands.getCommand("WaitForCoral"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Proc3P Part 5", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.parallel(
+                    NamedCommands.getCommand("Loading"),
+                    AutoUtil.loadPathPlannerPath("Proc3P Part 6", m_swerve)
+                )
+                
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
+    public static Command getThreePieceBackNonProc(SwerveSubsystem m_swerve) {
+        try {
+            return Commands.sequence(
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 1", m_swerve, true),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.75),
+                        NamedCommands.getCommand("CoralL4")
+                    )
+                ),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                NamedCommands.getCommand("Loading"),
+                Commands.waitSeconds(0.1),
+                AutoUtil.loadPathPlannerPath("Non Proc 3P Part 2", m_swerve),
+                NamedCommands.getCommand("WaitForCoral"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 3", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignR"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.parallel(
+                    NamedCommands.getCommand("Loading"),
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 4", m_swerve)
+                ),
+                NamedCommands.getCommand("WaitForCoral"),
+                Commands.parallel(
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 5", m_swerve),
+                    NamedCommands.getCommand("AutoWiggle")
+                ),
+                NamedCommands.getCommand("CoralL4"),
+                NamedCommands.getCommand("ReefAlignL"),
+                NamedCommands.getCommand("WaitForSetpoint"),
+                NamedCommands.getCommand("CoralScore"),
+                Commands.parallel(
+                    NamedCommands.getCommand("Loading"),
+                    AutoUtil.loadPathPlannerPath("Non Proc 3P Part 6", m_swerve)
+                )      
+            );
+        } catch (Exception e) {
+            System.err.println("Could not load auto: " + e.getMessage());
+            return Commands.none();
+        }
+    }
+
+    
+    
 
     public static Command testAutoAlign(SwerveSubsystem m_swerve){
         try{
@@ -155,6 +302,20 @@ public class AutoHelper {
         }
   
     }
+
+    public static Command wiggle(SwerveSubsystem m_swerve){
+        try{
+            return Commands.sequence(
+                NamedCommands.getCommand("AutoWiggle")
+            );
+        } 
+        catch(Exception e){
+            System.err.println("Could not load");
+            return Commands.none();
+        }
+  
+    }
+
     public static Command getTwoPieceProc(SwerveSubsystem m_swerve) {
         try {
             return Commands.sequence(

@@ -7,37 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Proc2P Part 1"
+            "pathName": "OneP Center"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Proc Two Piece Part 2 test"
+            "pathName": "One piece part 2 barge"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Proc Part 3 Back"
+            "pathName": "One piece part 3 barge"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3p Part 4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Proc3P Part 5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Proc part 6 back"
+            "pathName": "One piece part 4 barge"
           }
         }
       ]
