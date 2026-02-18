@@ -151,7 +151,7 @@ public class DefaultSwerveCommand extends Command {
     }
 
     if(!Blackbox.isCoralLoaded() && m_autoRotate.getAsBoolean()) {
-      Pose2d target = Blackbox.getNearestSourcePose(m_drivetrainSubsystem.getPose());
+      Pose2d target = Blackbox.getNearestHeuristic(m_drivetrainSubsystem.getPose(), Blackbox.getReefPoses());
       if (target != null) {
         m_targetState.position = target.getRotation().getRadians();
         m_targetState.velocity = 0;

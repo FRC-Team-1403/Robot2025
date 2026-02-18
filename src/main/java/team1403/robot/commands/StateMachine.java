@@ -46,20 +46,20 @@ public class StateMachine extends Command {
                     if (Blackbox.isCoralLoaded()) Blackbox.robotState = State.driving;
                 }
                 break;
-            case driving:
+            case driving: 
                 if(Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     m_wristSubsystem.moveToSetpoint(Constants.Wrist.Setpoints.Drive);
                 if(Blackbox.isAligning() && Blackbox.reefLevel != Blackbox.ReefScoreLevel.drive)
                     Blackbox.robotState = State.aligning;
                 break;
             case aligning:
-                if(Blackbox.isAligning() && Blackbox.getCloseAlign(m_swerve.getPose()) && Blackbox.reefLevel == Blackbox.ReefScoreLevel.L4)
+                if(Blackbox.isAligning() && Blackbox.getCloseAlign(m_swerve.getPose()) && (Blackbox.reefLevel == Blackbox.ReefScoreLevel.L2 || Blackbox.reefLevel == Blackbox.ReefScoreLevel.L4))
                     Blackbox.robotState = State.placing;
-                if(!Blackbox.isAligning())
+                if(!Blackbox.isAligning() && (Blackbox.reefLevel == Blackbox.ReefScoreLevel.L1 || Blackbox.reefLevel == Blackbox.ReefScoreLevel.L3)) //l4 goes really high, so let's wait until we are close
                     Blackbox.robotState = State.placing;
                 break;
             case placing:
-                if (Blackbox.reefLevel == Blackbox.ReefScoreLevel.L4) {
+                if (Blackbox.reefLevel != Blackbox.ReefScoreLevel.L1) {
                     m_elevatorSubsystem.moveToSetpoint(Blackbox.getElevatorSetpointLevel(Blackbox.reefLevel));
                     m_wristSubsystem.moveToSetpoint(Blackbox.getWristSetpointLevel(Blackbox.reefLevel));
                     if(!Blackbox.isCoralLoaded()) {

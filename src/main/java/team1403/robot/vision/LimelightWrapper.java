@@ -6,11 +6,13 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -27,21 +29,27 @@ import team1403.robot.Constants;
 
 public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private final String m_name;
-    private final Supplier<Rotation3d> m_imuRotation;
+    private final Supplier<Pose2d> m_robotPose;
     private final Supplier<Transform3d> m_camTransform;
+    private final DoubleSupplier m_yawRate;
     private LimelightHelpers.PoseEstimate m_poseEstimateMT1;
     private LimelightHelpers.PoseEstimate m_poseEstimateMT2;
-    private final static Matrix<N3, N1> kDefaultStdv = VecBuilder.fill(2, 2, 3); //TODO: adjust this
-    private final static Matrix<N3, N1> kDefaultStdvMT2 = VecBuilder.fill(2, 2, Double.POSITIVE_INFINITY);
+    private final boolean kMT2Enabled;
+    private final Matrix<N3, N1> kDefaultStdv;
+    private final Matrix<N3, N1> kDefaultStdvMT2;
     private final Alert m_camDisconnected;
     private final DoubleSubscriber m_latencySubscriber;
 
     private final VisionData m_dataReturned = new VisionData(); //data we return to swerve subsystem
 
-    public LimelightWrapper(String name, Supplier<Transform3d> cameraTransform, Supplier<Rotation3d> imuRotation) {
-        m_name = name.toLowerCase(); //hostname must be lowercase
-        m_imuRotation = imuRotation;
-        m_camTransform = cameraTransform;
+    public LimelightWrapper(VisionConfigurator config) {
+        m_name = config.getName().toLowerCase(); //hostname must be lowercase
+        m_robotPose = config.getRobotPose();
+        m_camTransform = config.getTransform3d();
+        kDefaultStdv = config.getDeviations();
+        kDefaultStdvMT2 = config.getDeviationsTrig();
+        kMT2Enabled = config.getTrigSolveEnabled();
+        m_yawRate = config.getYawRate();
         m_poseEstimateMT1 = null;
         m_poseEstimateMT2 = null;
 
@@ -131,11 +139,15 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
     private final ArrayList<Pose3d> targets = new ArrayList<>();
     
     @Override
-    public void periodic() {    
-        LimelightHelpers.SetRobotOrientation(m_name, m_imuRotation.get());
+    public void periodic() {
+        if (kMT2Enabled) LimelightHelpers.SetRobotOrientation(m_name, 
+                            new Rotation3d(m_robotPose.get().getRotation()));
         LimelightHelpers.setCameraPose_RobotSpace(m_name, m_camTransform.get());
         m_poseEstimateMT1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
-        m_poseEstimateMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+        if (kMT2Enabled && Math.abs(m_yawRate.getAsDouble()) < 0.5) m_poseEstimateMT2 = 
+                            LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
+        else
+            m_poseEstimateMT2 = null;
 
         m_camDisconnected.set(!isConnected());
         
@@ -162,10 +174,9 @@ public class LimelightWrapper extends SubsystemBase implements ITagCamera {
                     Optional<Pose3d> pose = Constants.Vision.kFieldLayout.getTagPose(f.id);
                     if(pose.isPresent()) targets.add(pose.get());
                 }
-                Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
             }
         }
-        
+        Logger.recordOutput(m_name + "/visionTargets", targets.toArray(new Pose3d[targets.size()]));
         
     }
 }
